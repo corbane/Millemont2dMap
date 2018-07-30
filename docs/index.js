@@ -1,6 +1,6 @@
 function initMillemontSVG(obj) {
     var map = new Millemont.Svg2dMap(obj);
-    var fn = function (name, sh) { alert(name); };
+    var fn = function (name, sh) { document.getElementById("info").innerHTML = name; };
     map.shapes.camping.onClick = fn;
     map.shapes.courDesCochets.onClick = fn;
     map.shapes.grandChateau.onClick = fn;
@@ -15,6 +15,7 @@ var Millemont;
             this.ownerDoc = ownerDoc;
             this.path = path;
             this.image = image;
+            this.active = false;
             image.style.transition = "all 0.25s";
             var bbox = path.getBBox(), c = this.ownerDoc.createElementNS("http://www.w3.org/2000/svg", "circle");
             c.setAttributeNS(null, "cx", (bbox.x + bbox.width / 2).toString());
@@ -26,10 +27,20 @@ var Millemont;
             c.style.transition = "all 0.5s";
             this.ownerDoc.querySelector("svg").appendChild(c);
             this.centerPoint = c;
+            if (!this.ownerDoc.querySelector("#blur-filter")) {
+                var tmp = this.ownerDoc.createElementNS("http://www.w3.org/2000/svg", "g");
+                tmp.innerHTML = "<filter id=\"blur-filter\" x=\"0\" y=\"0\">\n                    <feGaussianBlur in=\"SourceGraphic\" stdDeviation=\"8\" />\n                </filter>";
+                this.ownerDoc.querySelector("svg g").appendChild(tmp.children[0]);
+            }
         }
+        Shape.prototype.select = function (v) {
+            this.active = v;
+            this.path.style.stroke = v ? "white" : "";
+            this.path.style.filter = v ? "url(#blur-filter)" : "";
+        };
         Shape.prototype.hide = function () {
-            this.path.style.strokeWidth = "0";
-            this.image.style.opacity = "0";
+            this.path.style.strokeWidth = this.active ? "" : "0";
+            this.image.style.opacity = this.active ? "1" : "0";
             this.centerPoint.style.fillOpacity = "0.5";
         };
         Shape.prototype.show = function () {
@@ -72,6 +83,10 @@ var Millemont;
             this.background.onmousemove = null;
         };
         Svg2dMap.prototype.onClick = function (name, sh) {
+            if (this.currentShape)
+                this.currentShape.select(false);
+            sh.select(true);
+            this.currentShape = sh;
             if (sh.onClick)
                 sh.onClick(name, sh);
         };

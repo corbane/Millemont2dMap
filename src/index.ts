@@ -1,11 +1,9 @@
 
-
-
 function initMillemontSVG (obj: HTMLObjectElement)
 {
     var map = new Millemont.Svg2dMap (obj)
 
-    var fn = (name: string, sh: Millemont.Shape) => { alert (name) }
+    var fn = (name: string, sh: Millemont.Shape) => { document.getElementById ("info").innerHTML = name }
     map.shapes.camping.onClick = fn
     map.shapes.courDesCochets.onClick = fn
     map.shapes.grandChateau.onClick = fn
@@ -38,21 +36,45 @@ module Millemont
 
             this.ownerDoc.querySelector ("svg").appendChild (c)
             this.centerPoint = c
+
+            if( !this.ownerDoc.querySelector ("#blur-filter") )
+            {
+                var tmp = this.ownerDoc.createElementNS ("http://www.w3.org/2000/svg", "g")
+                tmp.innerHTML = `<filter id="blur-filter" x="0" y="0">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="8" />
+                </filter>`
+
+                this.ownerDoc.querySelector ("svg g").appendChild (tmp.children[0])
+            }
         }
 
         onClick? (name: string, sh: this): void
 
+        private active: boolean = false
+
+        select (v: boolean)
+        {
+            this.active = v
+
+            this.path.style.stroke = v ? "white" : ""
+            this.path.style.filter = v ? "url(#blur-filter)" : ""
+        }
+
         hide ()
         {
-            this.path.style.strokeWidth = "0"
-            this.image.style.opacity = "0"
+            this.path.style.strokeWidth = this.active ? "" : "0"
+
+            this.image.style.opacity = this.active ? "1" : "0"
+            
             this.centerPoint.style.fillOpacity = "0.5"
         }
 
         show ()
         {
             this.path.style.strokeWidth = ""
+
             this.image.style.opacity = "1"
+
             this.centerPoint.style.fillOpacity = "1"
         }
     }
@@ -108,13 +130,21 @@ module Millemont
             this.background.onmousemove = null
         }
 
+        private currentShape: Shape
+
         protected onClick (name: string, sh: Shape)
         {
+            if( this.currentShape )
+                this.currentShape.select (false)
+            
+            sh.select (true)
+            this.currentShape = sh
+
             if( sh.onClick )
                 sh.onClick (name, sh)
         }
 
-       show (sh: Shape)
+        show (sh: Shape)
         {
             for( var name in this.shapes )
                 this.shapes[name].hide ()
