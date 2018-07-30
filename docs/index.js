@@ -1,11 +1,21 @@
 function initMillemontSVG(obj) {
     var map = new Millemont.Svg2dMap(obj);
-    var fn = function (name, sh) { document.getElementById("info").innerHTML = name; };
-    map.shapes.camping.onClick = fn;
-    map.shapes.courDesCochets.onClick = fn;
-    map.shapes.grandChateau.onClick = fn;
-    map.shapes.orangerie.onClick = fn;
-    map.shapes.petitChateau.onClick = fn;
+    var fn = function (sh) {
+        document.getElementById("info").innerHTML = sh.image.id;
+    };
+    map.shapes.camping.onSelect = fn;
+    map.shapes.courDesCochets.onSelect = fn;
+    map.shapes.grandChateau.onSelect = fn;
+    map.shapes.orangerie.onSelect = fn;
+    map.shapes.petitChateau.onSelect = fn;
+    var ufn = function (sh) {
+        document.getElementById("info").innerHTML = "<br/>";
+    };
+    map.shapes.camping.onUnselect = ufn;
+    map.shapes.courDesCochets.onUnselect = ufn;
+    map.shapes.grandChateau.onUnselect = ufn;
+    map.shapes.orangerie.onUnselect = ufn;
+    map.shapes.petitChateau.onUnselect = ufn;
     console.log(map);
 }
 var Millemont;
@@ -55,6 +65,7 @@ var Millemont;
     var Svg2dMap = /** @class */ (function () {
         function Svg2dMap(el) {
             this.el = el;
+            this.selectedSape = null;
             var doc = el.contentDocument;
             this.shapes = {
                 orangerie: new Shape(doc, doc.querySelector("#t_orangerie"), doc.querySelector("#i_orangerie")),
@@ -86,24 +97,41 @@ var Millemont;
             this.background.onmousemove = null;
         };
         Svg2dMap.prototype.onClick = function (name, sh) {
-            if (this.currentShape == sh) {
-                sh.setSelected(false);
-                this.currentShape = null;
+            if (this.selectedSape == sh) {
+                this.unselect();
                 this.show(sh);
-                return;
             }
-            if (this.currentShape)
-                this.currentShape.setSelected(false);
+            else {
+                this.unselect();
+                this.select(sh);
+            }
+        };
+        Svg2dMap.prototype.select = function (sh) {
+            if (this.selectedSape)
+                this.selectedSape.setSelected(false);
             sh.setSelected(true);
-            this.currentShape = sh;
             this.show(sh);
-            if (sh.onClick)
-                sh.onClick(name, sh);
+            if (sh.onSelect)
+                sh.onSelect(sh);
+            this.selectedSape = sh;
+        };
+        Svg2dMap.prototype.unselect = function () {
+            var sh = this.selectedSape;
+            if (sh == null)
+                return;
+            sh.setSelected(false);
+            this.hideAll();
+            if (sh.onUnselect)
+                sh.onUnselect(sh);
+            this.selectedSape = null;
+            return;
         };
         Svg2dMap.prototype.onBackgroundClick = function () {
-            if (this.currentShape)
-                this.currentShape.setSelected(false);
-            this.hideAll();
+            this.unselect();
+            /*if( this.currentShape )
+                this.currentShape.setSelected (false)
+            
+            this.hideAll ()*/
         };
         Svg2dMap.prototype.show = function (sh) {
             for (var name in this.shapes)
