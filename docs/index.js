@@ -22,7 +22,7 @@ var Millemont;
             c.setAttributeNS(null, "cy", (bbox.y + bbox.height / 2).toString());
             c.setAttributeNS(null, "r", "100");
             c.setAttributeNS(null, "fill", "#FFD500");
-            c.setAttributeNS(null, "stroke-width", "20");
+            c.setAttributeNS(null, "stroke-width", "15");
             c.style.fillOpacity = "0.5";
             c.style.transition = "all 0.5s";
             this.ownerDoc.querySelector("svg").appendChild(c);
@@ -33,15 +33,16 @@ var Millemont;
                 this.ownerDoc.querySelector("svg g").appendChild(tmp.children[0]);
             }
         }
-        Shape.prototype.select = function (v) {
+        Shape.prototype.setSelected = function (v) {
             this.active = v;
             this.path.style.stroke = v ? "white" : "";
             this.path.style.filter = v ? "url(#blur-filter)" : "";
+            this.centerPoint.style.stroke = v ? "white" : "transparent";
         };
         Shape.prototype.hide = function () {
             this.path.style.strokeWidth = this.active ? "" : "0";
             this.image.style.opacity = this.active ? "1" : "0";
-            this.centerPoint.style.fillOpacity = "0.5";
+            this.centerPoint.style.fillOpacity = this.active ? "1" : "0.5";
         };
         Shape.prototype.show = function () {
             this.path.style.strokeWidth = "";
@@ -84,8 +85,8 @@ var Millemont;
         };
         Svg2dMap.prototype.onClick = function (name, sh) {
             if (this.currentShape)
-                this.currentShape.select(false);
-            sh.select(true);
+                this.currentShape.setSelected(false);
+            sh.setSelected(true);
             this.currentShape = sh;
             this.show(sh);
             if (sh.onClick)

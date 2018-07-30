@@ -30,7 +30,7 @@ module Millemont
             c.setAttributeNS (null, "cy", (bbox.y + bbox.height / 2).toString ())
             c.setAttributeNS (null, "r", "100")
             c.setAttributeNS (null, "fill", "#FFD500")
-            c.setAttributeNS (null, "stroke-width", "20")
+            c.setAttributeNS (null, "stroke-width", "15")
             c.style.fillOpacity = "0.5"
             c.style.transition = "all 0.5s"
 
@@ -52,29 +52,26 @@ module Millemont
 
         private active: boolean = false
 
-        select (v: boolean)
+        setSelected (v: boolean)
         {
             this.active = v
 
             this.path.style.stroke = v ? "white" : ""
             this.path.style.filter = v ? "url(#blur-filter)" : ""
+            this.centerPoint.style.stroke = v ? "white" : "transparent"
         }
 
         hide ()
         {
             this.path.style.strokeWidth = this.active ? "" : "0"
-
-            this.image.style.opacity = this.active ? "1" : "0"
-            
-            this.centerPoint.style.fillOpacity = "0.5"
+            this.image.style.opacity    = this.active ? "1" : "0"
+            this.centerPoint.style.fillOpacity = this.active ? "1" : "0.5"
         }
 
         show ()
         {
             this.path.style.strokeWidth = ""
-
             this.image.style.opacity = "1"
-
             this.centerPoint.style.fillOpacity = "1"
         }
     }
@@ -135,9 +132,9 @@ module Millemont
         protected onClick (name: string, sh: Shape)
         {
             if( this.currentShape )
-                this.currentShape.select (false)
+                this.currentShape.setSelected (false)
             
-            sh.select (true)
+            sh.setSelected (true)
             this.currentShape = sh
 
             this.show (sh)
