@@ -4,61 +4,48 @@ module MMMFest
 {
     export class Map2d
     {
-        readonly shapes: {
-            orangerie: Region2d
-            grandChateau: Region2d
-            petitChateau: Region2d
-            camping: Region2d
-            courDesCochets: Region2d
-        }
+        readonly regions: Region2d [] = []
 
-        readonly background: SVGImageElement
+        readonly background: SVGElement
 
-        constructor (protected el: HTMLObjectElement)
+        constructor (readonly container: SVGSVGElement, options: Map2d.IOptions)
         {
-            var svg = el.contentDocument.querySelector ("svg")
-
-            this.shapes = {
-                orangerie:      new Region2d (svg, svg.querySelector ("#t_orangerie"), svg.querySelector ("#i_orangerie"), ),
-                grandChateau:   new Region2d (svg, svg.querySelector ("#t_grchateau"), svg.querySelector ("#i_grchateau")),
-                petitChateau:   new Region2d (svg, svg.querySelector ("#t_ptchateau"), svg.querySelector ("#i_ptchateau")),
-                camping:        new Region2d (svg, svg.querySelector ("#t_camping"), svg.querySelector ("#i_camping")),
-                courDesCochets: new Region2d (svg, svg.querySelector ("#t_cochets"), svg.querySelector ("#i_cochets"))
-            }
-            
-            for( var name in this.shapes )
-            {
-                var sh = this.shapes[name] as Region2d
-                sh.image.addEventListener ("click", this.onClick.bind (this, name, sh))
-                //sh.centerPoint.addEventListener ("click", this.onClick.bind (this, name, sh))
-                sh.infoPoint.svg.addEventListener ("click", this.onClick.bind (this, name, sh))
-                sh.image.addEventListener ("mouseover", this.onMouseOver.bind (this, sh))
-            }
-
-            var bg = svg.querySelector ("#i_background") as SVGImageElement
+            if( typeof options.background == "string" )
+                var bg = this.container.querySelector (options.background) as SVGElement
+            else
+                var bg = options.background
+                
             bg.style.opacity = "1"
             bg.style.transition = "all 0.5s"
             bg.addEventListener ("click", this.onBackgroundClick.bind (this))
             this.background = bg
         }
 
+        addRegion (regionOptions: Region2d.IOptions): Region2d
+        {
+            var r = new Region2d (this.container, regionOptions)
+            r.image.addEventListener ("click", this.onClick.bind (this, r))
+            r.infoPoint.svg.addEventListener ("click", this.onClick.bind (this, r))
+            r.image.addEventListener ("mouseover", this.onMouseOver.bind (this, r))
+            this.regions.push (r)
+            return r
+        }
+
         protected onMouseOver (sh: Region2d)
         {
-            console.log ("mouseOver")
             this.show (sh)
             this.background.onmousemove = this.onMouseMove.bind (this, sh)
         }
 
         protected onMouseMove (sh: Region2d)
         {
-            console.log ("mouseMove")
             this.hideAll ()
             this.background.onmousemove = null
         }
 
         private selectedSape: Region2d = null
 
-        protected onClick (name: string, sh: Region2d)
+        protected onClick (sh: Region2d)
         {
             if( this.selectedSape == sh )
             {
@@ -114,8 +101,8 @@ module MMMFest
 
         protected show (sh: Region2d)
         {
-            for( var name in this.shapes )
-                this.shapes[name].hide ()
+            for( var s of this.regions )
+                s.hide ()
 
             sh.show ()
 
@@ -124,10 +111,18 @@ module MMMFest
 
         protected hideAll ()
         {
-            for( var name in this.shapes )
-                this.shapes[name].hide ()
+            for( var s of this.regions )
+                s.hide ()
             
             this.background.style.opacity = "1"
+        }
+    }
+
+    export module Map2d
+    {
+        export interface IOptions
+        {
+            background: SVGElement | string
         }
     }
 }

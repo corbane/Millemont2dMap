@@ -98,7 +98,7 @@ module MMMFest
             var b = this.svg.getBoundingClientRect () as DOMRect,
                 offsetY = this.popup.getBoundingClientRect().height / 2 - b.height / 2
             this.popup.style.left = (b.left + b.width + 20) + "px"
-            this.popup.style.top = (window.screenY + b.top + b.height - offsetY) + "px"
+            this.popup.style.top = (window.screenY + b.top + offsetY) + "px"
         }
 
         hidePopup ()

@@ -4,41 +4,38 @@ module MMMFest
 {
     export class Region2d 
     {
+        readonly path: SVGPolygonElement
+        readonly image: SVGImageElement
         readonly infoPoint: InfoPoint
 
-        constructor (
-            protected svg: SVGSVGElement,
-            readonly path: SVGPolygonElement, readonly image: SVGImageElement
-        ) {
-            image.style.transition = "all 0.25s"
+        constructor (protected container: SVGSVGElement, options: Region2d.IOptions)
+        {
+            this.path = typeof options.path == "string" ? container.ownerDocument.querySelector (options.path) : options.path
 
-            var bbox = path.getBBox ()
-            this.infoPoint = new InfoPoint (svg.ownerDocument.querySelector ("svg"))
+            this.image = typeof options.image == "string" ? container.ownerDocument.querySelector (options.image) : options.image
+            this.image.style.transition = "all 0.25s"
+
+            if( options.onSelect )
+                this.onSelect = options.onSelect
+
+            if( options.onUnselect )
+                this.onUnselect = options.onUnselect
+
+            this.infoPoint = new InfoPoint (container)
+            var bbox = this.path.getBBox ()
             this.infoPoint.setPosition (bbox.x + bbox.width / 2, bbox.y + bbox.height / 2)
             this.infoPoint.setScale (10)
+            if( options.popupInfo )
+                this.infoPoint.setPopup (options.popupInfo)
 
-            /*var bbox = path.getBBox (),
-                c = this.ownerDoc.createElementNS ("http://www.w3.org/2000/svg", "circle")
-
-            c.setAttributeNS (null, "cx", (bbox.x + bbox.width / 2).toString ())
-            c.setAttributeNS (null, "cy", (bbox.y + bbox.height / 2).toString ())
-            c.setAttributeNS (null, "r", "100")
-            c.setAttributeNS (null, "fill", "#FFD500")
-            c.setAttributeNS (null, "stroke-width", "15")
-            c.style.fillOpacity = "0.5"
-            c.style.transition = "all 0.5s"
-
-            this.ownerDoc.querySelector ("svg").appendChild (c)
-            this.centerPoint = c*/
-
-            if( !this.svg.ownerDocument.querySelector ("#blur-filter") )
+            if( !this.container.ownerDocument.querySelector ("#blur-filter") )
             {
-                var tmp = this.svg.ownerDocument.createElementNS ("http://www.w3.org/2000/svg", "g")
+                var tmp = this.container.ownerDocument.createElementNS ("http://www.w3.org/2000/svg", "g")
                 tmp.innerHTML = `<filter id="blur-filter" x="0" y="0">
                     <feGaussianBlur in="SourceGraphic" stdDeviation="8" />
                 </filter>`
 
-                this.svg.ownerDocument.querySelector ("svg g").appendChild (tmp.children[0])
+                this.container.ownerDocument.querySelector ("svg g").appendChild (tmp.children[0])
             }
         }
 
@@ -77,6 +74,18 @@ module MMMFest
             this.image.style.opacity = "1"
             //this.centerPoint.style.fillOpacity = "1"
             //this.infoPoint.svg.style.fillOpacity = "1"
+        }
+    }
+
+    export module Region2d
+    {
+        export interface IOptions
+        {
+            path: SVGPolygonElement|string
+            image: SVGImageElement|string
+            onSelect? (sh: this): void
+            onUnselect? ( sh: this): void
+            popupInfo?: HTMLElement
         }
     }
 }
