@@ -197,7 +197,7 @@ module Millemont
             this.hideAll ()*/
         }
 
-        show (sh: Shape)
+        protected show (sh: Shape)
         {
             for( var name in this.shapes )
                 this.shapes[name].hide ()
@@ -207,7 +207,7 @@ module Millemont
             this.background.style.opacity = "0.5"
         }
 
-        hideAll ()
+        protected hideAll ()
         {
             for( var name in this.shapes )
                 this.shapes[name].hide ()
