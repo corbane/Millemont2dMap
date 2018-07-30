@@ -69,9 +69,11 @@ var Millemont;
                 sh.centerPoint.addEventListener("click", this.onClick.bind(this, name, sh));
                 sh.image.addEventListener("mouseover", this.onMouseOver.bind(this, sh));
             }
-            this.background = doc.querySelector("#i_background");
-            this.background.style.opacity = "1";
-            this.background.style.transition = "all 0.25s";
+            var bg = doc.querySelector("#i_background");
+            bg.style.opacity = "1";
+            bg.style.transition = "all 0.25s";
+            bg.addEventListener("click", this.onBackgroundClick.bind(this));
+            this.background = bg;
         }
         Svg2dMap.prototype.onMouseOver = function (sh) {
             console.log("mouseOver");
@@ -84,6 +86,12 @@ var Millemont;
             this.background.onmousemove = null;
         };
         Svg2dMap.prototype.onClick = function (name, sh) {
+            if (this.currentShape == sh) {
+                sh.setSelected(false);
+                this.currentShape = null;
+                this.show(sh);
+                return;
+            }
             if (this.currentShape)
                 this.currentShape.setSelected(false);
             sh.setSelected(true);
@@ -91,6 +99,11 @@ var Millemont;
             this.show(sh);
             if (sh.onClick)
                 sh.onClick(name, sh);
+        };
+        Svg2dMap.prototype.onBackgroundClick = function () {
+            if (this.currentShape)
+                this.currentShape.setSelected(false);
+            this.hideAll();
         };
         Svg2dMap.prototype.show = function (sh) {
             for (var name in this.shapes)

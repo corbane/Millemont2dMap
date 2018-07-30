@@ -108,9 +108,11 @@ module Millemont
                 sh.image.addEventListener ("mouseover", this.onMouseOver.bind (this, sh))
             }
 
-            this.background = doc.querySelector ("#i_background") as SVGImageElement
-            this.background.style.opacity = "1"
-            this.background.style.transition = "all 0.25s"
+            var bg = doc.querySelector ("#i_background") as SVGImageElement
+            bg.style.opacity = "1"
+            bg.style.transition = "all 0.25s"
+            bg.addEventListener ("click", this.onBackgroundClick.bind (this))
+            this.background = bg
         }
 
         protected onMouseOver (sh: Shape)
@@ -131,6 +133,14 @@ module Millemont
 
         protected onClick (name: string, sh: Shape)
         {
+            if( this.currentShape == sh )
+            {
+                sh.setSelected (false)
+                this.currentShape = null
+                this.show (sh)
+                return
+            }
+
             if( this.currentShape )
                 this.currentShape.setSelected (false)
             
@@ -141,6 +151,14 @@ module Millemont
 
             if( sh.onClick )
                 sh.onClick (name, sh)
+        }
+
+        protected onBackgroundClick ()
+        {
+            if( this.currentShape )
+                this.currentShape.setSelected (false)
+            
+            this.hideAll ()
         }
 
         show (sh: Shape)
