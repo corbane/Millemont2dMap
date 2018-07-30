@@ -54,6 +54,7 @@ var Millemont;
             for (var name in this.shapes) {
                 var sh = this.shapes[name];
                 sh.image.addEventListener("click", this.onClick.bind(this, name, sh));
+                sh.centerPoint.addEventListener("click", this.onClick.bind(this, name, sh));
                 sh.image.addEventListener("mouseover", this.onMouseOver.bind(this, sh));
             }
             this.background = doc.querySelector("#i_background");

@@ -85,6 +85,7 @@ module Millemont
             {
                 var sh = this.shapes[name] as Shape
                 sh.image.addEventListener ("click", this.onClick.bind (this, name, sh))
+                sh.centerPoint.addEventListener ("click", this.onClick.bind (this, name, sh))
                 sh.image.addEventListener ("mouseover", this.onMouseOver.bind (this, sh))
             }
 
