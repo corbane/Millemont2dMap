@@ -1,4 +1,6 @@
 
+# Interactive 2d map for MMMFest
+
 Compiled with Typescript
 
 `tsc src/index.ts --sourceMap --outDir docs/`
