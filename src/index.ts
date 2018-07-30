@@ -140,6 +140,8 @@ module Millemont
             sh.select (true)
             this.currentShape = sh
 
+            this.show (sh)
+
             if( sh.onClick )
                 sh.onClick (name, sh)
         }
