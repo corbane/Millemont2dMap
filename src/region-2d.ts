@@ -8,11 +8,11 @@ module MMMFest
         readonly image: SVGImageElement
         readonly infoPoint: InfoPoint
 
-        constructor (protected container: SVGSVGElement, options: Region2d.IOptions)
+        constructor (protected parent: SVGSVGElement, options: Region2d.IOptions)
         {
-            this.path = typeof options.path == "string" ? container.ownerDocument.querySelector (options.path) : options.path
+            this.path = typeof options.path == "string" ? parent.ownerDocument.querySelector (options.path) : options.path
 
-            this.image = typeof options.image == "string" ? container.ownerDocument.querySelector (options.image) : options.image
+            this.image = typeof options.image == "string" ? parent.ownerDocument.querySelector (options.image) : options.image
             this.image.style.transition = "all 0.25s"
 
             if( options.onSelect )
@@ -21,21 +21,21 @@ module MMMFest
             if( options.onUnselect )
                 this.onUnselect = options.onUnselect
 
-            this.infoPoint = new InfoPoint (container)
+            this.infoPoint = new InfoPoint (parent)
             var bbox = this.path.getBBox ()
             this.infoPoint.setPosition (bbox.x + bbox.width / 2, bbox.y + bbox.height / 2)
             this.infoPoint.setScale (10)
             if( options.popupInfo )
                 this.infoPoint.setPopup (options.popupInfo)
 
-            if( !this.container.ownerDocument.querySelector ("#blur-filter") )
+            if( !this.parent.ownerDocument.querySelector ("#blur-filter") )
             {
-                var tmp = this.container.ownerDocument.createElementNS ("http://www.w3.org/2000/svg", "g")
+                var tmp = this.parent.ownerDocument.createElementNS ("http://www.w3.org/2000/svg", "g")
                 tmp.innerHTML = `<filter id="blur-filter" x="0" y="0">
                     <feGaussianBlur in="SourceGraphic" stdDeviation="8" />
                 </filter>`
 
-                this.container.ownerDocument.querySelector ("svg g").appendChild (tmp.children[0])
+                this.parent.ownerDocument.querySelector ("svg g").appendChild (tmp.children[0])
             }
         }
 

@@ -12,13 +12,13 @@ module MMMFest
         protected x_origin: number
         protected y_origin: number
 
-        constructor (readonly container: SVGElement)
+        constructor (readonly parent: SVGElement)
         {
-            var g = this.container.ownerDocument.createElementNS ("http://www.w3.org/2000/svg", "g")
+            var g = this.parent.ownerDocument.createElementNS ("http://www.w3.org/2000/svg", "g")
             g.setAttributeNS (null, "pointer-events", "all")
             g.addEventListener ("mouseover", this.showPopup.bind (this))
             g.addEventListener ("mouseout", this.hidePopup.bind (this))
-            container.appendChild (g)
+            parent.appendChild (g)
             this.svg = g
 
             this.setPosition (100, 100)
@@ -31,6 +31,9 @@ module MMMFest
             this.svg.innerHTML = this.getInnerSvg ()
         }
 
+        /**
+         * Overrides this method for build a custom style point
+         */
         getInnerSvg(): string
         {
             return `
@@ -83,7 +86,7 @@ module MMMFest
         setPopup (popup: HTMLElement)
         {
             if( popup )
-                popup.classList.add ("mmmfest-2dmap-popup")
+                popup.classList.add ("mmmfest-map-popup")
 
             this.popup = popup
         }
