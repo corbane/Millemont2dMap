@@ -1,16 +1,16 @@
 var MMMFest;
 (function (MMMFest) {
     var InfoPoint = /** @class */ (function () {
-        function InfoPoint(container) {
-            this.container = container;
+        function InfoPoint(parent) {
+            this.parent = parent;
             this.popup = null;
             this.scale = 1;
             this.active = false;
-            var g = this.container.ownerDocument.createElementNS("http://www.w3.org/2000/svg", "g");
+            var g = this.parent.ownerDocument.createElementNS("http://www.w3.org/2000/svg", "g");
             g.setAttributeNS(null, "pointer-events", "all");
             g.addEventListener("mouseover", this.showPopup.bind(this));
             g.addEventListener("mouseout", this.hidePopup.bind(this));
-            container.appendChild(g);
+            parent.appendChild(g);
             this.svg = g;
             this.setPosition(100, 100);
         }
@@ -19,6 +19,9 @@ var MMMFest;
             this.svg.style.transformOrigin = this.x + "px " + this.y + "px"; // "center center"
             this.svg.innerHTML = this.getInnerSvg();
         };
+        /**
+         * Overrides this method for build a custom style point
+         */
         InfoPoint.prototype.getInnerSvg = function () {
             return "\n                <circle cx=\"" + this.x + "\" cy=\"" + this.y + "\" r=\"14\" fill=\"" + (this.active ? "#FFD50055" : "none") + "\" stroke=\"gold\" stroke-width=\"2\"/>\n                <circle cx=\"" + this.x + "\" cy=\"" + (this.y - 6) + "\" r=\"2\" fill=\"gold\"/>\n                <rect x=\"" + (this.x - 1.5) + "\" y=\"" + (this.y - 2) + "\" width=\"3\" height=\"10\" fill=\"gold\"/>";
         };
@@ -50,7 +53,7 @@ var MMMFest;
         };
         InfoPoint.prototype.setPopup = function (popup) {
             if (popup)
-                popup.classList.add("mmmfest-2dmap-popup");
+                popup.classList.add("mmmfest-map-popup");
             this.popup = popup;
         };
         InfoPoint.prototype.showPopup = function (evt) {
@@ -74,26 +77,26 @@ var MMMFest;
 var MMMFest;
 (function (MMMFest) {
     var Region2d = /** @class */ (function () {
-        function Region2d(container, options) {
-            this.container = container;
+        function Region2d(parent, options) {
+            this.parent = parent;
             this.active = false;
-            this.path = typeof options.path == "string" ? container.ownerDocument.querySelector(options.path) : options.path;
-            this.image = typeof options.image == "string" ? container.ownerDocument.querySelector(options.image) : options.image;
+            this.path = typeof options.path == "string" ? parent.ownerDocument.querySelector(options.path) : options.path;
+            this.image = typeof options.image == "string" ? parent.ownerDocument.querySelector(options.image) : options.image;
             this.image.style.transition = "all 0.25s";
             if (options.onSelect)
                 this.onSelect = options.onSelect;
             if (options.onUnselect)
                 this.onUnselect = options.onUnselect;
-            this.infoPoint = new MMMFest.InfoPoint(container);
+            this.infoPoint = new MMMFest.InfoPoint(parent);
             var bbox = this.path.getBBox();
             this.infoPoint.setPosition(bbox.x + bbox.width / 2, bbox.y + bbox.height / 2);
             this.infoPoint.setScale(10);
             if (options.popupInfo)
                 this.infoPoint.setPopup(options.popupInfo);
-            if (!this.container.ownerDocument.querySelector("#blur-filter")) {
-                var tmp = this.container.ownerDocument.createElementNS("http://www.w3.org/2000/svg", "g");
+            if (!this.parent.ownerDocument.querySelector("#blur-filter")) {
+                var tmp = this.parent.ownerDocument.createElementNS("http://www.w3.org/2000/svg", "g");
                 tmp.innerHTML = "<filter id=\"blur-filter\" x=\"0\" y=\"0\">\n                    <feGaussianBlur in=\"SourceGraphic\" stdDeviation=\"8\" />\n                </filter>";
-                this.container.ownerDocument.querySelector("svg g").appendChild(tmp.children[0]);
+                this.parent.ownerDocument.querySelector("svg g").appendChild(tmp.children[0]);
             }
         }
         Region2d.prototype.select = function () {
@@ -214,12 +217,8 @@ var MMMFest;
     MMMFest.Map2d = Map2d;
 })(MMMFest || (MMMFest = {}));
 /// <reference path="map-2d.ts" />
-function initMillemontSVG(obj) {
-    var map = new MMMFest.Map2d(obj.contentDocument.querySelector("svg"), { background: "#i_background" }), fn = function (sh) {
-        document.getElementById("info").innerHTML = sh.image.id;
-    }, ufn = function (sh) {
-        document.getElementById("info").innerHTML = "<br/>";
-    };
+function init(obj) {
+    var map = new MMMFest.Map2d(obj.contentDocument.querySelector("svg"), { background: "#i_background" });
     map.addRegion({ path: "#t_orangerie", image: "#i_orangerie", onSelect: fn, onUnselect: ufn, popupInfo: document.querySelector("#p_orangerie") });
     map.addRegion({ path: "#t_grchateau", image: "#i_grchateau", onSelect: fn, onUnselect: ufn, popupInfo: document.querySelector("#p_grchateau") });
     map.addRegion({ path: "#t_ptchateau", image: "#i_ptchateau", onSelect: fn, onUnselect: ufn, popupInfo: document.querySelector("#p_orangerie") });
@@ -227,5 +226,7 @@ function initMillemontSVG(obj) {
     var camp = map.addRegion({ path: "#t_camping", image: "#i_camping", onSelect: fn, onUnselect: ufn });
     camp.infoPoint.offsetY(-200);
     console.log(map);
+    function fn(sh) { document.getElementById("info").innerHTML = sh.image.id; }
+    function ufn(sh) { document.getElementById("info").innerHTML = "<br/>"; }
 }
 //# sourceMappingURL=index.js.map

@@ -10,7 +10,7 @@
         position: relative;
         max-width: 800px;
     }
-    .mmmfest-2dmap-popup {
+    .mmmfest-map-popup {
         padding: 10px;
         font-family: Arial, sans-serif;
         font-size: 10pt;
@@ -22,7 +22,7 @@
         display: none;
     }
 
-    /*.mmmfest-2dmap-popup::before {
+    /*.mmmfest-map-popup::before {
         content: "";
         width: 12px;
         height: 12px;
@@ -41,7 +41,7 @@
 <body>
 
     <div class="mmmfest-2dmap">
-        <object data="chateau-de-millemont_c.svg" type="image/svg+xml" onload="initMillemontSVG (this)"></object>
+        <object data="chateau-de-millemont_c.svg" type="image/svg+xml" onload="init (this)"></object>
 
         <div id="p_orangerie">
             <p>L'orangerie</p>
@@ -55,7 +55,7 @@
         </div>
     </div>
 
-    <h2 id="info"><br/></h2>
+    <h2>Selected item: <span id="info"><br/></span></h2>
 
     <script src="index.js"></script>
 
