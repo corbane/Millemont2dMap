@@ -122,7 +122,7 @@ module Millemont
 
             var bg = doc.querySelector ("#i_background") as SVGImageElement
             bg.style.opacity = "1"
-            bg.style.transition = "all 0.25s"
+            bg.style.transition = "all 0.5s"
             bg.addEventListener ("click", this.onBackgroundClick.bind (this))
             this.background = bg
         }
