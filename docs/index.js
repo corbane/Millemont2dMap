@@ -61,11 +61,14 @@ var Millemont;
             this.background.style.transition = "all 0.25s";
         }
         Svg2dMap.prototype.onMouseOver = function (sh) {
+            console.log("mouseOver");
             this.show(sh);
-            this.background.addEventListener("mousemove", this.onMouseMove.bind(this, sh));
+            this.background.onmousemove = this.onMouseMove.bind(this, sh);
         };
         Svg2dMap.prototype.onMouseMove = function (sh) {
+            console.log("mouseMove");
             this.hideAll();
+            this.background.onmousemove = null;
         };
         Svg2dMap.prototype.onClick = function (name, sh) {
             if (sh.onClick)

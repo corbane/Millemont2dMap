@@ -95,13 +95,16 @@ module Millemont
 
         protected onMouseOver (sh: Shape)
         {
+            console.log ("mouseOver")
             this.show (sh)
-            this.background.addEventListener ("mousemove", this.onMouseMove.bind (this, sh))
+            this.background.onmousemove = this.onMouseMove.bind (this, sh)
         }
 
         protected onMouseMove (sh: Shape)
         {
+            console.log ("mouseMove")
             this.hideAll ()
+            this.background.onmousemove = null
         }
 
         protected onClick (name: string, sh: Shape)
