@@ -53,7 +53,7 @@ var MMMFest;
         };
         InfoPoint.prototype.setPopup = function (popup) {
             if (popup)
-                popup.classList.add("mmmfest-map-popup");
+                popup.classList.add("mmmfest", "map-popup");
             this.popup = popup;
         };
         InfoPoint.prototype.showPopup = function (evt) {
@@ -81,8 +81,9 @@ var MMMFest;
             this.parent = parent;
             this.active = false;
             this.path = typeof options.path == "string" ? parent.ownerDocument.querySelector(options.path) : options.path;
+            this.path.classList.add("mmmfest", "map2d-path");
             this.image = typeof options.image == "string" ? parent.ownerDocument.querySelector(options.image) : options.image;
-            this.image.style.transition = "all 0.25s";
+            this.image.classList.add("mmmfest", "map2d-image");
             if (options.onSelect)
                 this.onSelect = options.onSelect;
             if (options.onUnselect)
@@ -101,27 +102,21 @@ var MMMFest;
         }
         Region2d.prototype.select = function () {
             this.active = true;
-            this.path.style.stroke = "white";
-            this.path.style.filter = "url(#blur-filter)";
+            this.path.classList.add("active");
             this.infoPoint.select();
         };
         Region2d.prototype.unselect = function () {
             this.active = false;
-            this.path.style.stroke = "";
-            this.path.style.filter = "";
+            this.path.classList.remove("active");
             this.infoPoint.unselect();
         };
         Region2d.prototype.hide = function () {
-            this.path.style.strokeWidth = this.active ? "" : "0";
-            this.image.style.opacity = this.active ? "1" : "0";
-            //this.centerPoint.style.fillOpacity = this.active ? "1" : "0.5"
-            //this.infoPoint.svg.style.fillOpacity = this.active ? "1" : "0.5"
+            this.path.classList.add("ghost");
+            this.image.classList.add("ghost");
         };
         Region2d.prototype.show = function () {
-            this.path.style.strokeWidth = "";
-            this.image.style.opacity = "1";
-            //this.centerPoint.style.fillOpacity = "1"
-            //this.infoPoint.svg.style.fillOpacity = "1"
+            this.path.classList.remove("ghost");
+            this.image.classList.remove("ghost");
         };
         return Region2d;
     }());
@@ -139,8 +134,9 @@ var MMMFest;
                 var bg = this.container.querySelector(options.background);
             else
                 var bg = options.background;
-            bg.style.opacity = "1";
-            bg.style.transition = "all 0.5s";
+            //bg.style.opacity = "1"
+            //bg.style.transition = "all 0.5s"
+            bg.classList.add("mmmfest", "map2d-background");
             bg.addEventListener("click", this.onBackgroundClick.bind(this));
             this.background = bg;
         }
@@ -203,14 +199,16 @@ var MMMFest;
                 s.hide();
             }
             sh.show();
-            this.background.style.opacity = "0.5";
+            this.background.classList.add("ghost");
+            //this.background.style.opacity = "0.5"
         };
         Map2d.prototype.hideAll = function () {
             for (var _i = 0, _a = this.regions; _i < _a.length; _i++) {
                 var s = _a[_i];
                 s.hide();
             }
-            this.background.style.opacity = "1";
+            this.background.classList.remove("ghost");
+            //this.background.style.opacity = "1"
         };
         return Map2d;
     }());

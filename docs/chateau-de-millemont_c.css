@@ -3,7 +3,41 @@
 .str0 {stroke:black;stroke-width:8.5;stroke-miterlimit:10}
 .fil0 {fill:none;fill-rule:nonzero}
 
-.mmmfest-map.info-point:hover {
+.mmmfest.map.info-point:hover {
 
 }
 
+
+.mmmfest.map2d-background {
+    transition: all 0.5s;
+    opacity: 1;
+}
+
+.mmmfest.map2d-background.ghost {
+    opacity: 0.5;
+}
+
+.mmmfest.map2d-image {
+    transition: all 0.5s;
+}
+
+.mmmfest.map2d-path.active {
+    stroke: white;
+    filter: url(#blur-filter);
+}
+
+.mmmfest.map2d-image.ghost {
+    opacity: 0;
+}
+
+.mmmfest.map2d-path.ghost {
+    stroke-width: 0;
+}
+
+.mmmfest.map2d-path.ghost.active {
+    stroke-width: 1;
+}
+
+.mmmfest.map2d-image.ghost.active {
+    opacity: 1;
+}

@@ -15,8 +15,7 @@ module MMMFest
             else
                 var bg = options.background
                 
-            bg.style.opacity = "1"
-            bg.style.transition = "all 0.5s"
+            bg.classList.add ("mmmfest", "map2d-background")
             bg.addEventListener ("click", this.onBackgroundClick.bind (this))
             this.background = bg
         }
@@ -93,10 +92,6 @@ module MMMFest
         protected onBackgroundClick ()
         {
             this.unselect ()
-            /*if( this.currentShape )
-                this.currentShape.setSelected (false)
-            
-            this.hideAll ()*/
         }
 
         protected show (sh: Region2d)
@@ -106,7 +101,7 @@ module MMMFest
 
             sh.show ()
 
-            this.background.style.opacity = "0.5"
+            this.background.classList.add ("ghost")
         }
 
         protected hideAll ()
@@ -114,7 +109,7 @@ module MMMFest
             for( var s of this.regions )
                 s.hide ()
             
-            this.background.style.opacity = "1"
+            this.background.classList.remove ("ghost")
         }
     }
 

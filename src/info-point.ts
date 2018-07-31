@@ -86,7 +86,7 @@ module MMMFest
         setPopup (popup: HTMLElement)
         {
             if( popup )
-                popup.classList.add ("mmmfest-map-popup")
+                popup.classList.add ("mmmfest", "map-popup")
 
             this.popup = popup
         }

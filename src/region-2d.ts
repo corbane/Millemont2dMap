@@ -11,9 +11,10 @@ module MMMFest
         constructor (protected parent: SVGSVGElement, options: Region2d.IOptions)
         {
             this.path = typeof options.path == "string" ? parent.ownerDocument.querySelector (options.path) : options.path
+            this.path.classList.add ("mmmfest", "map2d-path")
 
             this.image = typeof options.image == "string" ? parent.ownerDocument.querySelector (options.image) : options.image
-            this.image.style.transition = "all 0.25s"
+            this.image.classList.add ("mmmfest", "map2d-image")
 
             if( options.onSelect )
                 this.onSelect = options.onSelect
@@ -47,33 +48,27 @@ module MMMFest
         select ()
         {
             this.active = true
-            this.path.style.stroke = "white"
-            this.path.style.filter = "url(#blur-filter)"
+            this.path.classList.add ("active")
             this.infoPoint.select ()
         }
 
         unselect ()
         {
             this.active = false
-            this.path.style.stroke = ""
-            this.path.style.filter = ""
+            this.path.classList.remove ("active")
             this.infoPoint.unselect ()
         }
 
         hide ()
         {
-            this.path.style.strokeWidth = this.active ? "" : "0"
-            this.image.style.opacity    = this.active ? "1" : "0"
-            //this.centerPoint.style.fillOpacity = this.active ? "1" : "0.5"
-            //this.infoPoint.svg.style.fillOpacity = this.active ? "1" : "0.5"
+            this.path.classList.add ("ghost")
+            this.image.classList.add ("ghost")
         }
 
         show ()
         {
-            this.path.style.strokeWidth = ""
-            this.image.style.opacity = "1"
-            //this.centerPoint.style.fillOpacity = "1"
-            //this.infoPoint.svg.style.fillOpacity = "1"
+            this.path.classList.remove ("ghost")
+            this.image.classList.remove ("ghost")
         }
     }
 
