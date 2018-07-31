@@ -16,87 +16,80 @@ module MMMFest
                 var bg = options.background
                 
             bg.classList.add ("mmmfest", "map2d-background")
-            bg.addEventListener ("click", this.onBackgroundClick.bind (this))
+            bg.onclick = this.onBackgroundClick.bind (this)
             this.background = bg
         }
 
         addRegion (regionOptions: Region2d.IOptions): Region2d
         {
-            var r = new Region2d (this.container, regionOptions)
-            //r.svg.onmouseover = this.onMouseOver.bind (this, r)
-            r.HMouseOver.add (this.onMouseOver.bind (this, r))
-            //r.svg.addEventListener ("mouseout", this.onMouseOut.bind (this, r))
-            r.HMouseOut.add (this.onMouseOut.bind (this, r))
-            r.svg.addEventListener ("click", this.onClick.bind (this, r))
-            //r.infoPoint.svg.addEventListener ("click", this.onClick.bind (this, r))
-            this.regions.push (r)
-            return r
+            var region = new Region2d (this.container, regionOptions)
+
+            region.HSelect.add (this.onRegionSelected.bind (this, region))
+            region.HUnselect.add (this.onRegionUnelected.bind (this, region))
+            region.HMouseOut.add (this.onMouseOut.bind (this, region))
+            this.hmo = region.HMouseOver.add (this.onMouseOver.bind (this, region))
+
+            this.regions.push (region)
+
+            return region
         }
 
-        protected onMouseOver (sh: Region2d, evt: MouseEvent)
+        select (region: Region2d)
         {
-            //sh.svg.onmouseover = null
-            sh.HMouseOver.remove (this.onMouseOver.bind (this, sh))
-            this.show (sh)
-        }
-
-        protected onMouseOut (sh: Region2d, evt: MouseEvent)
-        {
-            //sh.svg.onmouseover = this.onMouseOver.bind (this, sh)
-            sh.HMouseOver.add (this.onMouseOver.bind (this, sh))
-            this.hideAll ()
-        }
-
-        private selectedSape: Region2d = null
-
-        protected onClick (sh: Region2d)
-        {
-            if( this.selectedSape == sh )
-            {
-                this.unselect ()
-                this.show (sh)
-            }
-            else
-            {
-                this.unselect ()
-                this.select (sh)
-            }
-        }
-
-        select (sh: Region2d)
-        {
-            if( this.selectedSape )
-                this.selectedSape.unselect ()
-            
-            sh.select ()
-            this.show (sh)
-
-            /*if( sh.onSelect )
-                sh.onSelect (sh)*/
-                
-            this.selectedSape = sh
+            region.select ()
         }
 
         unselect ()
         {
-            var sh = this.selectedSape
-            if( sh == null )
-                return
-                
-            sh.unselect ()
-            this.hideAll ()
-
-            /*if( sh.onUnselect )
-                sh.onUnselect (sh)*/
-
-            this.selectedSape = null
-
-            return
+            if( this.selectedSape )
+                this.selectedSape.unselect ()
         }
 
-        protected onBackgroundClick ()
+        /** Handle Mouse Over (index) */
+        private hmo: number
+
+        protected onMouseOver (region: Region2d, evt: MouseEvent)
         {
+            console.log ("Event onMouseOver")
+            region.HMouseOver.remove (this.hmo)
+            this.show (region)
+        }
+
+        protected onMouseOut (region: Region2d, evt: MouseEvent)
+        {
+            console.log ("Event onMouseOut")
+            this.hmo = region.HMouseOver.add (this.onMouseOver.bind (this, region))
+            this.hideAll ()
+        }
+
+        protected onBackgroundClick (evt: Event)
+        {
+            if( evt.target != this.background )
+                return
+
             this.unselect ()
+        }
+
+        private selectedSape: Region2d = null
+
+        private onRegionSelected (region: Region2d)
+        {
+            if( this.selectedSape )
+                this.selectedSape.unselect ()
+                
+            this.selectedSape = region
+                
+            this.show (region)
+        }
+
+        private onRegionUnelected (region: Region2d)
+        {
+            if( this.selectedSape == region  )
+                this.show (region)
+            else
+                this.hideAll ()
+            
+            this.selectedSape = null
         }
 
         protected show (sh: Region2d)

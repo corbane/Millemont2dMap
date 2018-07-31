@@ -1,7 +1,7 @@
 var MMMFest;
 (function (MMMFest) {
     var InfoPoint = /** @class */ (function () {
-        function InfoPoint( /*readonly parent: SVGElement*/) {
+        function InfoPoint() {
             this.popup = null;
             this.scale = 1;
             this.active = false;
@@ -9,7 +9,6 @@ var MMMFest;
             g.setAttributeNS(null, "pointer-events", "all");
             g.addEventListener("mouseover", this.showPopup.bind(this));
             g.addEventListener("mouseout", this.hidePopup.bind(this));
-            //parent.appendChild (g)
             this.svg = g;
             this.setPosition(100, 100);
         }
@@ -93,14 +92,10 @@ var MMMFest;
             }
             Handle.prototype.add = function (callback) {
                 this.registers.push(callback);
+                return this.registers.length - 1;
             };
-            Handle.prototype.remove = function (callback) {
-                var cb;
-                for (var i = 0; cb = this.registers[i]; ++i)
-                    if (cb == callback) {
-                        this.registers.splice(i--, 1);
-                        return;
-                    }
+            Handle.prototype.remove = function (idx) {
+                this.registers.splice(idx, 1);
             };
             return Handle;
         }());
@@ -126,6 +121,8 @@ var MMMFest;
             this.HMouseOut = new MMMFest.Event.Handle();
             this.HSelect = new MMMFest.Event.Handle();
             this.HUnselect = new MMMFest.Event.Handle();
+            this.HEnable = new MMMFest.Event.Handle();
+            this.HDisable = new MMMFest.Event.Handle();
             var doc = this.parent.ownerDocument;
             // Initialize path & background
             this.path = typeof options.path == "string"
@@ -180,46 +177,54 @@ var MMMFest;
             this.svg = g;
             this.parent.appendChild(g);
             // Initialize event callbacks
-            /*if( options.onSelect )
-                this.onSelect = options.onSelect
-
-            if( options.onUnselect )
-                this.onUnselect = options.onUnselect*/
             this.svg.onclick = this.onClick.bind(this);
             this.svg.onmouseover = this.onMouseOver.bind(this);
-            this.svg.onmouseout = this.onMouseOut.bind(this);
         }
         Region2d.prototype.onClick = function (evt) {
-            console.log("Event onClick");
             this.HClick.trigger(this, evt);
+            if (this.isSelected())
+                this.unselect();
+            else
+                this.select();
         };
         Region2d.prototype.onMouseOver = function (evt) {
-            console.log("Event onMouseOver");
             this.svg.onmouseover = null;
+            this.background.onmouseover = this.onMouseOut.bind(this);
             this.HMouseOver.trigger(this, evt);
         };
         Region2d.prototype.onMouseOut = function (evt) {
-            console.log("Event onMouseOut");
+            if (evt.target != this.background)
+                return;
             this.svg.onmouseover = this.onMouseOver.bind(this);
+            this.background.onmouseover = null;
             this.HMouseOut.trigger(this, evt);
         };
-        //onSelect? (sh: this): void
-        //onUnselect? ( sh: this): void
+        Region2d.prototype.isSelected = function () {
+            return this.svg.classList.contains("selected");
+        };
         Region2d.prototype.select = function () {
+            console.log("selected");
+            this.svg.classList.add("selected");
             this.path.classList.add("selected");
             this.image.classList.add("selected");
             this.infoPoint.select();
             this.HSelect.trigger(this);
         };
         Region2d.prototype.unselect = function () {
+            console.log("unselect");
+            this.svg.classList.remove("selected");
             this.path.classList.remove("selected");
             this.image.classList.remove("selected");
             this.infoPoint.unselect();
             this.HUnselect.trigger(this);
         };
-        Region2d.prototype.activate = function () {
+        Region2d.prototype.enable = function () {
+            this.svg.classList.remove("selected");
+            this.HEnable.trigger(this);
         };
-        Region2d.prototype.desactivate = function () {
+        Region2d.prototype.disable = function () {
+            this.svg.classList.add("selected");
+            this.HDisable.trigger(this);
         };
         Region2d.prototype.hide = function () {
             this.path.classList.add("ghost");
@@ -246,62 +251,52 @@ var MMMFest;
             else
                 var bg = options.background;
             bg.classList.add("mmmfest", "map2d-background");
-            bg.addEventListener("click", this.onBackgroundClick.bind(this));
+            bg.onclick = this.onBackgroundClick.bind(this);
             this.background = bg;
         }
         Map2d.prototype.addRegion = function (regionOptions) {
-            var r = new MMMFest.Region2d(this.container, regionOptions);
-            //r.svg.onmouseover = this.onMouseOver.bind (this, r)
-            r.HMouseOver.add(this.onMouseOver.bind(this, r));
-            //r.svg.addEventListener ("mouseout", this.onMouseOut.bind (this, r))
-            r.HMouseOut.add(this.onMouseOut.bind(this, r));
-            r.svg.addEventListener("click", this.onClick.bind(this, r));
-            //r.infoPoint.svg.addEventListener ("click", this.onClick.bind (this, r))
-            this.regions.push(r);
-            return r;
+            var region = new MMMFest.Region2d(this.container, regionOptions);
+            region.HSelect.add(this.onRegionSelected.bind(this, region));
+            region.HUnselect.add(this.onRegionUnelected.bind(this, region));
+            region.HMouseOut.add(this.onMouseOut.bind(this, region));
+            this.hmo = region.HMouseOver.add(this.onMouseOver.bind(this, region));
+            this.regions.push(region);
+            return region;
         };
-        Map2d.prototype.onMouseOver = function (sh, evt) {
-            //sh.svg.onmouseover = null
-            sh.HMouseOver.remove(this.onMouseOver.bind(this, sh));
-            this.show(sh);
-        };
-        Map2d.prototype.onMouseOut = function (sh, evt) {
-            //sh.svg.onmouseover = this.onMouseOver.bind (this, sh)
-            sh.HMouseOver.add(this.onMouseOver.bind(this, sh));
-            this.hideAll();
-        };
-        Map2d.prototype.onClick = function (sh) {
-            if (this.selectedSape == sh) {
-                this.unselect();
-                this.show(sh);
-            }
-            else {
-                this.unselect();
-                this.select(sh);
-            }
-        };
-        Map2d.prototype.select = function (sh) {
-            if (this.selectedSape)
-                this.selectedSape.unselect();
-            sh.select();
-            this.show(sh);
-            /*if( sh.onSelect )
-                sh.onSelect (sh)*/
-            this.selectedSape = sh;
+        Map2d.prototype.select = function (region) {
+            region.select();
         };
         Map2d.prototype.unselect = function () {
-            var sh = this.selectedSape;
-            if (sh == null)
-                return;
-            sh.unselect();
-            this.hideAll();
-            /*if( sh.onUnselect )
-                sh.onUnselect (sh)*/
-            this.selectedSape = null;
-            return;
+            if (this.selectedSape)
+                this.selectedSape.unselect();
         };
-        Map2d.prototype.onBackgroundClick = function () {
+        Map2d.prototype.onMouseOver = function (region, evt) {
+            console.log("Event onMouseOver");
+            region.HMouseOver.remove(this.hmo);
+            this.show(region);
+        };
+        Map2d.prototype.onMouseOut = function (region, evt) {
+            console.log("Event onMouseOut");
+            this.hmo = region.HMouseOver.add(this.onMouseOver.bind(this, region));
+            this.hideAll();
+        };
+        Map2d.prototype.onBackgroundClick = function (evt) {
+            if (evt.target != this.background)
+                return;
             this.unselect();
+        };
+        Map2d.prototype.onRegionSelected = function (region) {
+            if (this.selectedSape)
+                this.selectedSape.unselect();
+            this.selectedSape = region;
+            this.show(region);
+        };
+        Map2d.prototype.onRegionUnelected = function (region) {
+            if (this.selectedSape == region)
+                this.show(region);
+            else
+                this.hideAll();
+            this.selectedSape = null;
         };
         Map2d.prototype.show = function (sh) {
             for (var _i = 0, _a = this.regions; _i < _a.length; _i++) {

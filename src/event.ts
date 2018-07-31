@@ -4,20 +4,15 @@ module MMMFest.Event
     {
         private registers: F[] = []
 
-        public add (callback: F)
+        public add (callback: F): number
         {
             this.registers.push (callback)
+            return this.registers.length - 1
         }
 
-        public remove (callback: F)
+        public remove (idx: number)
         {
-            var cb: Function
-            for (var i = 0 ; cb = this.registers[i] ; ++i)
-                if( cb == callback )
-                {
-                    this.registers.splice(i--, 1)
-                    return
-                }
+            this.registers.splice(idx, 1)
         }
         
         public trigger = <F> ((...args): any =>

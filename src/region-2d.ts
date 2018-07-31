@@ -22,10 +22,12 @@ module MMMFest
         protected background: SVGImageElement
 
         readonly HMouseOver = new MMMFest.Event.Handle <(region: this, evt: MouseEvent) => void> ()
-        readonly HClick = new MMMFest.Event.Handle <(region: this, evt: MouseEvent) => void> ()
-        readonly HMouseOut = new MMMFest.Event.Handle <(region: this, evt: MouseEvent) => void> ()
-        readonly HSelect = new MMMFest.Event.Handle <(region: this) => void> ()
-        readonly HUnselect = new MMMFest.Event.Handle <(region: this) => void> ()
+        readonly HClick     = new MMMFest.Event.Handle <(region: this, evt: MouseEvent) => void> ()
+        readonly HMouseOut  = new MMMFest.Event.Handle <(region: this, evt: MouseEvent) => void> ()
+        readonly HSelect    = new MMMFest.Event.Handle <(region: this) => void> ()
+        readonly HUnselect  = new MMMFest.Event.Handle <(region: this) => void> ()
+        readonly HEnable    = new MMMFest.Event.Handle <(region: this) => void> ()
+        readonly HDisable   = new MMMFest.Event.Handle <(region: this) => void> ()
 
         constructor (protected parent: SVGSVGElement, options: Region2d.IOptions)
         {
@@ -106,42 +108,46 @@ module MMMFest
 
             // Initialize event callbacks
 
-            /*if( options.onSelect )
-                this.onSelect = options.onSelect
-
-            if( options.onUnselect )
-                this.onUnselect = options.onUnselect*/
-
             this.svg.onclick = this.onClick.bind (this)
             this.svg.onmouseover = this.onMouseOver.bind (this)
-            this.svg.onmouseout = this.onMouseOut.bind (this)
         }
 
         protected onClick (evt: MouseEvent)
         {
-            console.log ("Event onClick")
             this.HClick.trigger (this, evt)
+
+            if( this.isSelected () )
+                this.unselect ()
+            else
+                this.select ()
         }
 
         protected onMouseOver (evt: MouseEvent)
         {
-            console.log ("Event onMouseOver")
             this.svg.onmouseover = null
+            this.background.onmouseover = this.onMouseOut.bind (this)
             this.HMouseOver.trigger (this, evt)
         }
 
         protected onMouseOut (evt: MouseEvent)
         {
-            console.log ("Event onMouseOut")
+            if( evt.target != this.background )
+                return
+
             this.svg.onmouseover = this.onMouseOver.bind (this)
+            this.background.onmouseover = null
             this.HMouseOut.trigger (this, evt)
         }
 
-        //onSelect? (sh: this): void
-        //onUnselect? ( sh: this): void
+        isSelected (): boolean
+        {
+            return this.svg.classList.contains ("selected")
+        }
 
         select ()
         {
+            console.log ("selected")
+            this.svg.classList.add ("selected")
             this.path.classList.add ("selected")
             this.image.classList.add ("selected")
             this.infoPoint.select ()
@@ -150,20 +156,24 @@ module MMMFest
 
         unselect ()
         {
+            console.log ("unselect")
+            this.svg.classList.remove ("selected")
             this.path.classList.remove ("selected")
             this.image.classList.remove ("selected")
             this.infoPoint.unselect ()
             this.HUnselect.trigger (this)
         }
 
-        activate ()
+        enable ()
         {
-
+            this.svg.classList.remove ("selected")
+            this.HEnable.trigger (this)
         }
 
-        desactivate ()
+        disable ()
         {
-
+            this.svg.classList.add ("selected")
+            this.HDisable.trigger (this)
         }
 
         hide ()
