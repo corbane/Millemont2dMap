@@ -10,10 +10,15 @@ module MMMFest
 
         constructor (protected parent: SVGSVGElement, options: Region2d.IOptions)
         {
-            this.path = typeof options.path == "string" ? parent.ownerDocument.querySelector (options.path) : options.path
-            this.path.classList.add ("mmmfest", "map2d-path")
+            this.path = typeof options.path == "string"
+                      ? parent.ownerDocument.querySelector (options.path)
+                      : options.path
 
-            this.image = typeof options.image == "string" ? parent.ownerDocument.querySelector (options.image) : options.image
+            this.image = typeof options.image == "string"
+                       ? parent.ownerDocument.querySelector (options.image)
+                       : options.image
+
+            this.path.classList.add ("mmmfest", "map2d-path")
             this.image.classList.add ("mmmfest", "map2d-image")
 
             if( options.onSelect )
@@ -26,10 +31,11 @@ module MMMFest
             var bbox = this.path.getBBox ()
             this.infoPoint.setPosition (bbox.x + bbox.width / 2, bbox.y + bbox.height / 2)
             this.infoPoint.setScale (10)
+
             if( options.popupInfo )
                 this.infoPoint.setPopup (options.popupInfo)
 
-            if( !this.parent.ownerDocument.querySelector ("#blur-filter") )
+            if( !parent.querySelector ("#blur-filter") )
             {
                 var tmp = this.parent.ownerDocument.createElementNS ("http://www.w3.org/2000/svg", "g")
                 tmp.innerHTML = `<filter id="blur-filter" x="0" y="0">
@@ -43,19 +49,17 @@ module MMMFest
         onSelect? (sh: this): void
         onUnselect? ( sh: this): void
 
-        private active: boolean = false
-
         select ()
         {
-            this.active = true
             this.path.classList.add ("active")
+            this.image.classList.add ("active")
             this.infoPoint.select ()
         }
 
         unselect ()
         {
-            this.active = false
             this.path.classList.remove ("active")
+            this.image.classList.remove ("active")
             this.infoPoint.unselect ()
         }
 

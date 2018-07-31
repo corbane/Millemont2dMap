@@ -79,10 +79,13 @@ var MMMFest;
     var Region2d = /** @class */ (function () {
         function Region2d(parent, options) {
             this.parent = parent;
-            this.active = false;
-            this.path = typeof options.path == "string" ? parent.ownerDocument.querySelector(options.path) : options.path;
+            this.path = typeof options.path == "string"
+                ? parent.ownerDocument.querySelector(options.path)
+                : options.path;
+            this.image = typeof options.image == "string"
+                ? parent.ownerDocument.querySelector(options.image)
+                : options.image;
             this.path.classList.add("mmmfest", "map2d-path");
-            this.image = typeof options.image == "string" ? parent.ownerDocument.querySelector(options.image) : options.image;
             this.image.classList.add("mmmfest", "map2d-image");
             if (options.onSelect)
                 this.onSelect = options.onSelect;
@@ -94,20 +97,20 @@ var MMMFest;
             this.infoPoint.setScale(10);
             if (options.popupInfo)
                 this.infoPoint.setPopup(options.popupInfo);
-            if (!this.parent.ownerDocument.querySelector("#blur-filter")) {
+            if (!parent.querySelector("#blur-filter")) {
                 var tmp = this.parent.ownerDocument.createElementNS("http://www.w3.org/2000/svg", "g");
                 tmp.innerHTML = "<filter id=\"blur-filter\" x=\"0\" y=\"0\">\n                    <feGaussianBlur in=\"SourceGraphic\" stdDeviation=\"8\" />\n                </filter>";
                 this.parent.ownerDocument.querySelector("svg g").appendChild(tmp.children[0]);
             }
         }
         Region2d.prototype.select = function () {
-            this.active = true;
             this.path.classList.add("active");
+            this.image.classList.add("active");
             this.infoPoint.select();
         };
         Region2d.prototype.unselect = function () {
-            this.active = false;
             this.path.classList.remove("active");
+            this.image.classList.remove("active");
             this.infoPoint.unselect();
         };
         Region2d.prototype.hide = function () {
@@ -134,8 +137,6 @@ var MMMFest;
                 var bg = this.container.querySelector(options.background);
             else
                 var bg = options.background;
-            //bg.style.opacity = "1"
-            //bg.style.transition = "all 0.5s"
             bg.classList.add("mmmfest", "map2d-background");
             bg.addEventListener("click", this.onBackgroundClick.bind(this));
             this.background = bg;
@@ -188,10 +189,6 @@ var MMMFest;
         };
         Map2d.prototype.onBackgroundClick = function () {
             this.unselect();
-            /*if( this.currentShape )
-                this.currentShape.setSelected (false)
-            
-            this.hideAll ()*/
         };
         Map2d.prototype.show = function (sh) {
             for (var _i = 0, _a = this.regions; _i < _a.length; _i++) {
@@ -200,7 +197,6 @@ var MMMFest;
             }
             sh.show();
             this.background.classList.add("ghost");
-            //this.background.style.opacity = "0.5"
         };
         Map2d.prototype.hideAll = function () {
             for (var _i = 0, _a = this.regions; _i < _a.length; _i++) {
@@ -208,7 +204,6 @@ var MMMFest;
                 s.hide();
             }
             this.background.classList.remove("ghost");
-            //this.background.style.opacity = "1"
         };
         return Map2d;
     }());
