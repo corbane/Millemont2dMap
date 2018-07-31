@@ -1,16 +1,15 @@
 var MMMFest;
 (function (MMMFest) {
     var InfoPoint = /** @class */ (function () {
-        function InfoPoint(parent) {
-            this.parent = parent;
+        function InfoPoint( /*readonly parent: SVGElement*/) {
             this.popup = null;
             this.scale = 1;
             this.active = false;
-            var g = this.parent.ownerDocument.createElementNS("http://www.w3.org/2000/svg", "g");
+            var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
             g.setAttributeNS(null, "pointer-events", "all");
             g.addEventListener("mouseover", this.showPopup.bind(this));
             g.addEventListener("mouseout", this.hidePopup.bind(this));
-            parent.appendChild(g);
+            //parent.appendChild (g)
             this.svg = g;
             this.setPosition(100, 100);
         }
@@ -76,33 +75,77 @@ var MMMFest;
 /// <reference path="info-point.ts" />
 var MMMFest;
 (function (MMMFest) {
+    var tmp = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    tmp.innerHTML
+        = "<filter id=\"blur-filter\" x=\"0\" y=\"0\">"
+            + "<feGaussianBlur in=\"SourceGraphic\" stdDeviation=\"8\" />"
+            + "</filter>";
+    var blurFilterExists = false;
+    var blurFilterElement = tmp.children[0];
     var Region2d = /** @class */ (function () {
         function Region2d(parent, options) {
             this.parent = parent;
+            var doc = this.parent.ownerDocument;
+            // Initialize path & background
             this.path = typeof options.path == "string"
                 ? parent.ownerDocument.querySelector(options.path)
                 : options.path;
-            this.image = typeof options.image == "string"
+            this.background = typeof options.image == "string"
                 ? parent.ownerDocument.querySelector(options.image)
                 : options.image;
             this.path.classList.add("mmmfest", "map2d-path");
-            this.image.classList.add("mmmfest", "map2d-image");
-            if (options.onSelect)
-                this.onSelect = options.onSelect;
-            if (options.onUnselect)
-                this.onUnselect = options.onUnselect;
-            this.infoPoint = new MMMFest.InfoPoint(parent);
+            if (!blurFilterExists) {
+                this.parent.appendChild(blurFilterElement);
+                blurFilterExists = true;
+            }
+            // Initialize svg viewbox
+            this.parent.viewBox.baseVal.x = this.background.y.baseVal.value;
+            this.parent.viewBox.baseVal.y = this.background.x.baseVal.value;
+            this.parent.viewBox.baseVal.width = this.background.width.baseVal.value;
+            this.parent.viewBox.baseVal.height = this.background.height.baseVal.value;
+            // Create clipping path
+            var p;
+            switch (this.path.tagName) {
+                case "polygon":
+                case "polyline":
+                    p = doc.createElementNS("http://www.w3.org/2000/svg", "polyline");
+                    p.setAttributeNS(null, "points", this.path.getAttributeNS(null, "points"));
+                    break;
+                default:
+                    throw "Not implemented";
+            }
+            var clipPath = doc.createElementNS("http://www.w3.org/2000/svg", "clipPath");
+            clipPath.id = "clip-" + this.path.id;
+            clipPath.appendChild(p);
+            // Create info point
+            this.infoPoint = new MMMFest.InfoPoint();
             var bbox = this.path.getBBox();
             this.infoPoint.setPosition(bbox.x + bbox.width / 2, bbox.y + bbox.height / 2);
             this.infoPoint.setScale(10);
             if (options.popupInfo)
                 this.infoPoint.setPopup(options.popupInfo);
-            if (!parent.querySelector("#blur-filter")) {
-                var tmp = this.parent.ownerDocument.createElementNS("http://www.w3.org/2000/svg", "g");
-                tmp.innerHTML = "<filter id=\"blur-filter\" x=\"0\" y=\"0\">\n                    <feGaussianBlur in=\"SourceGraphic\" stdDeviation=\"8\" />\n                </filter>";
-                this.parent.ownerDocument.querySelector("svg g").appendChild(tmp.children[0]);
-            }
+            // Initialize event callbacks
+            if (options.onSelect)
+                this.onSelect = options.onSelect;
+            if (options.onUnselect)
+                this.onUnselect = options.onUnselect;
+            // Create clipping background
+            this.image = doc.createElementNS("http://www.w3.org/2000/svg", "use");
+            this.image.classList.add("mmmfest", "map2d-image");
+            this.image.setAttributeNS("http://www.w3.org/1999/xlink", "href", '#' + this.background.id);
+            this.image.setAttributeNS(null, "clip-path", "url(#" + clipPath.id + ")");
+            // Create master svg element
+            var g = doc.createElementNS("http://www.w3.org/2000/svg", "g");
+            //g.style.clipPath = `url(#${clipPath.id})`
+            g.appendChild(clipPath);
+            g.appendChild(this.image);
+            g.appendChild(this.path);
+            g.appendChild(this.infoPoint.svg);
+            this.svg = g;
+            this.parent.appendChild(g);
         }
+        Region2d.prototype.createMap = function () {
+        };
         Region2d.prototype.select = function () {
             this.path.classList.add("active");
             this.image.classList.add("active");
@@ -143,19 +186,20 @@ var MMMFest;
         }
         Map2d.prototype.addRegion = function (regionOptions) {
             var r = new MMMFest.Region2d(this.container, regionOptions);
-            r.image.addEventListener("click", this.onClick.bind(this, r));
-            r.infoPoint.svg.addEventListener("click", this.onClick.bind(this, r));
-            r.image.addEventListener("mouseover", this.onMouseOver.bind(this, r));
+            r.svg.onmouseover = this.onMouseOver.bind(this, r);
+            r.svg.addEventListener("mouseout", this.onMouseOut.bind(this, r));
+            r.svg.addEventListener("click", this.onClick.bind(this, r));
+            //r.infoPoint.svg.addEventListener ("click", this.onClick.bind (this, r))
             this.regions.push(r);
             return r;
         };
-        Map2d.prototype.onMouseOver = function (sh) {
+        Map2d.prototype.onMouseOver = function (sh, evt) {
+            sh.svg.onmouseover = null;
             this.show(sh);
-            this.background.onmousemove = this.onMouseMove.bind(this, sh);
         };
-        Map2d.prototype.onMouseMove = function (sh) {
+        Map2d.prototype.onMouseOut = function (sh, evt) {
+            sh.svg.onmouseover = this.onMouseOver.bind(this, sh);
             this.hideAll();
-            this.background.onmousemove = null;
         };
         Map2d.prototype.onClick = function (sh) {
             if (this.selectedSape == sh) {
@@ -211,15 +255,15 @@ var MMMFest;
 })(MMMFest || (MMMFest = {}));
 /// <reference path="map-2d.ts" />
 function init(obj) {
-    var map = new MMMFest.Map2d(obj.contentDocument.querySelector("svg"), { background: "#i_background" });
-    map.addRegion({ path: "#t_orangerie", image: "#i_orangerie", onSelect: fn, onUnselect: ufn, popupInfo: document.querySelector("#p_orangerie") });
-    map.addRegion({ path: "#t_grchateau", image: "#i_grchateau", onSelect: fn, onUnselect: ufn, popupInfo: document.querySelector("#p_grchateau") });
-    map.addRegion({ path: "#t_ptchateau", image: "#i_ptchateau", onSelect: fn, onUnselect: ufn, popupInfo: document.querySelector("#p_orangerie") });
-    map.addRegion({ path: "#t_cochets", image: "#i_cochets", onSelect: fn, onUnselect: ufn, popupInfo: null });
-    var camp = map.addRegion({ path: "#t_camping", image: "#i_camping", onSelect: fn, onUnselect: ufn });
+    var map = new MMMFest.Map2d(obj.contentDocument.querySelector("svg"), { background: "#i_background" }), backgroundImage = obj.contentDocument.querySelector("#i_background");
+    map.addRegion({ path: "#t_orangerie", image: backgroundImage, onSelect: fn, onUnselect: ufn, popupInfo: document.querySelector("#p_orangerie") });
+    map.addRegion({ path: "#t_grchateau", image: backgroundImage, onSelect: fn, onUnselect: ufn, popupInfo: document.querySelector("#p_grchateau") });
+    map.addRegion({ path: "#t_ptchateau", image: backgroundImage, onSelect: fn, onUnselect: ufn, popupInfo: document.querySelector("#p_orangerie") });
+    map.addRegion({ path: "#t_cochets", image: backgroundImage, onSelect: fn, onUnselect: ufn, popupInfo: null });
+    var camp = map.addRegion({ path: "#t_camping", image: backgroundImage, onSelect: fn, onUnselect: ufn });
     camp.infoPoint.offsetY(-200);
     console.log(map);
-    function fn(sh) { document.getElementById("info").innerHTML = sh.image.id; }
+    function fn(sh) { document.getElementById("info").innerHTML = sh.path.id; }
     function ufn(sh) { document.getElementById("info").innerHTML = "<br/>"; }
 }
 //# sourceMappingURL=index.js.map

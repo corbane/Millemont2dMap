@@ -29,6 +29,7 @@
 }
 
 .mmmfest.map2d-path.active {
+    stroke-width: 10 !important;
     stroke: white;
     filter: url(#blur-filter);
 }

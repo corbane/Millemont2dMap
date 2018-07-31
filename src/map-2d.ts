@@ -23,23 +23,24 @@ module MMMFest
         addRegion (regionOptions: Region2d.IOptions): Region2d
         {
             var r = new Region2d (this.container, regionOptions)
-            r.image.addEventListener ("click", this.onClick.bind (this, r))
-            r.infoPoint.svg.addEventListener ("click", this.onClick.bind (this, r))
-            r.image.addEventListener ("mouseover", this.onMouseOver.bind (this, r))
+            r.svg.onmouseover = this.onMouseOver.bind (this, r)
+            r.svg.addEventListener ("mouseout", this.onMouseOut.bind (this, r))
+            r.svg.addEventListener ("click", this.onClick.bind (this, r))
+            //r.infoPoint.svg.addEventListener ("click", this.onClick.bind (this, r))
             this.regions.push (r)
             return r
         }
 
-        protected onMouseOver (sh: Region2d)
+        protected onMouseOver (sh: Region2d, evt: MouseEvent)
         {
+            sh.svg.onmouseover = null
             this.show (sh)
-            this.background.onmousemove = this.onMouseMove.bind (this, sh)
         }
 
-        protected onMouseMove (sh: Region2d)
+        protected onMouseOut (sh: Region2d, evt: MouseEvent)
         {
+            sh.svg.onmouseover = this.onMouseOver.bind (this, sh)
             this.hideAll ()
-            this.background.onmousemove = null
         }
 
         private selectedSape: Region2d = null

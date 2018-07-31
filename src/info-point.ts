@@ -12,13 +12,13 @@ module MMMFest
         protected x_origin: number
         protected y_origin: number
 
-        constructor (readonly parent: SVGElement)
+        constructor (/*readonly parent: SVGElement*/)
         {
-            var g = this.parent.ownerDocument.createElementNS ("http://www.w3.org/2000/svg", "g")
+            var g = document.createElementNS ("http://www.w3.org/2000/svg", "g")
             g.setAttributeNS (null, "pointer-events", "all")
             g.addEventListener ("mouseover", this.showPopup.bind (this))
             g.addEventListener ("mouseout", this.hidePopup.bind (this))
-            parent.appendChild (g)
+            //parent.appendChild (g)
             this.svg = g
 
             this.setPosition (100, 100)
