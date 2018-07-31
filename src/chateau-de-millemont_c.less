@@ -18,10 +18,20 @@ svg
 .mmmfest.map2d
 {
     .background {
+        transition: all 0.5s;
+    }
+    .region2d .image {
         transition: all 0.25s;
     }
-    .region2d.selected.image {
-        transition: all 0.25s;
+
+    .region2d.selected
+    {
+        .path {
+            opacity: 1 !important;
+            stroke-width: 10;
+            stroke: white;
+            filter: url(#blur-filter);
+        }
     }
 }
 
@@ -45,7 +55,7 @@ svg
     .region2d.selected
     {
         .path {
-            opacity: 1 !important;
+            opacity: 1;
             stroke-width: 10;
             stroke: white;
         }
@@ -83,6 +93,9 @@ svg
 
     .region2d.disabled
     {
+        .path {
+            opacity: 0;
+        }
         .image
         {
             filter: url(#blur-filter);

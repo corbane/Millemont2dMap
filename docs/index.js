@@ -234,7 +234,6 @@ var ImageMap;
             this.container.viewBox.baseVal.y = this.background.x.baseVal.value;
             this.container.viewBox.baseVal.width = this.background.width.baseVal.value;
             this.container.viewBox.baseVal.height = this.background.height.baseVal.value;
-            this.setNormalMode();
         }
         Map2d.prototype.addRegion = function (el) {
             var region = new ImageMap.Region2d(this, el);
@@ -246,6 +245,7 @@ var ImageMap;
             var popup = document.querySelector("[data-for=\"" + region.id + "\"]");
             if (popup)
                 region.infoPoint.setPopup(popup);
+            this.setNormalMode();
             return region;
         };
         //#region Selection

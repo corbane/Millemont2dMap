@@ -31,7 +31,6 @@ module ImageMap
             this.container.viewBox.baseVal.y = this.background.x.baseVal.value
             this.container.viewBox.baseVal.width = this.background.width.baseVal.value
             this.container.viewBox.baseVal.height = this.background.height.baseVal.value
-            this.setNormalMode ()
         }
 
         addRegion (el: SVGGraphicsElement|string): Region2d
@@ -49,6 +48,8 @@ module ImageMap
             var popup = document.querySelector (`[data-for="${region.id}"]`) as HTMLElement
             if( popup )
                 region.infoPoint.setPopup (popup)
+
+            this.setNormalMode ()
 
             return region
         }
