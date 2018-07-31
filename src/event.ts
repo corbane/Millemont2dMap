@@ -12,6 +12,9 @@ module MMMFest.Event
 
         public remove (idx: number)
         {
+            if( idx < 0 || this.registers.length < idx + 1 )
+                return
+                
             this.registers.splice(idx, 1)
         }
         

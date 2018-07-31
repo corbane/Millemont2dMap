@@ -95,6 +95,8 @@ var MMMFest;
                 return this.registers.length - 1;
             };
             Handle.prototype.remove = function (idx) {
+                if (idx < 0 || this.registers.length < idx + 1)
+                    return;
                 this.registers.splice(idx, 1);
             };
             return Handle;
@@ -114,8 +116,8 @@ var MMMFest;
     var blurFilterExists = false;
     var blurFilterElement = tmp.children[0];
     var Region2d = /** @class */ (function () {
-        function Region2d(parent, options) {
-            this.parent = parent;
+        function Region2d(map, options) {
+            this.map = map;
             this.HMouseOver = new MMMFest.Event.Handle();
             this.HClick = new MMMFest.Event.Handle();
             this.HMouseOut = new MMMFest.Event.Handle();
@@ -123,24 +125,19 @@ var MMMFest;
             this.HUnselect = new MMMFest.Event.Handle();
             this.HEnable = new MMMFest.Event.Handle();
             this.HDisable = new MMMFest.Event.Handle();
-            var doc = this.parent.ownerDocument;
+            var doc = map.container.ownerDocument;
             // Initialize path & background
             this.path = typeof options.path == "string"
-                ? parent.ownerDocument.querySelector(options.path)
+                ? doc.querySelector(options.path)
                 : options.path;
             this.background = typeof options.image == "string"
-                ? parent.ownerDocument.querySelector(options.image)
+                ? doc.querySelector(options.image)
                 : options.image;
             this.path.classList.add("mmmfest", "map2d-path");
             if (!blurFilterExists) {
-                this.parent.appendChild(blurFilterElement);
+                map.container.appendChild(blurFilterElement);
                 blurFilterExists = true;
             }
-            // Initialize svg viewbox
-            this.parent.viewBox.baseVal.x = this.background.y.baseVal.value;
-            this.parent.viewBox.baseVal.y = this.background.x.baseVal.value;
-            this.parent.viewBox.baseVal.width = this.background.width.baseVal.value;
-            this.parent.viewBox.baseVal.height = this.background.height.baseVal.value;
             // Create clipping path
             var p;
             switch (this.path.tagName) {
@@ -169,16 +166,15 @@ var MMMFest;
             this.image.setAttributeNS(null, "clip-path", "url(#" + clipPath.id + ")");
             // Create master svg element
             var g = doc.createElementNS("http://www.w3.org/2000/svg", "g");
-            //g.style.clipPath = `url(#${clipPath.id})`
             g.appendChild(clipPath);
             g.appendChild(this.image);
             g.appendChild(this.path);
             g.appendChild(this.infoPoint.svg);
             this.svg = g;
-            this.parent.appendChild(g);
+            map.container.appendChild(g);
             // Initialize event callbacks
-            this.svg.onclick = this.onClick.bind(this);
-            this.svg.onmouseover = this.onMouseOver.bind(this);
+            this.svg.addEventListener("click", this.onClick.bind(this));
+            this.svg.addEventListener("mouseover", this.onMouseOver.bind(this));
         }
         Region2d.prototype.onClick = function (evt) {
             this.HClick.trigger(this, evt);
@@ -188,16 +184,8 @@ var MMMFest;
                 this.select();
         };
         Region2d.prototype.onMouseOver = function (evt) {
-            this.svg.onmouseover = null;
-            this.background.onmouseover = this.onMouseOut.bind(this);
+            console.log("OVER");
             this.HMouseOver.trigger(this, evt);
-        };
-        Region2d.prototype.onMouseOut = function (evt) {
-            if (evt.target != this.background)
-                return;
-            this.svg.onmouseover = this.onMouseOver.bind(this);
-            this.background.onmouseover = null;
-            this.HMouseOut.trigger(this, evt);
         };
         Region2d.prototype.isSelected = function () {
             return this.svg.classList.contains("selected");
@@ -239,12 +227,14 @@ var MMMFest;
     MMMFest.Region2d = Region2d;
 })(MMMFest || (MMMFest = {}));
 /// <reference path="region-2d.ts" />
+/// <reference path="event.ts" />
 var MMMFest;
 (function (MMMFest) {
     var Map2d = /** @class */ (function () {
         function Map2d(container, options) {
             this.container = container;
             this.regions = [];
+            this.HOverRegion = new MMMFest.Event.Handle();
             this.selectedSape = null;
             if (typeof options.background == "string")
                 var bg = this.container.querySelector(options.background);
@@ -253,16 +243,21 @@ var MMMFest;
             bg.classList.add("mmmfest", "map2d-background");
             bg.onclick = this.onBackgroundClick.bind(this);
             this.background = bg;
+            // Initialize svg viewbox
+            this.container.viewBox.baseVal.x = this.background.y.baseVal.value;
+            this.container.viewBox.baseVal.y = this.background.x.baseVal.value;
+            this.container.viewBox.baseVal.width = this.background.width.baseVal.value;
+            this.container.viewBox.baseVal.height = this.background.height.baseVal.value;
         }
         Map2d.prototype.addRegion = function (regionOptions) {
-            var region = new MMMFest.Region2d(this.container, regionOptions);
+            var region = new MMMFest.Region2d(this, regionOptions);
             region.HSelect.add(this.onRegionSelected.bind(this, region));
             region.HUnselect.add(this.onRegionUnelected.bind(this, region));
-            region.HMouseOut.add(this.onMouseOut.bind(this, region));
-            this.hmo = region.HMouseOver.add(this.onMouseOver.bind(this, region));
+            region.HMouseOver.add(this.onOverRegion.bind(this, region));
             this.regions.push(region);
             return region;
         };
+        //#region Selection
         Map2d.prototype.select = function (region) {
             region.select();
         };
@@ -270,35 +265,23 @@ var MMMFest;
             if (this.selectedSape)
                 this.selectedSape.unselect();
         };
-        Map2d.prototype.onMouseOver = function (region, evt) {
-            console.log("Event onMouseOver");
-            region.HMouseOver.remove(this.hmo);
-            this.show(region);
+        Map2d.prototype.onRegionSelected = function (region) {
+            if (this.selectedSape)
+                this.selectedSape.unselect();
+            this.selectedSape = region;
+            //this.setGhostMode (region)
         };
-        Map2d.prototype.onMouseOut = function (region, evt) {
-            console.log("Event onMouseOut");
-            this.hmo = region.HMouseOver.add(this.onMouseOver.bind(this, region));
-            this.hideAll();
+        Map2d.prototype.onRegionUnelected = function (region) {
+            this.selectedSape = null;
         };
         Map2d.prototype.onBackgroundClick = function (evt) {
             if (evt.target != this.background)
                 return;
             this.unselect();
         };
-        Map2d.prototype.onRegionSelected = function (region) {
-            if (this.selectedSape)
-                this.selectedSape.unselect();
-            this.selectedSape = region;
-            this.show(region);
-        };
-        Map2d.prototype.onRegionUnelected = function (region) {
-            if (this.selectedSape == region)
-                this.show(region);
-            else
-                this.hideAll();
-            this.selectedSape = null;
-        };
-        Map2d.prototype.show = function (sh) {
+        //#endregion
+        //#region Ghost display
+        Map2d.prototype.setGhostMode = function (sh) {
             for (var _i = 0, _a = this.regions; _i < _a.length; _i++) {
                 var s = _a[_i];
                 s.hide();
@@ -306,12 +289,22 @@ var MMMFest;
             sh.show();
             this.background.classList.add("ghost");
         };
-        Map2d.prototype.hideAll = function () {
+        Map2d.prototype.setInitialMode = function () {
             for (var _i = 0, _a = this.regions; _i < _a.length; _i++) {
                 var s = _a[_i];
                 s.hide();
             }
             this.background.classList.remove("ghost");
+        };
+        Map2d.prototype.onOverRegion = function (region, evt) {
+            console.log("Event onMouseOver");
+            this.background.onmouseover = this.onOverBackground.bind(this);
+            this.setGhostMode(region);
+        };
+        Map2d.prototype.onOverBackground = function (region, evt) {
+            console.log("onOverBackground");
+            this.background.onmouseover = null;
+            this.setInitialMode();
         };
         return Map2d;
     }());

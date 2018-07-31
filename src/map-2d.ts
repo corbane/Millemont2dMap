@@ -1,4 +1,5 @@
 /// <reference path="region-2d.ts" />
+/// <reference path="event.ts" />
 
 module MMMFest
 {
@@ -6,33 +7,43 @@ module MMMFest
     {
         readonly regions: Region2d [] = []
 
-        readonly background: SVGElement
+        readonly background: SVGImageElement
+
+        readonly HOverRegion = new MMMFest.Event.Handle <(region: Region2d) => void> ()
 
         constructor (readonly container: SVGSVGElement, options: Map2d.IOptions)
         {
             if( typeof options.background == "string" )
-                var bg = this.container.querySelector (options.background) as SVGElement
+                var bg = this.container.querySelector (options.background) as SVGImageElement
             else
                 var bg = options.background
                 
             bg.classList.add ("mmmfest", "map2d-background")
             bg.onclick = this.onBackgroundClick.bind (this)
             this.background = bg
+
+            // Initialize svg viewbox
+
+            this.container.viewBox.baseVal.x = this.background.y.baseVal.value
+            this.container.viewBox.baseVal.y = this.background.x.baseVal.value
+            this.container.viewBox.baseVal.width = this.background.width.baseVal.value
+            this.container.viewBox.baseVal.height = this.background.height.baseVal.value
         }
 
         addRegion (regionOptions: Region2d.IOptions): Region2d
         {
-            var region = new Region2d (this.container, regionOptions)
+            var region = new Region2d (this, regionOptions)
 
             region.HSelect.add (this.onRegionSelected.bind (this, region))
             region.HUnselect.add (this.onRegionUnelected.bind (this, region))
-            region.HMouseOut.add (this.onMouseOut.bind (this, region))
-            this.hmo = region.HMouseOver.add (this.onMouseOver.bind (this, region))
+            region.HMouseOver.add (this.onOverRegion.bind (this, region))
 
             this.regions.push (region)
 
             return region
         }
+
+        //#region Selection
 
         select (region: Region2d)
         {
@@ -45,21 +56,19 @@ module MMMFest
                 this.selectedSape.unselect ()
         }
 
-        /** Handle Mouse Over (index) */
-        private hmo: number
+        private selectedSape: Region2d = null
 
-        protected onMouseOver (region: Region2d, evt: MouseEvent)
+        private onRegionSelected (region: Region2d)
         {
-            console.log ("Event onMouseOver")
-            region.HMouseOver.remove (this.hmo)
-            this.show (region)
+            if( this.selectedSape )
+                this.selectedSape.unselect ()
+                
+            this.selectedSape = region
         }
 
-        protected onMouseOut (region: Region2d, evt: MouseEvent)
+        private onRegionUnelected (region: Region2d)
         {
-            console.log ("Event onMouseOut")
-            this.hmo = region.HMouseOver.add (this.onMouseOver.bind (this, region))
-            this.hideAll ()
+            this.selectedSape = null
         }
 
         protected onBackgroundClick (evt: Event)
@@ -70,29 +79,11 @@ module MMMFest
             this.unselect ()
         }
 
-        private selectedSape: Region2d = null
+        //#endregion
 
-        private onRegionSelected (region: Region2d)
-        {
-            if( this.selectedSape )
-                this.selectedSape.unselect ()
-                
-            this.selectedSape = region
-                
-            this.show (region)
-        }
+        //#region Ghost display
 
-        private onRegionUnelected (region: Region2d)
-        {
-            if( this.selectedSape == region  )
-                this.show (region)
-            else
-                this.hideAll ()
-            
-            this.selectedSape = null
-        }
-
-        protected show (sh: Region2d)
+        setGhostMode (sh: Region2d)
         {
             for( var s of this.regions )
                 s.hide ()
@@ -102,20 +93,36 @@ module MMMFest
             this.background.classList.add ("ghost")
         }
 
-        protected hideAll ()
+        setInitialMode ()
         {
             for( var s of this.regions )
                 s.hide ()
             
             this.background.classList.remove ("ghost")
         }
+
+        protected onOverRegion (region: Region2d, evt: MouseEvent)
+        {
+            console.log ("Event onMouseOver")
+            this.background.onmouseover = this.onOverBackground.bind (this)
+            this.setGhostMode (region)
+        }
+
+        protected onOverBackground (region: Region2d, evt: MouseEvent)
+        {
+            console.log ("onOverBackground")
+            this.background.onmouseover = null
+            this.setInitialMode ()
+        }
+
+        //#endregion
     }
 
     export module Map2d
     {
         export interface IOptions
         {
-            background: SVGElement | string
+            background: SVGImageElement | string
         }
     }
 }

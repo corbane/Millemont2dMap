@@ -29,34 +29,27 @@ module MMMFest
         readonly HEnable    = new MMMFest.Event.Handle <(region: this) => void> ()
         readonly HDisable   = new MMMFest.Event.Handle <(region: this) => void> ()
 
-        constructor (protected parent: SVGSVGElement, options: Region2d.IOptions)
+        constructor (protected map: Map2d, options: Region2d.IOptions)
         {
-            var doc = this.parent.ownerDocument
+            var doc = map.container.ownerDocument
 
             // Initialize path & background
 
             this.path = typeof options.path == "string"
-                      ? parent.ownerDocument.querySelector (options.path)
+                      ? doc.querySelector (options.path)
                       : options.path
 
             this.background = typeof options.image == "string"
-                       ? parent.ownerDocument.querySelector (options.image)
+                       ? doc.querySelector (options.image)
                        : options.image
 
             this.path.classList.add ("mmmfest", "map2d-path")
 
             if( !blurFilterExists )
             {
-                this.parent.appendChild (blurFilterElement)
+                map.container.appendChild (blurFilterElement)
                 blurFilterExists = true
             }
-
-            // Initialize svg viewbox
-
-            this.parent.viewBox.baseVal.x = this.background.y.baseVal.value
-            this.parent.viewBox.baseVal.y = this.background.x.baseVal.value
-            this.parent.viewBox.baseVal.width = this.background.width.baseVal.value
-            this.parent.viewBox.baseVal.height = this.background.height.baseVal.value
 
             // Create clipping path
 
@@ -97,19 +90,18 @@ module MMMFest
             // Create master svg element
 
             var g = doc.createElementNS ("http://www.w3.org/2000/svg", "g")
-            //g.style.clipPath = `url(#${clipPath.id})`
             g.appendChild (clipPath)
             g.appendChild (this.image)
             g.appendChild (this.path)
             g.appendChild (this.infoPoint.svg)
             this.svg = g
 
-            this.parent.appendChild (g)
+            map.container.appendChild (g)
 
             // Initialize event callbacks
 
-            this.svg.onclick = this.onClick.bind (this)
-            this.svg.onmouseover = this.onMouseOver.bind (this)
+            this.svg.addEventListener ("click", this.onClick.bind (this))
+            this.svg.addEventListener ("mouseover", this.onMouseOver.bind (this))
         }
 
         protected onClick (evt: MouseEvent)
@@ -124,19 +116,8 @@ module MMMFest
 
         protected onMouseOver (evt: MouseEvent)
         {
-            this.svg.onmouseover = null
-            this.background.onmouseover = this.onMouseOut.bind (this)
+            console.log ("OVER")
             this.HMouseOver.trigger (this, evt)
-        }
-
-        protected onMouseOut (evt: MouseEvent)
-        {
-            if( evt.target != this.background )
-                return
-
-            this.svg.onmouseover = this.onMouseOver.bind (this)
-            this.background.onmouseover = null
-            this.HMouseOut.trigger (this, evt)
         }
 
         isSelected (): boolean
