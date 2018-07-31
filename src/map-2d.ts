@@ -1,3 +1,4 @@
+/// <reference path="mobile-detect.js" />
 /// <reference path="region-2d.ts" />
 /// <reference path="event.ts" />
 
@@ -30,10 +31,11 @@ module ImageMap
             this.container.classList.add ("mmmfest", "map2d")
             this.container.setAttribute ("width", "100%")
             this.container.setAttribute ("height", "100%")
-            this.container.viewBox.baseVal.x = this.background.y.baseVal.value
-            this.container.viewBox.baseVal.y = this.background.x.baseVal.value
-            this.container.viewBox.baseVal.width = this.background.width.baseVal.value
-            this.container.viewBox.baseVal.height = this.background.height.baseVal.value
+            //this.container.viewBox.baseVal.x = this.background.x.baseVal.value
+            //this.container.viewBox.baseVal.y = this.background.y.baseVal.value
+            //this.container.viewBox.baseVal.width = this.background.width.baseVal.value
+            //this.container.viewBox.baseVal.height = this.background.height.baseVal.value 
+            this.zoomTo (this.background.getBBox ())
         }
 
         addRegion (el: SVGGraphicsElement|string): Region2d
@@ -55,6 +57,14 @@ module ImageMap
             this.setNormalMode ()
 
             return region
+        }
+
+        zoomTo (b: SVGRect, margin = 0)
+        {
+            this.container.viewBox.baseVal.x = b.x - margin
+            this.container.viewBox.baseVal.y = b.y - margin
+            this.container.viewBox.baseVal.width = b.width + margin*2
+            this.container.viewBox.baseVal.height = b.height + margin*2
         }
 
         //#region Selection

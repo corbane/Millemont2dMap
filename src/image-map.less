@@ -21,8 +21,14 @@ svg
         transition: all 0.5s;
         filter: url(#blur-filter);
     }
-    .region2d .image {
-        transition: all 0.25s;
+    .region2d 
+    {
+        .path {
+            fill: transparent
+        }
+        .image {
+            transition: all 0.25s;
+        }
     }
 
     .region2d.selected
@@ -100,4 +106,33 @@ svg
             filter: url(#blur-filter);
         }
     }
+}
+
+/* Popup */
+
+.mmmfest.map-popup {
+    padding: 10px;
+    font-family: Arial, sans-serif;
+    font-size: 10pt;
+    background-color: rgba(255, 255, 255, 0.75);
+    box-shadow: 0px 0px 5px 0px rgba(206, 206, 206, 0.75);
+    border-radius: 6px;
+    /*border: 2px solid #FFD500;*/
+    position: absolute;
+    display: none;
+}
+
+/*.mmmfest-map-popup::before {
+    content: "";
+    width: 12px;
+    height: 12px;
+    transform: rotate(45deg);
+    background-color: white;
+    position: absolute;
+    left: -6px;
+    top: calc(50% - 6px);
+}*/
+
+.mmmfest.map-popup > * {
+    margin: 0;
 }

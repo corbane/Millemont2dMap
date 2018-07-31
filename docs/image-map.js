@@ -1066,19 +1066,26 @@ var ImageMap;
                 blurFilterExists = true;
             }
             // Create clipping path
+            var clipPath = doc.createElementNS("http://www.w3.org/2000/svg", "clipPath");
+            clipPath.id = "clip-" + this.pathElement.id;
             var p;
             switch (this.pathElement.tagName) {
                 case "polygon":
                 case "polyline":
                     p = doc.createElementNS("http://www.w3.org/2000/svg", "polyline");
                     p.setAttributeNS(null, "points", this.pathElement.getAttributeNS(null, "points"));
+                    clipPath.appendChild(p);
+                    break;
+                case "g":
+                    //@ts-ignore
+                    for (var _i = 0, _a = this.pathElement.children; _i < _a.length; _i++) {
+                        var e = _a[_i];
+                        clipPath.appendChild(e.cloneNode(true));
+                    }
                     break;
                 default:
                     throw "Not implemented";
             }
-            var clipPath = doc.createElementNS("http://www.w3.org/2000/svg", "clipPath");
-            clipPath.id = "clip-" + this.pathElement.id;
-            clipPath.appendChild(p);
             // Create info point
             this.infoPoint = new ImageMap.InfoPoint();
             var bbox = this.pathElement.getBBox();
@@ -1143,6 +1150,7 @@ var ImageMap;
     }());
     ImageMap.Region2d = Region2d;
 })(ImageMap || (ImageMap = {}));
+/// <reference path="mobile-detect.js" />
 /// <reference path="region-2d.ts" />
 /// <reference path="event.ts" />
 var ImageMap;
@@ -1165,10 +1173,11 @@ var ImageMap;
             this.container.classList.add("mmmfest", "map2d");
             this.container.setAttribute("width", "100%");
             this.container.setAttribute("height", "100%");
-            this.container.viewBox.baseVal.x = this.background.y.baseVal.value;
-            this.container.viewBox.baseVal.y = this.background.x.baseVal.value;
-            this.container.viewBox.baseVal.width = this.background.width.baseVal.value;
-            this.container.viewBox.baseVal.height = this.background.height.baseVal.value;
+            //this.container.viewBox.baseVal.x = this.background.x.baseVal.value
+            //this.container.viewBox.baseVal.y = this.background.y.baseVal.value
+            //this.container.viewBox.baseVal.width = this.background.width.baseVal.value
+            //this.container.viewBox.baseVal.height = this.background.height.baseVal.value 
+            this.zoomTo(this.background.getBBox());
         }
         Map2d.prototype.addRegion = function (el) {
             var region = new ImageMap.Region2d(this, el);
@@ -1182,6 +1191,13 @@ var ImageMap;
                 region.infoPoint.setPopup(popup);
             this.setNormalMode();
             return region;
+        };
+        Map2d.prototype.zoomTo = function (b, margin) {
+            if (margin === void 0) { margin = 0; }
+            this.container.viewBox.baseVal.x = b.x - margin;
+            this.container.viewBox.baseVal.y = b.y - margin;
+            this.container.viewBox.baseVal.width = b.width + margin * 2;
+            this.container.viewBox.baseVal.height = b.height + margin * 2;
         };
         //#region Selection
         Map2d.prototype.select = function (region) {
@@ -1241,4 +1257,4 @@ var ImageMap;
 })(ImageMap || (ImageMap = {}));
 /// <reference path="mobile-detect.js" />
 /// <reference path="map-2d.ts" />
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=image-map.js.map

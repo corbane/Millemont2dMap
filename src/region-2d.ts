@@ -47,6 +47,9 @@ module ImageMap
 
             // Create clipping path
 
+            var clipPath = doc.createElementNS ("http://www.w3.org/2000/svg", "clipPath")
+            clipPath.id = "clip-" + this.pathElement.id
+
             var p: SVGElement
             switch (this.pathElement.tagName)
             {
@@ -54,15 +57,18 @@ module ImageMap
             case "polyline":
                 p = doc.createElementNS ("http://www.w3.org/2000/svg", "polyline")
                 p.setAttributeNS (null, "points", this.pathElement.getAttributeNS (null, "points"))
+                clipPath.appendChild (p)
                 break
         
+            case "g":
+                //@ts-ignore
+                for( var e of this.pathElement.children )
+                    clipPath.appendChild (e.cloneNode (true))
+                break
+                
             default:
                 throw "Not implemented"
             }
-
-            var clipPath = doc.createElementNS ("http://www.w3.org/2000/svg", "clipPath")
-            clipPath.id = "clip-" + this.pathElement.id
-            clipPath.appendChild (p)
             
             // Create info point
 

@@ -1,0 +1,21 @@
+
+
+/* Demo */
+
+.demo2dmap, h2 {
+    position: relative;
+    width: 80%;
+    margin: 30px auto;
+}
+
+object
+{
+    max-height: 400px;
+    border: 8px dashed #F0F0F0;
+    transform: rotate(-1deg);
+}
+
+.demo2dmap.turbine object
+{
+    background-color: antiquewhite;
+}

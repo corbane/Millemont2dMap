@@ -1,0 +1,34 @@
+
+script
+    include millemont-demo.js
+    
+.demo2dmap.millemont
+
+    object(data='chateau-de-millemont_c.svg', type='image/svg+xml', onload='initMillemontDemo (this)')
+
+    div(data-for='orangerie')
+        h1 L'orangerie
+        p - Repas
+        p - Détente
+        p - Music
+
+    div(data-for='cochets')
+        h1 La cour des cochets
+        p - Ateliers
+        p - Construction
+
+    div(data-for='grchateau')
+        h1 Le petit château
+        p - Ateliers
+        p - Work-shop
+
+    div(data-for='ptchateau')
+        h1 Le grand château
+
+    div(data-for='camping')
+        p
+        b Le camping
+
+    h2 Selected region: 
+        span#info
+            br

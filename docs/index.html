@@ -1,85 +1,70 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <link rel="stylesheet" href="index.css">
-</head>
-<body>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><title>Document</title><link rel="stylesheet" href="image-map.css"><style>
 
-    <div class="demo2dmap">
-        <object data="chateau-de-millemont_c.svg" type="image/svg+xml" onload="init (this)"></object>
+/* Demo */
 
-        <div data-for="orangerie">
-            <p>
-                <b>L'orangerie</b><br/>
-                - Repas<br/>
-                - Détente<br/>
-                - Music<br/>
-            </p>
-        </div>
-        <div data-for="cochets">
-            <p>
-                <b>La cour des cochets</b><br/>
-                - Ateliers<br/>
-                - Construction<br/>
-            </p>
-        </div>
-        <div data-for="grchateau">
-            <p>
-                <b>Le petit château</b><br/>
-                - Ateliers<br/>
-                - Work-shop<br/>
-            </p>
-        </div>
-        <div data-for="ptchateau">
-            <p><b>Le grand château</b></p>
-        </div>
-        <div data-for="camping">
-            <p><b>Le camping</b></p>
-        </div>
-    </div>
+.demo2dmap, h2 {
+    position: relative;
+    width: 80%;
+    margin: 30px auto;
+}
 
-    <h2>Selected region: <span id="info"><br/></span></h2>
+object
+{
+    max-height: 400px;
+    border: 8px dashed #F0F0F0;
+    transform: rotate(-1deg);
+}
 
-    <script src="index.js"></script>
-    <script>
-        function init (obj)
-        {
-            var doc = obj.contentDocument,
-                map = new ImageMap.Map2d (doc.querySelector ("svg"), { background: "#background" }),
-                backgroundImage = doc.querySelector ("#background")
-                
-            var oran = map.addRegion ("#orangerie")
-            var grch = map.addRegion ("#grchateau")
-            var ptch = map.addRegion ("#ptchateau")
-            var coch = map.addRegion ("#cochets")
-            var camp = map.addRegion ("#camping")
-            camp.infoPoint.offsetY (-200)
+.demo2dmap.turbine object
+{
+    background-color: antiquewhite;
+}</style></head><body><script src="image-map.js"></script><script>
+function initMillemontDemo (obj)
+{
+    var doc = obj.contentDocument,
+        map = new ImageMap.Map2d (doc.querySelector ("svg"), { background: "#background" }),
+        backgroundImage = doc.querySelector ("#background")
+        
+    var oran = map.addRegion ("#orangerie")
+    var grch = map.addRegion ("#grchateau")
+    var ptch = map.addRegion ("#ptchateau")
+    var coch = map.addRegion ("#cochets")
+    var camp = map.addRegion ("#camping")
+    camp.infoPoint.offsetY (-200)
 
-            oran.HSelect.add (fn)
-            grch.HSelect.add (fn)
-            ptch.HSelect.add (fn)
-            coch.HSelect.add (fn)
-            camp.HSelect.add (fn)
+    oran.HSelect.add (fn)
+    grch.HSelect.add (fn)
+    ptch.HSelect.add (fn)
+    coch.HSelect.add (fn)
+    camp.HSelect.add (fn)
 
-            oran.HUnselect.add (ufn)
-            grch.HUnselect.add (ufn)
-            ptch.HUnselect.add (ufn)
-            coch.HUnselect.add (ufn)
-            camp.HUnselect.add (ufn)
+    oran.HUnselect.add (ufn)
+    grch.HUnselect.add (ufn)
+    ptch.HUnselect.add (ufn)
+    coch.HUnselect.add (ufn)
+    camp.HUnselect.add (ufn)
 
-            console.log (map)
+    console.log (map)
 
-            function fn (region)
-            { document.getElementById ("info").innerHTML = region.id }
-                
-            function ufn (region)
-            { document.getElementById ("info").innerHTML = "<br/>" }
-        }
-    </script>
-
-</body>
-</html>
+    function fn (region)
+    { document.getElementById ("info").innerHTML = region.id }
+        
+    function ufn (region)
+    { document.getElementById ("info").innerHTML = "<br/>" }
+}
+</script><div class="demo2dmap millemont"><object data="chateau-de-millemont_c.svg" type="image/svg+xml" onload="initMillemontDemo (this)"></object><div data-for="orangerie"><h1>L'orangerie</h1><p>- Repas</p><p>- Détente</p><p>- Music</p></div><div data-for="cochets"><h1>La cour des cochets</h1><p>- Ateliers</p><p>- Construction</p></div><div data-for="grchateau"><h1>Le petit château</h1><p>- Ateliers</p><p>- Work-shop</p></div><div data-for="ptchateau"><h1>Le grand château</h1></div><div data-for="camping"><p></p><b>Le camping</b></div><h2>Selected region: <span id="info"><br></span></h2></div><script>function initTurbineDemo(obj)
+{
+	var doc = obj.contentDocument,
+		map = new ImageMap.Map2d(doc.querySelector("svg"), { background: "#background" }),
+        backgroundImage = doc.querySelector("#background")
+        
+	var stat = map.addRegion("#stator")
+	var roto = map.addRegion("#rotor")
+	var shaf = map.addRegion("#shaft")
+	var gate = map.addRegion("#gate")
+    var blad = map.addRegion("#blades")
+    
+	//map.zoomTo (shaf.pathElement.getBBox (), 500)
+	//map.zoomTo (blad.gElement.getBBox ())
+}
+</script><div class="demo2dmap turbine"><object data="Water_turbine_(en_2).svg" type="image/svg+xml" onload="initTurbineDemo (this)"></object></div></body></html>
