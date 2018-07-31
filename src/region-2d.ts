@@ -23,7 +23,6 @@ module MMMFest
 
         readonly HMouseOver = new MMMFest.Event.Handle <(region: this, evt: MouseEvent) => void> ()
         readonly HClick     = new MMMFest.Event.Handle <(region: this, evt: MouseEvent) => void> ()
-        readonly HMouseOut  = new MMMFest.Event.Handle <(region: this, evt: MouseEvent) => void> ()
         readonly HSelect    = new MMMFest.Event.Handle <(region: this) => void> ()
         readonly HUnselect  = new MMMFest.Event.Handle <(region: this) => void> ()
         readonly HEnable    = new MMMFest.Event.Handle <(region: this) => void> ()
@@ -43,7 +42,7 @@ module MMMFest
                        ? doc.querySelector (options.image)
                        : options.image
 
-            this.path.classList.add ("mmmfest", "map2d-path")
+            this.path.classList.add ("path")
 
             if( !blurFilterExists )
             {
@@ -83,13 +82,14 @@ module MMMFest
             // Create clipping background
             
             this.image = doc.createElementNS ("http://www.w3.org/2000/svg", "use")
-            this.image.classList.add ("mmmfest", "map2d-image")
+            this.image.classList.add ("image")
             this.image.setAttributeNS ("http://www.w3.org/1999/xlink", "href", '#' + this.background.id)
             this.image.setAttributeNS (null, "clip-path", `url(#${clipPath.id})`)
 
             // Create master svg element
 
             var g = doc.createElementNS ("http://www.w3.org/2000/svg", "g")
+            g.classList.add ("region2d")
             g.appendChild (clipPath)
             g.appendChild (this.image)
             g.appendChild (this.path)
@@ -127,46 +127,33 @@ module MMMFest
 
         select ()
         {
-            console.log ("selected")
             this.svg.classList.add ("selected")
-            this.path.classList.add ("selected")
-            this.image.classList.add ("selected")
             this.infoPoint.select ()
             this.HSelect.trigger (this)
         }
 
         unselect ()
         {
-            console.log ("unselect")
             this.svg.classList.remove ("selected")
-            this.path.classList.remove ("selected")
-            this.image.classList.remove ("selected")
             this.infoPoint.unselect ()
             this.HUnselect.trigger (this)
         }
 
+        isEnabled (): boolean
+        {
+            return !this.svg.classList.contains ("disabled")
+        }
+
         enable ()
         {
-            this.svg.classList.remove ("selected")
+            this.svg.classList.remove ("disabled")
             this.HEnable.trigger (this)
         }
 
         disable ()
         {
-            this.svg.classList.add ("selected")
+            this.svg.classList.add ("disabled")
             this.HDisable.trigger (this)
-        }
-
-        hide ()
-        {
-            this.path.classList.add ("ghost")
-            this.image.classList.add ("ghost")
-        }
-
-        show ()
-        {
-            this.path.classList.remove ("ghost")
-            this.image.classList.remove ("ghost")
         }
     }
 

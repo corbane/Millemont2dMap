@@ -1,0 +1,57 @@
+@charset "UTF-8";
+.str1 {stroke:black;stroke-width:8.49;stroke-miterlimit:10}
+.str0 {stroke:black;stroke-width:8.5;stroke-miterlimit:10}
+.fil0 {fill:none;fill-rule:nonzero}
+
+svg, g {
+    pointer-events: all;
+}
+
+.mmmfest.map2d .map2d-background
+{
+    transition: all 0.5s;
+    opacity: 1;
+
+    &.disabled {
+        opacity: 0.5;
+    }
+}
+
+/* Map regions */
+
+.mmmfest.map2d .region2d
+{
+    .path {
+        opacity: 1;
+    }
+    .image {
+        opacity: 1;
+    }
+
+    &.selected
+    {
+        .path {
+            opacity: 1 !important;
+            stroke-width: 10;
+            stroke: white;
+            filter: url(#blur-filter);
+        }
+        .image {
+            transition: all 0.25s;
+            opacity: 1;
+        }
+    }
+
+    &.disabled
+    {
+        .path {
+            opacity: 0;
+        }
+        .image {
+            opacity: 0.5;
+        }
+    }
+}
+
+
+

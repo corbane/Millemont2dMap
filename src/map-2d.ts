@@ -9,21 +9,22 @@ module MMMFest
 
         readonly background: SVGImageElement
 
-        readonly HOverRegion = new MMMFest.Event.Handle <(region: Region2d) => void> ()
-
         constructor (readonly container: SVGSVGElement, options: Map2d.IOptions)
         {
+
+            // Initialize background
+
             if( typeof options.background == "string" )
-                var bg = this.container.querySelector (options.background) as SVGImageElement
+                this.background = this.container.querySelector (options.background) as SVGImageElement
             else
-                var bg = options.background
+                this.background = options.background
                 
-            bg.classList.add ("mmmfest", "map2d-background")
-            bg.onclick = this.onBackgroundClick.bind (this)
-            this.background = bg
+            this.background.classList.add ("mmmfest", "map2d-background")
+            this.background.onclick = this.onBackgroundClick.bind (this)
 
             // Initialize svg viewbox
 
+            this.container.classList.add ("mmmfest", "map2d")
             this.container.viewBox.baseVal.x = this.background.y.baseVal.value
             this.container.viewBox.baseVal.y = this.background.x.baseVal.value
             this.container.viewBox.baseVal.width = this.background.width.baseVal.value
@@ -81,24 +82,24 @@ module MMMFest
 
         //#endregion
 
-        //#region Ghost display
+        //#region display mode
 
         setGhostMode (sh: Region2d)
         {
             for( var s of this.regions )
-                s.hide ()
+                s.disable ()
 
-            sh.show ()
+            sh.enable ()
 
-            this.background.classList.add ("ghost")
+            this.background.classList.add ("disabled")
         }
 
         setInitialMode ()
         {
             for( var s of this.regions )
-                s.hide ()
+                s.disable ()
             
-            this.background.classList.remove ("ghost")
+            this.background.classList.remove ("disabled")
         }
 
         protected onOverRegion (region: Region2d, evt: MouseEvent)
