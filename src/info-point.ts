@@ -87,7 +87,8 @@ module ImageMap
             if( popup )
                 popup.classList.add ("mmmfest", "map-popup")
 
-            this.popup = popup
+            if( !runOnMobile )
+                this.popup = popup
         }
 
         showPopup (evt: MouseEvent)

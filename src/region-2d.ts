@@ -1,3 +1,4 @@
+/// <reference path="map-2d.ts" />
 /// <reference path="info-point.ts" />
 /// <reference path="event.ts" />
 
@@ -6,7 +7,7 @@ module ImageMap
     var tmp = document.createElementNS ("http://www.w3.org/2000/svg", "g")
     tmp.innerHTML
         = `<filter id="blur-filter" x="0" y="0">`
-        + `<feGaussianBlur in="SourceGraphic" stdDeviation="10" />`
+        + `<feGaussianBlur in="SourceGraphic" stdDeviation="9" />`
         + `</filter>`
         
     var blurFilterExists = false

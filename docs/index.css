@@ -31,7 +31,8 @@
 
 .demo2dmap, h2 {
     position: relative;
-    max-width: 80%;
+    width: 80%;
+    max-width: 800px;
     margin: 30px auto;
 }
 

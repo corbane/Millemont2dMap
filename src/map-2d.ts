@@ -3,6 +3,9 @@
 
 module ImageMap
 {
+    //@ts-ignore
+    export const runOnMobile: boolean = md = new MobileDetect(navigator.userAgent).mobile ()
+
     export class Map2d
     {
         readonly regions: Region2d [] = []
@@ -48,7 +51,7 @@ module ImageMap
             var popup = document.querySelector (`[data-for="${region.id}"]`) as HTMLElement
             if( popup )
                 region.infoPoint.setPopup (popup)
-
+            
             this.setNormalMode ()
 
             return region
@@ -75,11 +78,17 @@ module ImageMap
                 this.selectedSape.unselect ()
                 
             this.selectedSape = region
+
+            if( runOnMobile )
+                this.setGhostMode (region)
         }
 
         private onRegionUnelected (region: Region2d)
         {
             this.selectedSape = null
+
+            if( runOnMobile )
+                this.setNormalMode ()
         }
 
         protected onBackgroundClick (evt: Event)

@@ -19,6 +19,7 @@ svg
 {
     .background {
         transition: all 0.5s;
+        filter: url(#blur-filter);
     }
     .region2d .image {
         transition: all 0.25s;
@@ -39,7 +40,6 @@ svg
 {
     .background {
         opacity: 1;
-        filter: url(#blur-filter);
     }
 
     .region2d
@@ -78,15 +78,13 @@ svg
 
 .mmmfest.map2d.ghost-view
 {
-    .background
-    {
+    .background {
         opacity: 0.5;
     }
 
     .region2d
     {
-        .image
-        {
+        .image {
             filter: none;
         }
     }
@@ -98,8 +96,8 @@ svg
         }
         .image
         {
-            filter: url(#blur-filter);
             opacity: 0.5;
+            filter: url(#blur-filter);
         }
     }
 }

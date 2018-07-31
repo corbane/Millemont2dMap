@@ -24,6 +24,7 @@ svg {
 /* Map regions */
 .mmmfest.map2d .background {
   transition: all 0.5s;
+  filter: url(#blur-filter);
 }
 .mmmfest.map2d .region2d .image {
   transition: all 0.25s;
@@ -36,7 +37,6 @@ svg {
 }
 .mmmfest.map2d.normal-view .background {
   opacity: 1;
-  filter: url(#blur-filter);
 }
 .mmmfest.map2d.normal-view .region2d .path {
   opacity: 1;
@@ -68,6 +68,6 @@ svg {
   opacity: 0;
 }
 .mmmfest.map2d.ghost-view .region2d.disabled .image {
-  filter: url(#blur-filter);
   opacity: 0.5;
+  filter: url(#blur-filter);
 }
