@@ -13,50 +13,80 @@ svg
     clip-rule:evenodd;
 }
 
-.mmmfest.map2d .map2d-background
-{
-    transition: all 0.5s;
-    opacity: 1;
+/* Map regions */
 
-    &.disabled {
-        opacity: 0.5;
+.mmmfest.map2d
+{
+    .background {
+        transition: all 0.25s;
+    }
+    .region2d.selected.image {
+        transition: all 0.25s;
     }
 }
 
-/* Map regions */
-
-.mmmfest.map2d .region2d
+.mmmfest.map2d.normal-view
 {
-    .path {
+    .background {
         opacity: 1;
-    }
-    .image {
-        opacity: 1;
+        filter: url(#blur-filter);
     }
 
-    &.selected
+    .region2d
+    {
+        .path {
+            opacity: 1;
+        }
+        
+        .image {
+            opacity: 1;
+        }
+    }
+    .region2d.selected
     {
         .path {
             opacity: 1 !important;
             stroke-width: 10;
             stroke: white;
-            filter: url(#blur-filter);
         }
         .image {
-            transition: all 0.25s;
             opacity: 1;
         }
     }
 
-    &.disabled
+    .region2d.disabled
     {
         .path {
             opacity: 0;
         }
+        
         .image {
-            opacity: 0.5;
+            opacity: 1;
         }
     }
 }
 
+.mmmfest.map2d.ghost-view
+{
+    .background
+    {
+        opacity: 0.5;
+    }
 
+    .region2d
+    {
+        .image
+        {
+            filter: none;
+        }
+    }
+
+    .region2d.disabled
+    {
+        .image
+        {
+            filter: url(#blur-filter);
+            opacity: 0.5;
+        }
+    }
+}

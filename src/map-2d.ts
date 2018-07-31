@@ -1,7 +1,7 @@
 /// <reference path="region-2d.ts" />
 /// <reference path="event.ts" />
 
-module MMMFest
+module ImageMap
 {
     export class Map2d
     {
@@ -19,27 +19,36 @@ module MMMFest
             else
                 this.background = options.background
                 
-            this.background.classList.add ("mmmfest", "map2d-background")
+            this.background.classList.add ("background")
             this.background.onclick = this.onBackgroundClick.bind (this)
 
-            // Initialize svg viewbox
+            // Initialize svg container
 
             this.container.classList.add ("mmmfest", "map2d")
+            this.container.setAttribute ("width", "100%")
+            this.container.setAttribute ("height", "100%")
             this.container.viewBox.baseVal.x = this.background.y.baseVal.value
             this.container.viewBox.baseVal.y = this.background.x.baseVal.value
             this.container.viewBox.baseVal.width = this.background.width.baseVal.value
             this.container.viewBox.baseVal.height = this.background.height.baseVal.value
+            this.setNormalMode ()
         }
 
-        addRegion (regionOptions: Region2d.IOptions): Region2d
+        addRegion (el: SVGGraphicsElement|string): Region2d
         {
-            var region = new Region2d (this, regionOptions)
+            var region = new Region2d (this, el)
 
             region.HSelect.add (this.onRegionSelected.bind (this, region))
             region.HUnselect.add (this.onRegionUnelected.bind (this, region))
             region.HMouseOver.add (this.onOverRegion.bind (this, region))
 
             this.regions.push (region)
+
+            // Initialize popup info
+
+            var popup = document.querySelector (`[data-for="${region.id}"]`) as HTMLElement
+            if( popup )
+                region.infoPoint.setPopup (popup)
 
             return region
         }
@@ -91,15 +100,17 @@ module MMMFest
 
             sh.enable ()
 
-            this.background.classList.add ("disabled")
+            this.container.classList.remove ("normal-view")
+            this.container.classList.add ("ghost-view")
         }
 
-        setInitialMode ()
+        setNormalMode ()
         {
             for( var s of this.regions )
                 s.disable ()
             
-            this.background.classList.remove ("disabled")
+            this.container.classList.remove ("ghost-view")
+            this.container.classList.add ("normal-view")
         }
 
         protected onOverRegion (region: Region2d, evt: MouseEvent)
@@ -111,7 +122,7 @@ module MMMFest
         protected onOverBackground (region: Region2d, evt: MouseEvent)
         {
             this.background.onmouseover = null
-            this.setInitialMode ()
+            this.setNormalMode ()
         }
 
         //#endregion

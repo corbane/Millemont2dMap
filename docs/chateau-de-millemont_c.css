@@ -21,33 +21,44 @@ svg {
   fill-rule: evenodd;
   clip-rule: evenodd;
 }
-.mmmfest.map2d .map2d-background {
-  transition: all 0.5s;
-  opacity: 1;
-}
-.mmmfest.map2d .map2d-background.disabled {
-  opacity: 0.5;
-}
 /* Map regions */
-.mmmfest.map2d .region2d .path {
+.mmmfest.map2d .background {
+  transition: all 0.25s;
+}
+.mmmfest.map2d .region2d.selected.image {
+  transition: all 0.25s;
+}
+.mmmfest.map2d.normal-view .background {
+  opacity: 1;
+  filter: url(#blur-filter);
+}
+.mmmfest.map2d.normal-view .region2d .path {
   opacity: 1;
 }
-.mmmfest.map2d .region2d .image {
+.mmmfest.map2d.normal-view .region2d .image {
   opacity: 1;
 }
-.mmmfest.map2d .region2d.selected .path {
+.mmmfest.map2d.normal-view .region2d.selected .path {
   opacity: 1 !important;
   stroke-width: 10;
   stroke: white;
-  filter: url(#blur-filter);
 }
-.mmmfest.map2d .region2d.selected .image {
-  transition: all 0.25s;
+.mmmfest.map2d.normal-view .region2d.selected .image {
   opacity: 1;
 }
-.mmmfest.map2d .region2d.disabled .path {
+.mmmfest.map2d.normal-view .region2d.disabled .path {
   opacity: 0;
 }
-.mmmfest.map2d .region2d.disabled .image {
+.mmmfest.map2d.normal-view .region2d.disabled .image {
+  opacity: 1;
+}
+.mmmfest.map2d.ghost-view .background {
+  opacity: 0.5;
+}
+.mmmfest.map2d.ghost-view .region2d .image {
+  filter: none;
+}
+.mmmfest.map2d.ghost-view .region2d.disabled .image {
+  filter: url(#blur-filter);
   opacity: 0.5;
 }

@@ -1,12 +1,12 @@
 /// <reference path="info-point.ts" />
 /// <reference path="event.ts" />
 
-module MMMFest
+module ImageMap
 {        
     var tmp = document.createElementNS ("http://www.w3.org/2000/svg", "g")
     tmp.innerHTML
         = `<filter id="blur-filter" x="0" y="0">`
-        + `<feGaussianBlur in="SourceGraphic" stdDeviation="8" />`
+        + `<feGaussianBlur in="SourceGraphic" stdDeviation="10" />`
         + `</filter>`
         
     var blurFilterExists = false
@@ -14,35 +14,29 @@ module MMMFest
 
     export class Region2d 
     {
-        readonly svg: SVGGElement
-        readonly path: SVGGraphicsElement
-        readonly image: SVGUseElement
+        readonly id: string
+
+        readonly gElement: SVGGElement
+        readonly pathElement: SVGGraphicsElement
+        readonly imageElement: SVGImageElement
+
         readonly infoPoint: InfoPoint
 
-        protected background: SVGImageElement
+        readonly HMouseOver = new ImageMap.Event.Handle <(region: this, evt: MouseEvent) => void> ()
+        readonly HClick     = new ImageMap.Event.Handle <(region: this, evt: MouseEvent) => void> ()
+        readonly HSelect    = new ImageMap.Event.Handle <(region: this) => void> ()
+        readonly HUnselect  = new ImageMap.Event.Handle <(region: this) => void> ()
+        readonly HEnable    = new ImageMap.Event.Handle <(region: this) => void> ()
+        readonly HDisable   = new ImageMap.Event.Handle <(region: this) => void> ()
 
-        readonly HMouseOver = new MMMFest.Event.Handle <(region: this, evt: MouseEvent) => void> ()
-        readonly HClick     = new MMMFest.Event.Handle <(region: this, evt: MouseEvent) => void> ()
-        readonly HSelect    = new MMMFest.Event.Handle <(region: this) => void> ()
-        readonly HUnselect  = new MMMFest.Event.Handle <(region: this) => void> ()
-        readonly HEnable    = new MMMFest.Event.Handle <(region: this) => void> ()
-        readonly HDisable   = new MMMFest.Event.Handle <(region: this) => void> ()
-
-        constructor (protected map: Map2d, options: Region2d.IOptions)
+        constructor (protected map: Map2d, el: SVGGraphicsElement|string)
         {
             var doc = map.container.ownerDocument
 
-            // Initialize path & background
+            // Initialize path
 
-            this.path = typeof options.path == "string"
-                      ? doc.querySelector (options.path)
-                      : options.path
-
-            this.background = typeof options.image == "string"
-                       ? doc.querySelector (options.image)
-                       : options.image
-
-            this.path.classList.add ("path")
+            this.pathElement = typeof el == "string" ? doc.querySelector (el) : el
+            this.pathElement.classList.add ("path")
 
             if( !blurFilterExists )
             {
@@ -53,55 +47,53 @@ module MMMFest
             // Create clipping path
 
             var p: SVGElement
-            switch (this.path.tagName)
+            switch (this.pathElement.tagName)
             {
             case "polygon":
             case "polyline":
                 p = doc.createElementNS ("http://www.w3.org/2000/svg", "polyline")
-                p.setAttributeNS (null, "points", this.path.getAttributeNS (null, "points"))
-                break;
+                p.setAttributeNS (null, "points", this.pathElement.getAttributeNS (null, "points"))
+                break
         
             default:
                 throw "Not implemented"
             }
 
             var clipPath = doc.createElementNS ("http://www.w3.org/2000/svg", "clipPath")
-            clipPath.id = "clip-" + this.path.id
+            clipPath.id = "clip-" + this.pathElement.id
             clipPath.appendChild (p)
             
             // Create info point
 
             this.infoPoint = new InfoPoint ()
-            var bbox = this.path.getBBox ()
+            var bbox = this.pathElement.getBBox ()
             this.infoPoint.setPosition (bbox.x + bbox.width / 2, bbox.y + bbox.height / 2)
             this.infoPoint.setScale (10)
 
-            if( options.popupInfo )
-                this.infoPoint.setPopup (options.popupInfo)
-
             // Create clipping background
             
-            this.image = doc.createElementNS ("http://www.w3.org/2000/svg", "use")
-            this.image.classList.add ("image")
-            this.image.setAttributeNS ("http://www.w3.org/1999/xlink", "href", '#' + this.background.id)
-            this.image.setAttributeNS (null, "clip-path", `url(#${clipPath.id})`)
+            this.imageElement = this.map.background.cloneNode (true) as SVGImageElement
+            this.imageElement.setAttribute ("class", "image")
+            this.imageElement.setAttribute ("clip-path", `url(#${clipPath.id})`)
 
-            // Create master svg element
+            // Create master group element
 
             var g = doc.createElementNS ("http://www.w3.org/2000/svg", "g")
             g.classList.add ("region2d")
             g.appendChild (clipPath)
-            g.appendChild (this.image)
-            g.appendChild (this.path)
+            g.appendChild (this.imageElement)
+            g.appendChild (this.pathElement)
             g.appendChild (this.infoPoint.svg)
-            this.svg = g
+            this.gElement = g
+
+            this.id = this.pathElement.id
 
             map.container.appendChild (g)
 
             // Initialize event callbacks
 
-            this.svg.addEventListener ("click", this.onClick.bind (this))
-            this.svg.addEventListener ("mouseover", this.onMouseOver.bind (this))
+            this.gElement.addEventListener ("click", this.onClick.bind (this))
+            this.gElement.addEventListener ("mouseover", this.onMouseOver.bind (this))
         }
 
         protected onClick (evt: MouseEvent)
@@ -119,52 +111,48 @@ module MMMFest
             this.HMouseOver.trigger (this, evt)
         }
 
+        //#region Selection
+        
         isSelected (): boolean
         {
-            return this.svg.classList.contains ("selected")
+            return this.gElement.classList.contains ("selected")
         }
 
         select ()
         {
-            this.svg.classList.add ("selected")
+            this.gElement.classList.add ("selected")
             this.infoPoint.select ()
             this.HSelect.trigger (this)
         }
 
         unselect ()
         {
-            this.svg.classList.remove ("selected")
+            this.gElement.classList.remove ("selected")
             this.infoPoint.unselect ()
             this.HUnselect.trigger (this)
         }
 
+        //#end region
+
+        //#region Activation
+
         isEnabled (): boolean
         {
-            return !this.svg.classList.contains ("disabled")
+            return !this.gElement.classList.contains ("disabled")
         }
 
         enable ()
         {
-            this.svg.classList.remove ("disabled")
+            this.gElement.classList.remove ("disabled")
             this.HEnable.trigger (this)
         }
 
         disable ()
         {
-            this.svg.classList.add ("disabled")
+            this.gElement.classList.add ("disabled")
             this.HDisable.trigger (this)
         }
-    }
 
-    export module Region2d
-    {
-        export interface IOptions
-        {
-            path: SVGGraphicsElement|string
-            image: SVGImageElement|string
-            //onSelect? (sh: Region2d): void
-            //onUnselect? ( sh: Region2d): void
-            popupInfo?: HTMLElement
-        }
+        //#end region
     }
 }

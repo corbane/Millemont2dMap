@@ -1,4 +1,4 @@
-module MMMFest.Event
+module ImageMap.Event
 {
     export class Handle <F extends (...args) => any>
     {
@@ -14,7 +14,7 @@ module MMMFest.Event
         {
             if( idx < 0 || this.registers.length < idx + 1 )
                 return
-                
+
             this.registers.splice(idx, 1)
         }
         

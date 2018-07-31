@@ -8,12 +8,12 @@ Compiled with Typescript & Less
 Demo : https://corbane.github.io/Millemont2dMap/
 
 
-## The SVG format
+## The SVG file
 
 The svg file is formatted with:
 
 - A background image that also defines the area of the SVG view.
-  The `image` element must define the elements `x`, `y`, `width` and `height`.
+  The `image` element must define the attributes `x`, `y`, `width` and `height`.
 - And several `polygon` elements that define the contours of the regions inside the background image.
 
 > All of these items must have a unique id

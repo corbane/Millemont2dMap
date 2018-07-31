@@ -1,5 +1,5 @@
 
-module MMMFest
+module ImageMap
 {
     export class InfoPoint
     {

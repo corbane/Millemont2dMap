@@ -12,15 +12,33 @@
     <div class="demo2dmap">
         <object data="chateau-de-millemont_c.svg" type="image/svg+xml" onload="init (this)"></object>
 
-        <div id="p_orangerie">
-            <p>L'orangerie</p>
-        </div>
-        <div id="p_grchateau">
+        <div data-for="orangerie">
             <p>
-                <b>Le grand château</b><br/>
+                <b>L'orangerie</b><br/>
+                - Repas<br/>
+                - Détente<br/>
+                - Music<br/>
+            </p>
+        </div>
+        <div data-for="cochets">
+            <p>
+                <b>La cour des cochets</b><br/>
+                - Ateliers<br/>
+                - Construction<br/>
+            </p>
+        </div>
+        <div data-for="grchateau">
+            <p>
+                <b>Le petit château</b><br/>
                 - Ateliers<br/>
                 - Work-shop<br/>
             </p>
+        </div>
+        <div data-for="ptchateau">
+            <p><b>Le grand château</b></p>
+        </div>
+        <div data-for="camping">
+            <p><b>Le camping</b></p>
         </div>
     </div>
 
@@ -30,14 +48,15 @@
     <script>
         function init (obj)
         {
-            var map = new MMMFest.Map2d (obj.contentDocument.querySelector ("svg"), { background: "#i_background" }),
-                backgroundImage = obj.contentDocument.querySelector ("#i_background")
+            var doc = obj.contentDocument,
+                map = new ImageMap.Map2d (doc.querySelector ("svg"), { background: "#background" }),
+                backgroundImage = doc.querySelector ("#background")
                 
-            var oran = map.addRegion ({ path: "#t_orangerie", image: backgroundImage, popupInfo: document.querySelector ("#p_orangerie") })
-            var grch = map.addRegion ({ path: "#t_grchateau", image: backgroundImage, popupInfo: document.querySelector ("#p_grchateau") })
-            var ptch = map.addRegion ({ path: "#t_ptchateau", image: backgroundImage, popupInfo: document.querySelector ("#p_orangerie") })
-            var coch = map.addRegion ({ path: "#t_cochets",   image: backgroundImage, popupInfo: null })
-            var camp = map.addRegion ({ path: "#t_camping",   image: backgroundImage, })
+            var oran = map.addRegion ("#orangerie")
+            var grch = map.addRegion ("#grchateau")
+            var ptch = map.addRegion ("#ptchateau")
+            var coch = map.addRegion ("#cochets")
+            var camp = map.addRegion ("#camping")
             camp.infoPoint.offsetY (-200)
 
             oran.HSelect.add (fn)
