@@ -3,8 +3,14 @@
 .str0 {stroke:black;stroke-width:8.5;stroke-miterlimit:10}
 .fil0 {fill:none;fill-rule:nonzero}
 
-svg, g {
+svg
+{
     pointer-events: all;
+    shape-rendering: geometricPrecision;
+    text-rendering: geometricPrecision;
+    image-rendering: optimizeQuality;
+    fill-rule: evenodd;
+    clip-rule:evenodd;
 }
 
 .mmmfest.map2d .map2d-background
@@ -52,6 +58,5 @@ svg, g {
         }
     }
 }
-
 
 

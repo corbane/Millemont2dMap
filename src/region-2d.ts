@@ -116,7 +116,6 @@ module MMMFest
 
         protected onMouseOver (evt: MouseEvent)
         {
-            console.log ("OVER")
             this.HMouseOver.trigger (this, evt)
         }
 

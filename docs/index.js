@@ -184,7 +184,6 @@ var MMMFest;
                 this.select();
         };
         Region2d.prototype.onMouseOver = function (evt) {
-            console.log("OVER");
             this.HMouseOver.trigger(this, evt);
         };
         Region2d.prototype.isSelected = function () {
@@ -285,12 +284,10 @@ var MMMFest;
             this.background.classList.remove("disabled");
         };
         Map2d.prototype.onOverRegion = function (region, evt) {
-            console.log("Event onMouseOver");
             this.background.onmouseover = this.onOverBackground.bind(this);
             this.setGhostMode(region);
         };
         Map2d.prototype.onOverBackground = function (region, evt) {
-            console.log("onOverBackground");
             this.background.onmouseover = null;
             this.setInitialMode();
         };
@@ -299,26 +296,4 @@ var MMMFest;
     MMMFest.Map2d = Map2d;
 })(MMMFest || (MMMFest = {}));
 /// <reference path="map-2d.ts" />
-function init(obj) {
-    var map = new MMMFest.Map2d(obj.contentDocument.querySelector("svg"), { background: "#i_background" }), backgroundImage = obj.contentDocument.querySelector("#i_background");
-    var oran = map.addRegion({ path: "#t_orangerie", image: backgroundImage, /*onSelect: fn, onUnselect: ufn,*/ popupInfo: document.querySelector("#p_orangerie") });
-    var grch = map.addRegion({ path: "#t_grchateau", image: backgroundImage, /*onSelect: fn, onUnselect: ufn,*/ popupInfo: document.querySelector("#p_grchateau") });
-    var ptch = map.addRegion({ path: "#t_ptchateau", image: backgroundImage, /*onSelect: fn, onUnselect: ufn,*/ popupInfo: document.querySelector("#p_orangerie") });
-    var coch = map.addRegion({ path: "#t_cochets", image: backgroundImage, /*onSelect: fn, onUnselect: ufn,*/ popupInfo: null });
-    var camp = map.addRegion({ path: "#t_camping", image: backgroundImage });
-    camp.infoPoint.offsetY(-200);
-    oran.HSelect.add(fn);
-    grch.HSelect.add(fn);
-    ptch.HSelect.add(fn);
-    coch.HSelect.add(fn);
-    camp.HSelect.add(fn);
-    oran.HUnselect.add(ufn);
-    grch.HUnselect.add(ufn);
-    ptch.HUnselect.add(ufn);
-    coch.HUnselect.add(ufn);
-    camp.HUnselect.add(ufn);
-    console.log(map);
-    function fn(sh) { document.getElementById("info").innerHTML = sh.path.id; }
-    function ufn(sh) { document.getElementById("info").innerHTML = "<br/>"; }
-}
 //# sourceMappingURL=index.js.map

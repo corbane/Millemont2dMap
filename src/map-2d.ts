@@ -104,14 +104,12 @@ module MMMFest
 
         protected onOverRegion (region: Region2d, evt: MouseEvent)
         {
-            console.log ("Event onMouseOver")
             this.background.onmouseover = this.onOverBackground.bind (this)
             this.setGhostMode (region)
         }
 
         protected onOverBackground (region: Region2d, evt: MouseEvent)
         {
-            console.log ("onOverBackground")
             this.background.onmouseover = null
             this.setInitialMode ()
         }
