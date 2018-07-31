@@ -24,11 +24,11 @@
 .mmmfest.map2d-image.ghost {
     opacity: 0;
 }
-.mmmfest.map2d-image.ghost.active {
+.mmmfest.map2d-image.ghost.selected {
     opacity: 1;
 }
 
-.mmmfest.map2d-path.active {
+.mmmfest.map2d-path.selected {
     stroke-width: 10 !important;
     stroke: white;
     filter: url(#blur-filter);
@@ -36,7 +36,7 @@
 .mmmfest.map2d-path.ghost {
     stroke-width: 0;
 }
-.mmmfest.map2d-path.ghost.active {
+.mmmfest.map2d-path.ghost.selected {
     stroke-width: 1;
 }
 

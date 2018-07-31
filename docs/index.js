@@ -72,7 +72,43 @@ var MMMFest;
     }());
     MMMFest.InfoPoint = InfoPoint;
 })(MMMFest || (MMMFest = {}));
+var MMMFest;
+(function (MMMFest) {
+    var Event;
+    (function (Event) {
+        var Handle = /** @class */ (function () {
+            function Handle() {
+                var _this = this;
+                this.registers = [];
+                this.trigger = (function () {
+                    var args = [];
+                    for (var _i = 0; _i < arguments.length; _i++) {
+                        args[_i] = arguments[_i];
+                    }
+                    for (var _a = 0, _b = _this.registers; _a < _b.length; _a++) {
+                        var fn = _b[_a];
+                        fn.apply(_this, args);
+                    }
+                });
+            }
+            Handle.prototype.add = function (callback) {
+                this.registers.push(callback);
+            };
+            Handle.prototype.remove = function (callback) {
+                var cb;
+                for (var i = 0; cb = this.registers[i]; ++i)
+                    if (cb == callback) {
+                        this.registers.splice(i--, 1);
+                        return;
+                    }
+            };
+            return Handle;
+        }());
+        Event.Handle = Handle;
+    })(Event = MMMFest.Event || (MMMFest.Event = {}));
+})(MMMFest || (MMMFest = {}));
 /// <reference path="info-point.ts" />
+/// <reference path="event.ts" />
 var MMMFest;
 (function (MMMFest) {
     var tmp = document.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -85,6 +121,11 @@ var MMMFest;
     var Region2d = /** @class */ (function () {
         function Region2d(parent, options) {
             this.parent = parent;
+            this.HMouseOver = new MMMFest.Event.Handle();
+            this.HClick = new MMMFest.Event.Handle();
+            this.HMouseOut = new MMMFest.Event.Handle();
+            this.HSelect = new MMMFest.Event.Handle();
+            this.HUnselect = new MMMFest.Event.Handle();
             var doc = this.parent.ownerDocument;
             // Initialize path & background
             this.path = typeof options.path == "string"
@@ -124,11 +165,6 @@ var MMMFest;
             this.infoPoint.setScale(10);
             if (options.popupInfo)
                 this.infoPoint.setPopup(options.popupInfo);
-            // Initialize event callbacks
-            if (options.onSelect)
-                this.onSelect = options.onSelect;
-            if (options.onUnselect)
-                this.onUnselect = options.onUnselect;
             // Create clipping background
             this.image = doc.createElementNS("http://www.w3.org/2000/svg", "use");
             this.image.classList.add("mmmfest", "map2d-image");
@@ -143,18 +179,47 @@ var MMMFest;
             g.appendChild(this.infoPoint.svg);
             this.svg = g;
             this.parent.appendChild(g);
+            // Initialize event callbacks
+            /*if( options.onSelect )
+                this.onSelect = options.onSelect
+
+            if( options.onUnselect )
+                this.onUnselect = options.onUnselect*/
+            this.svg.onclick = this.onClick.bind(this);
+            this.svg.onmouseover = this.onMouseOver.bind(this);
+            this.svg.onmouseout = this.onMouseOut.bind(this);
         }
-        Region2d.prototype.createMap = function () {
+        Region2d.prototype.onClick = function (evt) {
+            console.log("Event onClick");
+            this.HClick.trigger(this, evt);
         };
+        Region2d.prototype.onMouseOver = function (evt) {
+            console.log("Event onMouseOver");
+            this.svg.onmouseover = null;
+            this.HMouseOver.trigger(this, evt);
+        };
+        Region2d.prototype.onMouseOut = function (evt) {
+            console.log("Event onMouseOut");
+            this.svg.onmouseover = this.onMouseOver.bind(this);
+            this.HMouseOut.trigger(this, evt);
+        };
+        //onSelect? (sh: this): void
+        //onUnselect? ( sh: this): void
         Region2d.prototype.select = function () {
-            this.path.classList.add("active");
-            this.image.classList.add("active");
+            this.path.classList.add("selected");
+            this.image.classList.add("selected");
             this.infoPoint.select();
+            this.HSelect.trigger(this);
         };
         Region2d.prototype.unselect = function () {
-            this.path.classList.remove("active");
-            this.image.classList.remove("active");
+            this.path.classList.remove("selected");
+            this.image.classList.remove("selected");
             this.infoPoint.unselect();
+            this.HUnselect.trigger(this);
+        };
+        Region2d.prototype.activate = function () {
+        };
+        Region2d.prototype.desactivate = function () {
         };
         Region2d.prototype.hide = function () {
             this.path.classList.add("ghost");
@@ -186,19 +251,23 @@ var MMMFest;
         }
         Map2d.prototype.addRegion = function (regionOptions) {
             var r = new MMMFest.Region2d(this.container, regionOptions);
-            r.svg.onmouseover = this.onMouseOver.bind(this, r);
-            r.svg.addEventListener("mouseout", this.onMouseOut.bind(this, r));
+            //r.svg.onmouseover = this.onMouseOver.bind (this, r)
+            r.HMouseOver.add(this.onMouseOver.bind(this, r));
+            //r.svg.addEventListener ("mouseout", this.onMouseOut.bind (this, r))
+            r.HMouseOut.add(this.onMouseOut.bind(this, r));
             r.svg.addEventListener("click", this.onClick.bind(this, r));
             //r.infoPoint.svg.addEventListener ("click", this.onClick.bind (this, r))
             this.regions.push(r);
             return r;
         };
         Map2d.prototype.onMouseOver = function (sh, evt) {
-            sh.svg.onmouseover = null;
+            //sh.svg.onmouseover = null
+            sh.HMouseOver.remove(this.onMouseOver.bind(this, sh));
             this.show(sh);
         };
         Map2d.prototype.onMouseOut = function (sh, evt) {
-            sh.svg.onmouseover = this.onMouseOver.bind(this, sh);
+            //sh.svg.onmouseover = this.onMouseOver.bind (this, sh)
+            sh.HMouseOver.add(this.onMouseOver.bind(this, sh));
             this.hideAll();
         };
         Map2d.prototype.onClick = function (sh) {
@@ -216,8 +285,8 @@ var MMMFest;
                 this.selectedSape.unselect();
             sh.select();
             this.show(sh);
-            if (sh.onSelect)
-                sh.onSelect(sh);
+            /*if( sh.onSelect )
+                sh.onSelect (sh)*/
             this.selectedSape = sh;
         };
         Map2d.prototype.unselect = function () {
@@ -226,8 +295,8 @@ var MMMFest;
                 return;
             sh.unselect();
             this.hideAll();
-            if (sh.onUnselect)
-                sh.onUnselect(sh);
+            /*if( sh.onUnselect )
+                sh.onUnselect (sh)*/
             this.selectedSape = null;
             return;
         };
@@ -256,12 +325,22 @@ var MMMFest;
 /// <reference path="map-2d.ts" />
 function init(obj) {
     var map = new MMMFest.Map2d(obj.contentDocument.querySelector("svg"), { background: "#i_background" }), backgroundImage = obj.contentDocument.querySelector("#i_background");
-    map.addRegion({ path: "#t_orangerie", image: backgroundImage, onSelect: fn, onUnselect: ufn, popupInfo: document.querySelector("#p_orangerie") });
-    map.addRegion({ path: "#t_grchateau", image: backgroundImage, onSelect: fn, onUnselect: ufn, popupInfo: document.querySelector("#p_grchateau") });
-    map.addRegion({ path: "#t_ptchateau", image: backgroundImage, onSelect: fn, onUnselect: ufn, popupInfo: document.querySelector("#p_orangerie") });
-    map.addRegion({ path: "#t_cochets", image: backgroundImage, onSelect: fn, onUnselect: ufn, popupInfo: null });
-    var camp = map.addRegion({ path: "#t_camping", image: backgroundImage, onSelect: fn, onUnselect: ufn });
+    var oran = map.addRegion({ path: "#t_orangerie", image: backgroundImage, /*onSelect: fn, onUnselect: ufn,*/ popupInfo: document.querySelector("#p_orangerie") });
+    var grch = map.addRegion({ path: "#t_grchateau", image: backgroundImage, /*onSelect: fn, onUnselect: ufn,*/ popupInfo: document.querySelector("#p_grchateau") });
+    var ptch = map.addRegion({ path: "#t_ptchateau", image: backgroundImage, /*onSelect: fn, onUnselect: ufn,*/ popupInfo: document.querySelector("#p_orangerie") });
+    var coch = map.addRegion({ path: "#t_cochets", image: backgroundImage, /*onSelect: fn, onUnselect: ufn,*/ popupInfo: null });
+    var camp = map.addRegion({ path: "#t_camping", image: backgroundImage });
     camp.infoPoint.offsetY(-200);
+    oran.HSelect.add(fn);
+    grch.HSelect.add(fn);
+    ptch.HSelect.add(fn);
+    coch.HSelect.add(fn);
+    camp.HSelect.add(fn);
+    oran.HUnselect.add(ufn);
+    grch.HUnselect.add(ufn);
+    ptch.HUnselect.add(ufn);
+    coch.HUnselect.add(ufn);
+    camp.HUnselect.add(ufn);
     console.log(map);
     function fn(sh) { document.getElementById("info").innerHTML = sh.path.id; }
     function ufn(sh) { document.getElementById("info").innerHTML = "<br/>"; }

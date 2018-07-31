@@ -1,4 +1,5 @@
 /// <reference path="info-point.ts" />
+/// <reference path="event.ts" />
 
 module MMMFest
 {        
@@ -15,9 +16,16 @@ module MMMFest
     {
         readonly svg: SVGGElement
         readonly path: SVGGraphicsElement
-        protected background: SVGImageElement
         readonly image: SVGUseElement
         readonly infoPoint: InfoPoint
+
+        protected background: SVGImageElement
+
+        readonly HMouseOver = new MMMFest.Event.Handle <(region: this, evt: MouseEvent) => void> ()
+        readonly HClick = new MMMFest.Event.Handle <(region: this, evt: MouseEvent) => void> ()
+        readonly HMouseOut = new MMMFest.Event.Handle <(region: this, evt: MouseEvent) => void> ()
+        readonly HSelect = new MMMFest.Event.Handle <(region: this) => void> ()
+        readonly HUnselect = new MMMFest.Event.Handle <(region: this) => void> ()
 
         constructor (protected parent: SVGSVGElement, options: Region2d.IOptions)
         {
@@ -77,14 +85,6 @@ module MMMFest
             if( options.popupInfo )
                 this.infoPoint.setPopup (options.popupInfo)
 
-            // Initialize event callbacks
-
-            if( options.onSelect )
-                this.onSelect = options.onSelect
-
-            if( options.onUnselect )
-                this.onUnselect = options.onUnselect
-
             // Create clipping background
             
             this.image = doc.createElementNS ("http://www.w3.org/2000/svg", "use")
@@ -103,27 +103,67 @@ module MMMFest
             this.svg = g
 
             this.parent.appendChild (g)
+
+            // Initialize event callbacks
+
+            /*if( options.onSelect )
+                this.onSelect = options.onSelect
+
+            if( options.onUnselect )
+                this.onUnselect = options.onUnselect*/
+
+            this.svg.onclick = this.onClick.bind (this)
+            this.svg.onmouseover = this.onMouseOver.bind (this)
+            this.svg.onmouseout = this.onMouseOut.bind (this)
         }
 
-        createMap ()
+        protected onClick (evt: MouseEvent)
         {
+            console.log ("Event onClick")
+            this.HClick.trigger (this, evt)
         }
 
-        onSelect? (sh: this): void
-        onUnselect? ( sh: this): void
+        protected onMouseOver (evt: MouseEvent)
+        {
+            console.log ("Event onMouseOver")
+            this.svg.onmouseover = null
+            this.HMouseOver.trigger (this, evt)
+        }
+
+        protected onMouseOut (evt: MouseEvent)
+        {
+            console.log ("Event onMouseOut")
+            this.svg.onmouseover = this.onMouseOver.bind (this)
+            this.HMouseOut.trigger (this, evt)
+        }
+
+        //onSelect? (sh: this): void
+        //onUnselect? ( sh: this): void
 
         select ()
         {
-            this.path.classList.add ("active")
-            this.image.classList.add ("active")
+            this.path.classList.add ("selected")
+            this.image.classList.add ("selected")
             this.infoPoint.select ()
+            this.HSelect.trigger (this)
         }
 
         unselect ()
         {
-            this.path.classList.remove ("active")
-            this.image.classList.remove ("active")
+            this.path.classList.remove ("selected")
+            this.image.classList.remove ("selected")
             this.infoPoint.unselect ()
+            this.HUnselect.trigger (this)
+        }
+
+        activate ()
+        {
+
+        }
+
+        desactivate ()
+        {
+
         }
 
         hide ()
@@ -145,8 +185,8 @@ module MMMFest
         {
             path: SVGGraphicsElement|string
             image: SVGImageElement|string
-            onSelect? (sh: Region2d): void
-            onUnselect? ( sh: Region2d): void
+            //onSelect? (sh: Region2d): void
+            //onUnselect? ( sh: Region2d): void
             popupInfo?: HTMLElement
         }
     }

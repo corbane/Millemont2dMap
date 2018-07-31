@@ -23,8 +23,10 @@ module MMMFest
         addRegion (regionOptions: Region2d.IOptions): Region2d
         {
             var r = new Region2d (this.container, regionOptions)
-            r.svg.onmouseover = this.onMouseOver.bind (this, r)
-            r.svg.addEventListener ("mouseout", this.onMouseOut.bind (this, r))
+            //r.svg.onmouseover = this.onMouseOver.bind (this, r)
+            r.HMouseOver.add (this.onMouseOver.bind (this, r))
+            //r.svg.addEventListener ("mouseout", this.onMouseOut.bind (this, r))
+            r.HMouseOut.add (this.onMouseOut.bind (this, r))
             r.svg.addEventListener ("click", this.onClick.bind (this, r))
             //r.infoPoint.svg.addEventListener ("click", this.onClick.bind (this, r))
             this.regions.push (r)
@@ -33,13 +35,15 @@ module MMMFest
 
         protected onMouseOver (sh: Region2d, evt: MouseEvent)
         {
-            sh.svg.onmouseover = null
+            //sh.svg.onmouseover = null
+            sh.HMouseOver.remove (this.onMouseOver.bind (this, sh))
             this.show (sh)
         }
 
         protected onMouseOut (sh: Region2d, evt: MouseEvent)
         {
-            sh.svg.onmouseover = this.onMouseOver.bind (this, sh)
+            //sh.svg.onmouseover = this.onMouseOver.bind (this, sh)
+            sh.HMouseOver.add (this.onMouseOver.bind (this, sh))
             this.hideAll ()
         }
 
@@ -67,8 +71,8 @@ module MMMFest
             sh.select ()
             this.show (sh)
 
-            if( sh.onSelect )
-                sh.onSelect (sh)
+            /*if( sh.onSelect )
+                sh.onSelect (sh)*/
                 
             this.selectedSape = sh
         }
@@ -82,8 +86,8 @@ module MMMFest
             sh.unselect ()
             this.hideAll ()
 
-            if( sh.onUnselect )
-                sh.onUnselect (sh)
+            /*if( sh.onUnselect )
+                sh.onUnselect (sh)*/
 
             this.selectedSape = null
 
