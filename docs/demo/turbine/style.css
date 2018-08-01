@@ -4,8 +4,8 @@
   margin: 30px auto;
 }
 #turbine-demo .image-map-container object {
-  max-height: 400px;
-  background-color: antiquewhite;
+  max-height: 600px;
+  /*background-color: antiquewhite;*/
 }
 svg.image-map .background {
   opacity: 1;

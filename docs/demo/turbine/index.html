@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><title>ImageMap Documentation</title><link rel="stylesheet" href="../../image-map.css"><style>/* W3.CSS 4.10 February 2018 by Jan Egil and Borge Refsnes */	
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><title>ImageMap Documentation</title><link rel="stylesheet" href="../../image-map.css"><link rel="stylesheet" href="style.css"><style>/* W3.CSS 4.10 February 2018 by Jan Egil and Borge Refsnes */	
 html{box-sizing:border-box}*,*:before,*:after{box-sizing:inherit}	
 /* Extract from normalize.css by Nicolas Gallagher and Jonathan Neal git.io/normalize */	
 html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{margin:0}	
@@ -259,16 +259,18 @@ body {
 &lt;/svg></pre></div></div></div></div><script>function toggleTabDemo(el, id)	
 {	
     var i, x, tablinks,	
-        parent = el.parentElement,	
+        parent = document.querySelector (".demo-source-tab-content"),	
         content = parent.getElementsByClassName(id)[0],	
         isOpen = content.style.display == "block"	
     	
-	x = parent.getElementsByClassName("demo-tab-content")	
+	x = parent.getElementsByClassName("demo-source-tab")	
 	for (i = 0; i < x.length; i++)	
-		x[i].style.display = "none"	
- 	tablinks = parent.getElementsByClassName("demo-tab-anchor")	
+        x[i].style.display = "none"	
+        
+ 	tablinks = el.parentElement.getElementsByClassName("demo-tab-anchor")	
 	for (i = 0; i < tablinks.length; i++)	
-		tablinks[i].classList.remove ("border-amber")	
+        tablinks[i].classList.remove ("border-amber")	
+        
      if( !isOpen )	
     {	
         content.style.display = "block"	
