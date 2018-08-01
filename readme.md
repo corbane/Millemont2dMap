@@ -7,7 +7,7 @@ Compiled with Typescript & Less
 
 Demo : https://corbane.github.io/Millemont2dMap/
 
-Api documentation : https://corbane.github.io/Millemont2dMap/api/index.html
+Api documentation : https://corbane.github.io/Millemont2dMap/api/modules/imagemap.html
 
 
 ## The SVG file
