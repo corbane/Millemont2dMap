@@ -12,3 +12,4 @@ less:
 doc:
 	lessc src/docs/index.less src/docs/index.css
 	pug --out docs/ src/docs/index.pug
+	cp build/* docs/
