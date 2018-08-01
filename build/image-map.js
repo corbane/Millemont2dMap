@@ -1,3 +1,33 @@
+var __values = (this && this.__values) || function (o) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
+    if (m) return m.call(o);
+    return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+};
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
+var __spread = (this && this.__spread) || function () {
+    for (var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
+    return ar;
+};
 // THIS FILE IS GENERATED - DO NOT EDIT!
 /*!mobile-detect v1.4.2 2018-06-10*/
 /*global module:false, define:false*/
@@ -936,11 +966,10 @@ var ImageMap;
             this.popup = null;
             this.scale = 1;
             this.active = false;
-            var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-            g.setAttributeNS(null, "pointer-events", "all");
-            g.addEventListener("mouseover", this.showPopup.bind(this));
-            g.addEventListener("mouseout", this.hidePopup.bind(this));
-            this.svg = g;
+            this.svg = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            this.svg.setAttributeNS(null, "pointer-events", "all");
+            this.svg.addEventListener("mouseover", this.showPopup.bind(this));
+            this.svg.addEventListener("mouseout", this.hidePopup.bind(this));
             this.setPosition(100, 100);
         }
         InfoPoint.prototype.updateSvg = function () {
@@ -958,7 +987,6 @@ var ImageMap;
             this.x = this.x_origin = x;
             this.y = this.y_origin = y;
             this.updateSvg();
-            this.svg.innerHTML = this.getInnerSvg();
         };
         InfoPoint.prototype.offsetX = function (n) {
             this.x = this.x_origin + n;
@@ -993,8 +1021,8 @@ var ImageMap;
             var b = this.svg.getBoundingClientRect(), offsetY = this.popup.getBoundingClientRect().height / 2 - b.height / 2;
             //this.popup.style.left = (b.left + b.width + 20) + "px"
             //this.popup.style.top = (window.screenY + b.top + offsetY) + "px"
-            this.popup.style.left = evt.pageX + "px";
-            this.popup.style.top = evt.pageY + "px";
+            this.popup.style.left = evt.pageX + 30 + "px";
+            this.popup.style.top = evt.pageY + 30 + "px";
         };
         InfoPoint.prototype.hidePopup = function () {
             if (!this.popup)
@@ -1018,9 +1046,19 @@ var ImageMap;
                     for (var _i = 0; _i < arguments.length; _i++) {
                         args[_i] = arguments[_i];
                     }
-                    for (var _a = 0, _b = _this.registers; _a < _b.length; _a++) {
-                        var fn = _b[_a];
-                        fn.apply(_this, args);
+                    var e_1, _a;
+                    try {
+                        for (var _b = __values(_this.registers), _c = _b.next(); !_c.done; _c = _b.next()) {
+                            var fn = _c.value;
+                            fn.apply(_this, args);
+                        }
+                    }
+                    catch (e_1_1) { e_1 = { error: e_1_1 }; }
+                    finally {
+                        try {
+                            if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                        }
+                        finally { if (e_1) throw e_1.error; }
                     }
                 });
             }
@@ -1063,6 +1101,7 @@ var ImageMap;
      */
     var Region2d = /** @class */ (function () {
         function Region2d(map, el) {
+            var e_2, _a;
             this.map = map;
             this.hMouseOver = new ImageMap.Event.Handle();
             this.hClick = new ImageMap.Event.Handle();
@@ -1088,10 +1127,19 @@ var ImageMap;
                     clipPath.appendChild(p);
                     break;
                 case "g":
-                    //@ts-ignore
-                    for (var _i = 0, _a = this.pathElement.children; _i < _a.length; _i++) {
-                        var e = _a[_i];
-                        clipPath.appendChild(e.cloneNode(true));
+                    try {
+                        //@ts-ignore
+                        for (var _b = __values(this.pathElement.children), _c = _b.next(); !_c.done; _c = _b.next()) {
+                            var e = _c.value;
+                            clipPath.appendChild(e.cloneNode(true));
+                        }
+                    }
+                    catch (e_2_1) { e_2 = { error: e_2_1 }; }
+                    finally {
+                        try {
+                            if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                        }
+                        finally { if (e_2) throw e_2.error; }
                     }
                     break;
                 default:
@@ -1163,7 +1211,105 @@ var ImageMap;
     ImageMap.Region2d = Region2d;
 })(ImageMap || (ImageMap = {}));
 /// <reference path="region-2d.ts" />
+/// <reference path="map-2d.ts" />
 /// <reference path="event.ts" />
+var ImageMap;
+(function (ImageMap) {
+    var RegionCollection = /** @class */ (function () {
+        function RegionCollection(parent) {
+            this.parent = parent;
+            this.registry = [];
+            this.HRegionAdded = new ImageMap.Event.Handle();
+            this.HRegionRemoved = new ImageMap.Event.Handle();
+        }
+        RegionCollection.prototype.add = function (el) {
+            var region = new ImageMap.Region2d(this.parent, el);
+            this.registry.push(region);
+            // Initialize popup info
+            var popup = document.querySelector("[data-for=\"" + region.id + "\"]");
+            if (popup)
+                region.infoPoint.setPopup(popup);
+            this.HRegionAdded.trigger(region);
+            return region;
+        };
+        RegionCollection.prototype.has = function (region) { return !(this.indexOf(region) == -1); };
+        RegionCollection.prototype.indexOf = function (region) {
+            var e_3, _a;
+            if (typeof region == "string")
+                region = this.get(region);
+            var i = 0;
+            try {
+                for (var _b = __values(this.registry), _c = _b.next(); !_c.done; _c = _b.next()) {
+                    var vel = _c.value;
+                    if (vel === region)
+                        return i;
+                    ++i;
+                }
+            }
+            catch (e_3_1) { e_3 = { error: e_3_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                }
+                finally { if (e_3) throw e_3.error; }
+            }
+            return -1;
+        };
+        RegionCollection.prototype.get = function (id) {
+            var el = this.parent.container.getElementById(id);
+            if (el)
+                return el.parentElement.vElement;
+            return null;
+        };
+        RegionCollection.prototype.remove = function () {
+            var regions = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                regions[_i] = arguments[_i];
+            }
+            var e_4, _a;
+            try {
+                for (var regions_1 = __values(regions), regions_1_1 = regions_1.next(); !regions_1_1.done; regions_1_1 = regions_1.next()) {
+                    var region = regions_1_1.value;
+                    var i = this.indexOf(region);
+                    if (i == -1)
+                        continue;
+                    var del = this.registry.splice(i, 1);
+                    this.HRegionRemoved.trigger(del[0]);
+                }
+            }
+            catch (e_4_1) { e_4 = { error: e_4_1 }; }
+            finally {
+                try {
+                    if (regions_1_1 && !regions_1_1.done && (_a = regions_1.return)) _a.call(regions_1);
+                }
+                finally { if (e_4) throw e_4.error; }
+            }
+        };
+        RegionCollection.prototype.clear = function () {
+            this.remove.apply(this, __spread(this.registry));
+            this.registry = [];
+        };
+        RegionCollection.prototype[Symbol.iterator] = function () {
+            var _this = this;
+            var i = 0;
+            return {
+                next: function () {
+                    return i == _this.registry.length
+                        ? { done: true, value: undefined }
+                        : { done: false, value: _this.registry[i++] };
+                }
+            };
+        };
+        RegionCollection.prototype.toArray = function () {
+            return Object.create(this.registry);
+        };
+        return RegionCollection;
+    }());
+    ImageMap.RegionCollection = RegionCollection;
+})(ImageMap || (ImageMap = {}));
+/// <reference path="region-2d.ts" />
+/// <reference path="event.ts" />
+/// <reference path="region-collection.ts" />
 var ImageMap;
 (function (ImageMap) {
     /**
@@ -1188,17 +1334,20 @@ var ImageMap;
      */
     var Map2d = /** @class */ (function () {
         function Map2d(container) {
+            // Initialize regions collection
             this.container = container;
             //#region Regions
-            this.regionsRegister = [];
-            this.regions = {
-                add: this.addRegion.bind(this),
-                get: this.getRegion.bind(this)
-            };
+            this.regions = new ImageMap.RegionCollection(this);
             this.selectedSape = null;
+            /**
+             * Use [mobile-detect.js](https://github.com/hgoebl/mobile-detect.js)
+             */
+            this.mobileMode = ImageMap.isRunningOnMobile;
             //#endregion
             //#region Filters
             this.filtersRegister = {};
+            this.regions.HRegionAdded.add(this.onRegionAdded.bind(this));
+            // Initialize children of SVG
             var childs = container.ownerDocument.querySelectorAll("svg > *");
             for (var i = 0; i < childs.length; ++i) {
                 var name = childs[i].tagName.toLowerCase();
@@ -1221,26 +1370,14 @@ var ImageMap;
             this.container.setAttribute("height", "100%");
             this.restoreZoom();
         }
-        Map2d.prototype.addRegion = function (el) {
-            var region = new ImageMap.Region2d(this, el);
+        Map2d.prototype.onRegionAdded = function (region) {
             region.hSelect.add(this.onRegionSelected.bind(this, region));
             region.hUnselect.add(this.onRegionUnelected.bind(this, region));
             region.hMouseOver.add(this.onOverRegion.bind(this, region));
-            this.regionsRegister.push(region);
-            // Initialize popup info
-            var popup = document.querySelector("[data-for=\"" + region.id + "\"]");
-            if (popup)
-                region.infoPoint.setPopup(popup);
             this.setNormalMode();
-            return region;
-        };
-        Map2d.prototype.getRegion = function (id) {
-            var el = this.container.getElementById(id);
-            if (el)
-                return el.parentElement.vElement;
-            return null;
         };
         //#endregion
+        //#region Zoom
         Map2d.prototype.zoomTo = function (b, margin) {
             if (margin === void 0) { margin = 0; }
             this.container.viewBox.baseVal.x = b.x - margin;
@@ -1251,6 +1388,7 @@ var ImageMap;
         Map2d.prototype.restoreZoom = function () {
             this.zoomTo(this.background.getBBox());
         };
+        //#endregion
         //#region Selection
         Map2d.prototype.select = function (region) {
             region.select();
@@ -1263,12 +1401,12 @@ var ImageMap;
             if (this.selectedSape)
                 this.selectedSape.unselect();
             this.selectedSape = region;
-            if (ImageMap.isRunningOnMobile)
+            if (this.mobileMode)
                 this.setGhostMode(region);
         };
         Map2d.prototype.onRegionUnelected = function (region) {
             this.selectedSape = null;
-            if (ImageMap.isRunningOnMobile)
+            if (this.mobileMode)
                 this.setNormalMode();
         };
         Map2d.prototype.onBackgroundClick = function (evt) {
@@ -1279,38 +1417,57 @@ var ImageMap;
         //#endregion
         //#region display mode
         Map2d.prototype.setGhostMode = function (sh) {
-            for (var _i = 0, _a = this.regionsRegister; _i < _a.length; _i++) {
-                var s = _a[_i];
-                s.disable();
+            var e_5, _a;
+            try {
+                for (var _b = __values(this.regions), _c = _b.next(); !_c.done; _c = _b.next()) {
+                    var s = _c.value;
+                    s.disable();
+                }
+            }
+            catch (e_5_1) { e_5 = { error: e_5_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                }
+                finally { if (e_5) throw e_5.error; }
             }
             sh.enable();
             this.container.classList.remove("normal-view");
             this.container.classList.add("ghost-view");
         };
         Map2d.prototype.setNormalMode = function () {
-            for (var _i = 0, _a = this.regionsRegister; _i < _a.length; _i++) {
-                var s = _a[_i];
-                s.disable();
+            var e_6, _a;
+            try {
+                for (var _b = __values(this.regions), _c = _b.next(); !_c.done; _c = _b.next()) {
+                    var s = _c.value;
+                    s.disable();
+                }
+            }
+            catch (e_6_1) { e_6 = { error: e_6_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                }
+                finally { if (e_6) throw e_6.error; }
             }
             this.container.classList.remove("ghost-view");
             this.container.classList.add("normal-view");
         };
-        Map2d.prototype.disableOverEvents = function () {
-            //@ts-ignore
-            ImageMap.isRunningOnMobile = true;
-        };
-        Map2d.prototype.enableOverMouse = function () {
-            //@ts-ignore
-            ImageMap.isRunningOnMobile = false;
+        /**
+         * Active or desactive the mouse over event for mobile view.
+         */
+        Map2d.prototype.setMobileMode = function (v) {
+            if (v === void 0) { v = true; }
+            this.mobileMode = v;
         };
         Map2d.prototype.onOverRegion = function (region, evt) {
-            if (ImageMap.isRunningOnMobile)
+            if (this.mobileMode)
                 return;
             this.background.onmouseover = this.onOverBackground.bind(this);
             this.setGhostMode(region);
         };
         Map2d.prototype.onOverBackground = function (region, evt) {
-            if (ImageMap.isRunningOnMobile)
+            if (this.mobileMode)
                 return;
             this.background.onmouseover = null;
             this.setNormalMode();

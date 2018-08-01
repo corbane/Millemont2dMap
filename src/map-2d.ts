@@ -1,5 +1,6 @@
 /// <reference path="region-2d.ts" />
 /// <reference path="event.ts" />
+/// <reference path="region-collection.ts" />
 
 module ImageMap
 {
@@ -33,6 +34,12 @@ module ImageMap
 
         constructor (readonly container: SVGSVGElement)
         {
+            // Initialize regions collection
+            
+            this.regions.HRegionAdded.add (this.onRegionAdded.bind (this))
+            
+            // Initialize children of SVG
+
             var childs = container.ownerDocument.querySelectorAll ("svg > *")
             for( var i = 0 ; i < childs.length ; ++i )
             {
@@ -54,7 +61,6 @@ module ImageMap
                 }
             }
 
-
             // Initialize svg container
 
             this.container.classList.add ("image-map")
@@ -65,45 +71,19 @@ module ImageMap
 
         //#region Regions
 
-        private regionsRegister: Region2d [] = []
+        readonly regions = new RegionCollection (this)
 
-        readonly regions =
+        private onRegionAdded (region: Region2d)
         {
-            add: this.addRegion.bind (this),
-            get: this.getRegion.bind (this)
-        }
-
-        private addRegion (el: SVGGraphicsElement|string): Region2d
-        {
-            var region = new Region2d (this, el)
-
             region.hSelect.add (this.onRegionSelected.bind (this, region))
             region.hUnselect.add (this.onRegionUnelected.bind (this, region))
             region.hMouseOver.add (this.onOverRegion.bind (this, region))
-
-            this.regionsRegister.push (region)
-
-            // Initialize popup info
-
-            var popup = document.querySelector (`[data-for="${region.id}"]`) as HTMLElement
-            if( popup )
-                region.infoPoint.setPopup (popup)
-            
             this.setNormalMode ()
-
-            return region
-        }
-
-        private getRegion (id: string): Region2d
-        {
-            var el = this.container.getElementById (id)
-            if( el )
-                return el.parentElement.vElement as Region2d
-
-            return null
         }
 
         //#endregion
+
+        //#region Zoom
 
         zoomTo (b: SVGRect, margin = 0)
         {
@@ -117,6 +97,8 @@ module ImageMap
         {
             this.zoomTo (this.background.getBBox ())
         }
+
+        //#endregion
 
         //#region Selection
 
@@ -140,7 +122,7 @@ module ImageMap
                 
             this.selectedSape = region
 
-            if( isRunningOnMobile )
+            if( this.mobileMode )
                 this.setGhostMode (region)
         }
 
@@ -148,7 +130,7 @@ module ImageMap
         {
             this.selectedSape = null
 
-            if( isRunningOnMobile )
+            if( this.mobileMode )
                 this.setNormalMode ()
         }
 
@@ -166,7 +148,7 @@ module ImageMap
 
         setGhostMode (sh: Region2d)
         {
-            for( var s of this.regionsRegister )
+            for( var s of this.regions )
                 s.disable ()
 
             sh.enable ()
@@ -177,28 +159,29 @@ module ImageMap
 
         setNormalMode ()
         {
-            for( var s of this.regionsRegister )
+            for( var s of this.regions )
                 s.disable ()
             
             this.container.classList.remove ("ghost-view")
             this.container.classList.add ("normal-view")
         }
 
-        disableOverEvents ()
-        {
-            //@ts-ignore
-            isRunningOnMobile = true
-        }
+        /**
+         * Use [mobile-detect.js](https://github.com/hgoebl/mobile-detect.js)
+         */
+        private mobileMode: boolean = isRunningOnMobile
 
-        enableOverMouse ()
+        /**
+         * Active or desactive the mouse over event for mobile view.
+         */
+        setMobileMode (v: boolean = true)
         {
-            //@ts-ignore
-            isRunningOnMobile = false
+            this.mobileMode = v
         }
 
         protected onOverRegion (region: Region2d, evt: MouseEvent)
         {
-            if( isRunningOnMobile )
+            if( this.mobileMode )
                 return
                 
             this.background.onmouseover = this.onOverBackground.bind (this)
@@ -207,7 +190,7 @@ module ImageMap
 
         protected onOverBackground (region: Region2d, evt: MouseEvent)
         {
-            if( isRunningOnMobile )
+            if( this.mobileMode )
                 return
 
             this.background.onmouseover = null

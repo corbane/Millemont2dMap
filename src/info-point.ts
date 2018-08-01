@@ -3,7 +3,7 @@ module ImageMap
 {
     export class InfoPoint
     {
-        readonly svg: SVGElement
+        readonly svg: SVGGraphicsElement
         protected popup: HTMLElement = null
 
         protected scale = 1
@@ -14,12 +14,10 @@ module ImageMap
 
         constructor ()
         {
-            var g = document.createElementNS ("http://www.w3.org/2000/svg", "g")
-            g.setAttributeNS (null, "pointer-events", "all")
-            g.addEventListener ("mouseover", this.showPopup.bind (this))
-            g.addEventListener ("mouseout", this.hidePopup.bind (this))
-            this.svg = g
-
+            this.svg = document.createElementNS ("http://www.w3.org/2000/svg", "g")
+            this.svg.setAttributeNS (null, "pointer-events", "all")
+            this.svg.addEventListener ("mouseover", this.showPopup.bind (this))
+            this.svg.addEventListener ("mouseout", this.hidePopup.bind (this))
             this.setPosition (100, 100)
         }
 
@@ -46,7 +44,6 @@ module ImageMap
             this.x = this.x_origin = x
             this.y = this.y_origin = y
             this.updateSvg ()
-            this.svg.innerHTML = this.getInnerSvg ()
 
         }
 
@@ -102,8 +99,8 @@ module ImageMap
                 offsetY = this.popup.getBoundingClientRect().height / 2 - b.height / 2
             //this.popup.style.left = (b.left + b.width + 20) + "px"
             //this.popup.style.top = (window.screenY + b.top + offsetY) + "px"
-            this.popup.style.left = evt.pageX + "px"
-            this.popup.style.top = evt.pageY + "px"
+            this.popup.style.left = evt.pageX + 30 + "px"
+            this.popup.style.top = evt.pageY + 30 + "px"
         }
 
         hidePopup ()
