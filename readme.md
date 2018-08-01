@@ -7,5 +7,5 @@ Compiled with Typescript & Less
 
 Demo : https://corbane.github.io/Millemont2dMap/
 
-Api documentation : https://corbane.github.io/Millemont2dMap/api/modules/imagemap.html
+Api documentation : https://corbane.github.io/Millemont2dMap/api/globals.html
 
