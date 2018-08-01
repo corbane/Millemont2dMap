@@ -1376,7 +1376,6 @@ var ImageMap;
      */
     var Map2d = /** @class */ (function () {
         function Map2d(container) {
-            // Initialize regions collection
             this.container = container;
             //#region Regions
             this.regions = new ImageMap.RegionCollection(this);
@@ -1412,6 +1411,7 @@ var ImageMap;
                     this.regions.add(childs[i]);
                 }
             }
+            this.initFilters();
             // Initialize svg container
             this.container.classList.add("image-map");
             this.container.setAttribute("width", "100%");
@@ -1425,7 +1425,7 @@ var ImageMap;
             region.hSelect.add(this.onRegionSelected.bind(this));
             region.hUnselect.add(this.onRegionUnelected.bind(this));
             region.hMouseOver.add(this.onOverRegion.bind(this));
-            this.setDisplayMode("normal");
+            this.updateDisplay();
         };
         //#endregion
         //#region Zoom
@@ -1463,10 +1463,7 @@ var ImageMap;
                 }
             }
             this.selectedSapes.push(region);
-            if (this.mobileMode)
-                this.setDisplayMode("ghost");
-            else
-                this.updateDisplay();
+            this.updateDisplay();
         };
         Map2d.prototype.onRegionUnelected = function (region, evt) {
             var i = this.selectedSapes.indexOf(region);
@@ -1477,17 +1474,18 @@ var ImageMap;
                 while (this.selectedSapes.length)
                     (this.selectedSapes.splice(0, 1))[0].unselect();
             }
-            if (this.mobileMode)
-                this.setDisplayMode("normal");
-            else
-                this.updateDisplay();
+            this.updateDisplay();
         };
         Map2d.prototype.onBackgroundClick = function (evt) {
             if (evt.target != this.background)
                 return;
-            this.unselect();
+            while (this.selectedSapes.length)
+                (this.selectedSapes.splice(0, 1))[0].unselect();
+            this.updateDisplay();
         };
         Map2d.prototype.setDisplayMode = function (mode) {
+            if (this.displayMode == mode)
+                return;
             this.displayMode = mode;
             this.container.classList.remove("normal-view");
             this.container.classList.remove("ghost-view");
@@ -1497,8 +1495,22 @@ var ImageMap;
                 this.container.classList.add("normal-view");
             this.updateDisplay();
         };
+        /**
+         * Active or desactive the mouse over event for mobile view.
+         */
+        Map2d.prototype.setMobileMode = function (v) {
+            if (v === void 0) { v = true; }
+            this.mobileMode = v;
+            this.updateDisplay();
+        };
         Map2d.prototype.updateDisplay = function () {
             var e_5, _a, e_6, _b, e_7, _c;
+            if (this.mobileMode) {
+                if (this.selectedSapes.length)
+                    this.setDisplayMode("ghost");
+                else
+                    this.setDisplayMode("normal");
+            }
             if (this.displayMode == "ghost") {
                 try {
                     for (var _d = __values(this.regions), _e = _d.next(); !_e.done; _e = _d.next()) {
@@ -1527,7 +1539,8 @@ var ImageMap;
                     finally { if (e_6) throw e_6.error; }
                 }
             }
-            else {
+            else //"normal"
+             {
                 try {
                     for (var _h = __values(this.regions), _j = _h.next(); !_j.done; _j = _h.next()) {
                         var s = _j.value;
@@ -1543,13 +1556,6 @@ var ImageMap;
                 }
             }
         };
-        /**
-         * Active or desactive the mouse over event for mobile view.
-         */
-        Map2d.prototype.setMobileMode = function (v) {
-            if (v === void 0) { v = true; }
-            this.mobileMode = v;
-        };
         Map2d.prototype.onOverRegion = function (region, evt) {
             if (this.mobileMode)
                 return;
@@ -1562,19 +1568,22 @@ var ImageMap;
             this.background.onmouseover = null;
             this.setDisplayMode("normal");
         };
+        Map2d.prototype.initFilters = function () {
+            var defs = this.container.querySelector("defs");
+            if (!defs) {
+                defs = this.container.ownerDocument.createElementNS("http://www.w3.org/2000/svg", "defs");
+                this.container.appendChild(defs);
+            }
+            this.defsElement = defs;
+        };
         Map2d.prototype.addFilter = function (id, def) {
             if (def === void 0) { def = null; }
             var doc = this.container.ownerDocument;
             if (def) {
-                var defs = this.container.querySelector("defs");
-                if (!defs) {
-                    defs = doc.createElementNS("http://www.w3.org/2000/svg", "defs");
-                    this.container.appendChild(defs);
-                }
                 var filter = doc.createElementNS("http://www.w3.org/2000/svg", "filter");
                 filter.id = id;
                 filter.innerHTML = def;
-                defs.appendChild(filter);
+                this.defsElement.appendChild(filter);
                 this.filtersRegister[id] = def;
             }
             else {

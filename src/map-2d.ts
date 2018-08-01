@@ -34,8 +34,6 @@ module ImageMap
 
         constructor (readonly container: SVGSVGElement)
         {
-            // Initialize regions collection
-            
             this.initRegions ()
             
             // Initialize children of SVG
@@ -60,6 +58,8 @@ module ImageMap
                     this.regions.add (childs[i] as SVGGraphicsElement)
                 }
             }
+            
+            this.initFilters ()
 
             // Initialize svg container
 
@@ -83,7 +83,7 @@ module ImageMap
             region.hSelect.add (this.onRegionSelected.bind (this))
             region.hUnselect.add (this.onRegionUnelected.bind (this))
             region.hMouseOver.add (this.onOverRegion.bind (this))
-            this.setDisplayMode ("normal")
+            this.updateDisplay ()
         }
 
         //#endregion
@@ -146,10 +146,7 @@ module ImageMap
                 
             this.selectedSapes.push (region)
 
-            if( this.mobileMode )
-                this.setDisplayMode ("ghost")
-            else
-                this.updateDisplay ()
+            this.updateDisplay ()
         }
 
         private onRegionUnelected (region: Region2d, evt: MouseEvent)
@@ -166,18 +163,18 @@ module ImageMap
                     (this.selectedSapes.splice (0, 1))[0].unselect ()
             }
 
-            if( this.mobileMode )
-                this.setDisplayMode ("normal")
-            else
-                this.updateDisplay ()
+            this.updateDisplay ()
         }
 
         protected onBackgroundClick (evt: Event)
         {
             if( evt.target != this.background )
                 return
-
-            this.unselect ()
+            
+            while( this.selectedSapes.length )
+                (this.selectedSapes.splice (0, 1))[0].unselect ()
+            
+            this.updateDisplay ()
         }
 
         //#endregion
@@ -186,8 +183,16 @@ module ImageMap
 
         protected displayMode: "ghost" | "normal" = "normal"
 
+        /**
+         * Use [mobile-detect.js](https://github.com/hgoebl/mobile-detect.js)
+         */
+        private mobileMode: boolean = isRunningOnMobile
+
         setDisplayMode (mode: "ghost" | "normal")
         {
+            if( this.displayMode == mode )
+                return
+
             this.displayMode = mode
 
             this.container.classList.remove ("normal-view")
@@ -201,8 +206,25 @@ module ImageMap
             this.updateDisplay ()
         }
 
+        /**
+         * Active or desactive the mouse over event for mobile view.
+         */
+        setMobileMode (v: boolean = true)
+        {
+            this.mobileMode = v
+            this.updateDisplay ()
+        }
+
         updateDisplay ()
         {
+            if( this.mobileMode )
+            {
+                if( this.selectedSapes.length )
+                    this.setDisplayMode ("ghost")
+                else
+                    this.setDisplayMode ("normal")
+            }
+
             if( this.displayMode == "ghost" )
             {
                 for( var s of this.regions )
@@ -211,24 +233,11 @@ module ImageMap
                 for( var r of this.selectedSapes )
                     r.enable ()
             }
-            else
+            else //"normal"
             {
                 for( var s of this.regions )
                     s.disable ()
             }
-        }
-
-        /**
-         * Use [mobile-detect.js](https://github.com/hgoebl/mobile-detect.js)
-         */
-        private mobileMode: boolean = isRunningOnMobile
-
-        /**
-         * Active or desactive the mouse over event for mobile view.
-         */
-        setMobileMode (v: boolean = true)
-        {
-            this.mobileMode = v
         }
 
         protected onOverRegion (region: Region2d, evt: MouseEvent)
@@ -255,22 +264,28 @@ module ImageMap
 
         filtersRegister: { [key: string]: string } = {}
 
+        private defsElement: SVGDefsElement
+
+        initFilters ()
+        {
+            var defs = this.container.querySelector ("defs") as SVGDefsElement
+            if( !defs )
+            {
+                defs = this.container.ownerDocument.createElementNS ("http://www.w3.org/2000/svg", "defs")
+                this.container.appendChild (defs)
+            }
+            this.defsElement = defs
+        }
+
         private addFilter (id: string, def: string = null)
         {
             var doc = this.container.ownerDocument
             if( def )
             {
-                var defs = this.container.querySelector ("defs") as SVGDefsElement
-                if( !defs )
-                {
-                    defs = doc.createElementNS ("http://www.w3.org/2000/svg", "defs")
-                    this.container.appendChild (defs)
-                }
-
                 var filter = doc.createElementNS ("http://www.w3.org/2000/svg", "filter")
                 filter.id = id
                 filter.innerHTML = def
-                defs.appendChild (filter)
+                this.defsElement.appendChild (filter)
 
                 this.filtersRegister[id] = def
             }
