@@ -1293,6 +1293,14 @@ var ImageMap;
             this.container.classList.remove("ghost-view");
             this.container.classList.add("normal-view");
         };
+        Map2d.prototype.disableOverEvents = function () {
+            //@ts-ignore
+            ImageMap.isRunningOnMobile = true;
+        };
+        Map2d.prototype.enableOverMouse = function () {
+            //@ts-ignore
+            ImageMap.isRunningOnMobile = false;
+        };
         Map2d.prototype.onOverRegion = function (region, evt) {
             if (ImageMap.isRunningOnMobile)
                 return;
