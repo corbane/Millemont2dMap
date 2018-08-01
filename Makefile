@@ -7,9 +7,9 @@ ts:
 	tsc src/image-map.ts --sourceMap --outDir docs/ --outFile build/image-map.js --allowJs
 
 less:
-	lessc src/image-map.less build/image-map.css
+	lessc src/style/image-map.less build/image-map.css
 
 doc:
-	lessc src/docs/index.less src/docs/index.css
+	lessc src/docs/style/index.less src/docs/style/index.css
 	pug --out docs/ src/docs/index.pug
 	cp build/* docs/

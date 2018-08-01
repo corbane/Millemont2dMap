@@ -1102,6 +1102,7 @@ var ImageMap;
             g.appendChild(this.imageElement);
             g.appendChild(this.pathElement);
             g.appendChild(this.infoPoint.svg);
+            g.vElement = this;
             this.gElement = g;
             this.id = this.pathElement.id;
             map.container.appendChild(g);
@@ -1150,7 +1151,7 @@ var ImageMap;
     }());
     ImageMap.Region2d = Region2d;
 })(ImageMap || (ImageMap = {}));
-/// <reference path="mobile-detect.js" />
+/// <reference path="vendor/mobile-detect.js" />
 /// <reference path="region-2d.ts" />
 /// <reference path="event.ts" />
 var ImageMap;
@@ -1159,16 +1160,29 @@ var ImageMap;
     ImageMap.runOnMobile = md = new MobileDetect(navigator.userAgent).mobile();
     var Map2d = /** @class */ (function () {
         function Map2d(container, options) {
-            // Initialize background
             this.container = container;
-            this.regions = [];
+            this.regionsRegister = [];
+            this.regions = {
+                add: this.addRegion.bind(this),
+                get: this.getRegion.bind(this)
+            };
             this.selectedSape = null;
-            if (typeof options.background == "string")
-                this.background = this.container.querySelector(options.background);
-            else
-                this.background = options.background;
-            this.background.classList.add("background");
-            this.background.onclick = this.onBackgroundClick.bind(this);
+            var childs = container.ownerDocument.querySelectorAll("svg > *");
+            for (var i = 0; i < childs.length; ++i) {
+                var name = childs[i].tagName.toLowerCase();
+                if (name == "script")
+                    continue; // Live reload inject a script element
+                if (name == "image") {
+                    // Initialize background
+                    this.background = childs[i];
+                    this.background.classList.add("background");
+                    this.background.onclick = this.onBackgroundClick.bind(this);
+                }
+                else {
+                    // Initialize regions
+                    this.regions.add(childs[i]);
+                }
+            }
             // Initialize svg container
             this.container.classList.add("mmmfest", "map2d");
             this.container.setAttribute("width", "100%");
@@ -1180,13 +1194,19 @@ var ImageMap;
             region.HSelect.add(this.onRegionSelected.bind(this, region));
             region.HUnselect.add(this.onRegionUnelected.bind(this, region));
             region.HMouseOver.add(this.onOverRegion.bind(this, region));
-            this.regions.push(region);
+            this.regionsRegister.push(region);
             // Initialize popup info
             var popup = document.querySelector("[data-for=\"" + region.id + "\"]");
             if (popup)
                 region.infoPoint.setPopup(popup);
             this.setNormalMode();
             return region;
+        };
+        Map2d.prototype.getRegion = function (id) {
+            var el = this.container.getElementById(id);
+            if (el)
+                return el.parentElement.vElement;
+            return null;
         };
         Map2d.prototype.zoomTo = function (b, margin) {
             if (margin === void 0) { margin = 0; }
@@ -1226,7 +1246,7 @@ var ImageMap;
         //#endregion
         //#region display mode
         Map2d.prototype.setGhostMode = function (sh) {
-            for (var _i = 0, _a = this.regions; _i < _a.length; _i++) {
+            for (var _i = 0, _a = this.regionsRegister; _i < _a.length; _i++) {
                 var s = _a[_i];
                 s.disable();
             }
@@ -1235,7 +1255,7 @@ var ImageMap;
             this.container.classList.add("ghost-view");
         };
         Map2d.prototype.setNormalMode = function () {
-            for (var _i = 0, _a = this.regions; _i < _a.length; _i++) {
+            for (var _i = 0, _a = this.regionsRegister; _i < _a.length; _i++) {
                 var s = _a[_i];
                 s.disable();
             }
@@ -1254,6 +1274,5 @@ var ImageMap;
     }());
     ImageMap.Map2d = Map2d;
 })(ImageMap || (ImageMap = {}));
-/// <reference path="mobile-detect.js" />
 /// <reference path="map-2d.ts" />
 //# sourceMappingURL=image-map.js.map

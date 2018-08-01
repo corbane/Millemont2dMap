@@ -8,15 +8,15 @@ html(lang='en')
         title Document
         link(rel='stylesheet', href='image-map.css')
         style
-            include index.css
+            include style/index.css
 
     body.w3
         script(src='image-map.js')
         script
-            include index.js
-            include w3codecolor.js
+            include script/index.js
+            include script/w3codecolor.js
         .container
-            include millemont-demo.pug
-            include turbine-demo.pug
+            include demo/millemont-demo.pug
+            include demo/turbine-demo.pug
         script.
             w3CodeColor()

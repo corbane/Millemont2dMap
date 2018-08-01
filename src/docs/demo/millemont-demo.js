@@ -2,14 +2,13 @@
 function initMillemontDemo (obj)
 {
     var doc = obj.contentDocument,
-        map = new ImageMap.Map2d (doc.querySelector ("svg"), { background: "#background" })
+        map = new ImageMap.Map2d (doc.querySelector("svg"), { background: "#background" })
         
-    var oran = map.addRegion ("#orangerie")
-    var grch = map.addRegion ("#grchateau")
-    var ptch = map.addRegion ("#ptchateau")
-    var coch = map.addRegion ("#cochets")
-    var camp = map.addRegion ("#camping")
-    camp.infoPoint.offsetY (-200)
+    var oran = map.regions.get ("orangerie")
+    var grch = map.regions.get ("grchateau")
+    var ptch = map.regions.get ("ptchateau")
+    var coch = map.regions.get ("cochets")
+    var camp = map.regions.get ("camping")
 
     oran.HSelect.add (fn)
     grch.HSelect.add (fn)

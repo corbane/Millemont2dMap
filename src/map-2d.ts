@@ -1,4 +1,4 @@
-/// <reference path="mobile-detect.js" />
+/// <reference path="vendor/mobile-detect.js" />
 /// <reference path="region-2d.ts" />
 /// <reference path="event.ts" />
 
@@ -9,22 +9,33 @@ module ImageMap
 
     export class Map2d
     {
-        readonly regions: Region2d [] = []
+        private regionsRegister: Region2d [] = []
 
         readonly background: SVGImageElement
 
         constructor (readonly container: SVGSVGElement, options: Map2d.IOptions)
         {
+            var childs = container.ownerDocument.querySelectorAll ("svg > *")
+            for( var i = 0 ; i < childs.length ; ++i )
+            {
+                var name = childs[i].tagName.toLowerCase () 
+                if( name == "script" )
+                    continue // Live reload inject a script element
 
-            // Initialize background
+                if( name == "image" )
+                {
+                    // Initialize background
+                    this.background = childs[i] as SVGImageElement
+                    this.background.classList.add ("background")
+                    this.background.onclick = this.onBackgroundClick.bind (this)
+                }
+                else
+                {
+                    // Initialize regions
+                    this.regions.add (childs[i] as SVGGraphicsElement)
+                }
+            }
 
-            if( typeof options.background == "string" )
-                this.background = this.container.querySelector (options.background) as SVGImageElement
-            else
-                this.background = options.background
-                
-            this.background.classList.add ("background")
-            this.background.onclick = this.onBackgroundClick.bind (this)
 
             // Initialize svg container
 
@@ -34,7 +45,13 @@ module ImageMap
             this.restoreZoom ()
         }
 
-        addRegion (el: SVGGraphicsElement|string): Region2d
+        readonly regions =
+        {
+            add: this.addRegion.bind (this),
+            get: this.getRegion.bind (this)
+        }
+
+        private addRegion (el: SVGGraphicsElement|string): Region2d
         {
             var region = new Region2d (this, el)
 
@@ -42,7 +59,7 @@ module ImageMap
             region.HUnselect.add (this.onRegionUnelected.bind (this, region))
             region.HMouseOver.add (this.onOverRegion.bind (this, region))
 
-            this.regions.push (region)
+            this.regionsRegister.push (region)
 
             // Initialize popup info
 
@@ -53,6 +70,15 @@ module ImageMap
             this.setNormalMode ()
 
             return region
+        }
+
+        private getRegion (id: string): Region2d
+        {
+            var el = this.container.getElementById (id)
+            if( el )
+                return el.parentElement.vElement as Region2d
+
+            return null
         }
 
         zoomTo (b: SVGRect, margin = 0)
@@ -116,7 +142,7 @@ module ImageMap
 
         setGhostMode (sh: Region2d)
         {
-            for( var s of this.regions )
+            for( var s of this.regionsRegister )
                 s.disable ()
 
             sh.enable ()
@@ -127,7 +153,7 @@ module ImageMap
 
         setNormalMode ()
         {
-            for( var s of this.regions )
+            for( var s of this.regionsRegister )
                 s.disable ()
             
             this.container.classList.remove ("ghost-view")

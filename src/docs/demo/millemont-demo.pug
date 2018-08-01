@@ -59,24 +59,14 @@ script
         .demo-tab-content.tab-js-source
             pre.code.jsHigh.notranslate.border-light-grey.
                 var doc = document.querySelector ('object#millemont-demo'),
-                    map = new ImageMap.Map2d (doc.querySelector ("svg"), { background: "#background" })
+                    map = new ImageMap.Map2d (doc.querySelector ("svg"), { background: "#background" }),
+                    info = document.getElementById ("info")
+
+                function fn (region)  { info.innerHTML = region.id }
+                function ufn (region) { info.innerHTML = "&lt;br/>" }
                     
-                var oran = map.addRegion ("#orangerie")
-                var grch = map.addRegion ("#grchateau")
-                var ptch = map.addRegion ("#ptchateau")
-                var coch = map.addRegion ("#cochets")
-                var camp = map.addRegion ("#camping")
-
-                oran.HSelect.add (fn)
-                oran.HUnselect.add (ufn)
-
+                var camp = map.region.get ("camping")
                 grch.HSelect.add (fn)
                 grch.HUnselect.add (ufn)
                 
                 /* ... */
-
-                function fn (region)
-                { document.getElementById ("info").innerHTML = region.id }
-                    
-                function ufn (region)
-                { document.getElementById ("info").innerHTML = "&lt;br/>" }

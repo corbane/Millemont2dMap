@@ -779,14 +779,13 @@ function w3CodeColor() {
 function initMillemontDemo (obj)
 {
     var doc = obj.contentDocument,
-        map = new ImageMap.Map2d (doc.querySelector ("svg"), { background: "#background" })
+        map = new ImageMap.Map2d (doc.querySelector("svg"), { background: "#background" })
         
-    var oran = map.addRegion ("#orangerie")
-    var grch = map.addRegion ("#grchateau")
-    var ptch = map.addRegion ("#ptchateau")
-    var coch = map.addRegion ("#cochets")
-    var camp = map.addRegion ("#camping")
-    camp.infoPoint.offsetY (-200)
+    var oran = map.regions.get ("orangerie")
+    var grch = map.regions.get ("grchateau")
+    var ptch = map.regions.get ("ptchateau")
+    var coch = map.regions.get ("cochets")
+    var camp = map.regions.get ("camping")
 
     oran.HSelect.add (fn)
     grch.HSelect.add (fn)
@@ -820,37 +819,26 @@ function initMillemontDemo (obj)
     &lt;polygon id="cochets" points=" ... "/>
 &lt;/svg>
 </pre></div><div class="demo-tab-content tab-js-source"><pre class="code jsHigh notranslate border-light-grey">var doc = document.querySelector ('object#millemont-demo'),
-    map = new ImageMap.Map2d (doc.querySelector ("svg"), { background: "#background" })
+    map = new ImageMap.Map2d (doc.querySelector ("svg"), { background: "#background" }),
+    info = document.getElementById ("info")
+
+function fn (region)  { info.innerHTML = region.id }
+function ufn (region) { info.innerHTML = "&lt;br/>" }
     
-var oran = map.addRegion ("#orangerie")
-var grch = map.addRegion ("#grchateau")
-var ptch = map.addRegion ("#ptchateau")
-var coch = map.addRegion ("#cochets")
-var camp = map.addRegion ("#camping")
-
-oran.HSelect.add (fn)
-oran.HUnselect.add (ufn)
-
+var camp = map.region.get ("camping")
 grch.HSelect.add (fn)
 grch.HUnselect.add (ufn)
 
-/* ... */
-
-function fn (region)
-{ document.getElementById ("info").innerHTML = region.id }
-    
-function ufn (region)
-{ document.getElementById ("info").innerHTML = "&lt;br/>" }</pre></div></div></div><script>function initTurbineDemo(obj)
+/* ... */</pre></div></div></div><script>function initTurbineDemo(obj)
 {
 	var doc = obj.contentDocument,
-		map = new ImageMap.Map2d(doc.querySelector("svg"), { background: "#background" }),
-        backgroundImage = doc.querySelector("#background")
+		map = new ImageMap.Map2d(doc.querySelector("svg"), { background: "#background" })
         
-	var stat = map.addRegion("#stator")
-	var roto = map.addRegion("#rotor")
-	var shaf = map.addRegion("#shaft")
-	var gate = map.addRegion("#gate")
-    var blad = map.addRegion("#blades")
+	//var stat = map.addRegion("#stator")
+	//var roto = map.addRegion("#rotor")
+	//var shaf = map.addRegion("#shaft")
+	//var gate = map.addRegion("#gate")
+    //var blad = map.addRegion("#blades")
     
 	//map.zoomTo (shaf.pathElement.getBBox (), 500)
 	//map.zoomTo (blad.gElement.getBBox ())

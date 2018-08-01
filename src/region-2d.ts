@@ -92,6 +92,7 @@ module ImageMap
             g.appendChild (this.imageElement)
             g.appendChild (this.pathElement)
             g.appendChild (this.infoPoint.svg)
+            g.vElement = this
             this.gElement = g
 
             this.id = this.pathElement.id
