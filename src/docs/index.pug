@@ -1,22 +1,25 @@
-doctype html
-html(lang='en')
+extends layout/main.pug
 
-    head
-        meta(charset='UTF-8')
-        meta(name='viewport', content='width=device-width, initial-scale=1.0')
-        meta(http-equiv='X-UA-Compatible', content='ie=edge')
-        title Document
-        link(rel='stylesheet', href='image-map.css')
-        style
-            include style/index.css
+block style
+    link(rel='stylesheet', href='image-map.css')
 
-    body.w3
-        script(src='image-map.js')
-        script
-            include script/index.js
-            include script/w3codecolor.js
-        .container
-            include demo/millemont-demo.pug
-            include demo/turbine-demo.pug
-        script.
-            w3CodeColor()
+block script
+    script(src='image-map.js')
+
+block content
+    .container
+        .row
+            h2 Demos
+        .row
+            .col.s4
+                .card-2
+                    a(href="demo/millemont/")
+                        img(src="demo/millemont/thumb.jpg")
+                        .container.center
+                            p Millemont
+            .col.s4
+                .card-2
+                    a(href="demo/turbine/") 
+                        img(src="demo/turbine/thumb.jpg")
+                        .container.center
+                            p Turbine

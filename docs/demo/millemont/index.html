@@ -1,4 +1,13 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><title>ImageMap Documentation</title><link rel="stylesheet" href="image-map.css"><style>/* W3.CSS 4.10 February 2018 by Jan Egil and Borge Refsnes */
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><title>ImageMap Documentation</title><link rel="stylesheet" href="../../image-map.css"><style>.millemont-demo .demo2dmap {
+  width: 80%;
+  max-width: 800px;
+  margin: 30px auto;
+}
+.millemont-demo .demo2dmap object {
+  border: 8px dashed #F0F0F0;
+  transform: rotate(-1deg);
+}
+</style><style>/* W3.CSS 4.10 February 2018 by Jan Egil and Borge Refsnes */
 html{box-sizing:border-box}*,*:before,*:after{box-sizing:inherit}
 /* Extract from normalize.css by Nicolas Gallagher and Jonathan Neal git.io/normalize */
 html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{margin:0}
@@ -247,7 +256,32 @@ h2 {
   max-height: 400px;
   background-color: antiquewhite;
 }
-</style></head><body class="w3"><div class="container"><div class="row"><h2>Demos</h2></div><div class="row"><div class="col s4"><div class="card-2"><a href="demo/millemont/"><img src="demo/millemont/thumb.jpg"><div class="container center"><p>Millemont</p></div></a></div></div><div class="col s4"><div class="card-2"><a href="demo/turbine/"> <img src="demo/turbine/thumb.jpg"><div class="container center"><p>Turbine</p></div></a></div></div></div></div><script>
+</style></head><body class="w3"><div class="container" id="millemont-demo"><div class="row millemont-demo"><div class="col l8 m12"><div class="demo2dmap"><object data="map.svg" type="image/svg+xml" onload="init (this)"></object><div data-for="orangerie"><h2>L'orangerie</h2><p>- Repas</p><p>- Détente</p><p>- Music</p></div><div data-for="cochets"><h2>La cour des cochets</h2><p>- Ateliers</p><p>- Construction</p></div><div data-for="grchateau"><h2>Le petit château</h2><p>- Ateliers</p><p>- Work-shop</p></div><div data-for="ptchateau"><h2>Le grand château</h2></div><div data-for="camping"><h2>Le camping</h2></div></div></div><div class="col l4 m12"><h2>Selected region: <span id="info"><br></span></h2></div></div><div class="row"><div class="col s12" id="millemont-demo-source"><div class="bottombar cell hover-light-grey padding demo-tab-anchor" onclick="toggleTabDemo (event.currentTarget, 'tab-svg-source');">SVG</div><div class="bottombar cell hover-light-grey padding demo-tab-anchor" onclick="toggleTabDemo (event.currentTarget, 'tab-html-source');">HTML</div><div class="bottombar cell hover-light-grey padding demo-tab-anchor" onclick="toggleTabDemo (event.currentTarget, 'tab-js-source');">Javascript</div><div class="demo-tab-content tab-svg-source"><pre class="code htmlHigh notranslate border-light-grey">&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+&lt;?xml-stylesheet href="../build/image-map.css" type="text/css"?>
+&lt;svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0">
+    &lt;image width="8669.85" height="5782.73" x="0.01" y="-0" xlink:href="chateau-de-millemont_c.jpg"/>
+    &lt;polygon id="camping" points=" ... "/>
+    &lt;polygon id="ptchateau" points=" ... "/>
+    &lt;polygon id="grchateau" points=" ... "/>
+    &lt;polygon id="orangerie" points=" ... "/>
+    &lt;polygon id="cochets" points=" ... "/>
+&lt;/svg>
+</pre></div><div class="demo-tab-content tab-html-source"><pre class="code htmlHigh notranslate border-light-grey">&lt;object data="map.svg", type="image/svg+xml", onload="init (this)"></object>
+</pre></div><div class="demo-tab-content tab-js-source"><pre class="code jsHigh notranslate border-light-grey">function init (objElement)
+{
+    var map = new ImageMap.Map2d (objElement.contentDocument.querySelector ("svg")),
+        info = document.getElementById ("info")
+
+    function fn (region)  { info.innerHTML = region.id }
+    function ufn (region) { info.innerHTML = "&lt;br/>" }
+        
+    var camp = map.region.get ("camping")
+    grch.HSelect.add (fn)
+    grch.HUnselect.add (ufn)
+    
+    /* ... */
+}</pre></div></div></div></div><script>
 function toggleTabDemo(el, id)
 {
     var i, x, tablinks,
@@ -767,4 +801,41 @@ function w3CodeColor() {
       }  
       return [-1, -1, func];
     }  
-  }</script><script src="image-map.js"></script><script>w3CodeColor()</script></body></html>
+  }</script><script src="../../image-map.js"></script><script>
+function init (obj)
+{
+    var map = new ImageMap.Map2d (obj.contentDocument.querySelector("svg"))
+
+    map.addFilter (
+        "blur-filter",
+        `<feGaussianBlur in="SourceGraphic" stdDeviation="9" />`
+    )
+    
+    var oran = map.regions.get ("orangerie")
+    var grch = map.regions.get ("grchateau")
+    var ptch = map.regions.get ("ptchateau")
+    var coch = map.regions.get ("cochets")
+    var camp = map.regions.get ("camping")
+
+    camp.infoPoint.offsetY (-100)
+
+    oran.hSelect.add (fn)
+    grch.hSelect.add (fn)
+    ptch.hSelect.add (fn)
+    coch.hSelect.add (fn)
+    camp.hSelect.add (fn)
+
+    oran.hUnselect.add (ufn)
+    grch.hUnselect.add (ufn)
+    ptch.hUnselect.add (ufn)
+    coch.hUnselect.add (ufn)
+    camp.hUnselect.add (ufn)
+
+    console.log (map)
+
+    function fn (region)
+    { document.getElementById ("info").innerHTML = region.id }
+        
+    function ufn (region)
+    { document.getElementById ("info").innerHTML = "<br/>" }
+}</script><script>w3CodeColor()</script></body></html>

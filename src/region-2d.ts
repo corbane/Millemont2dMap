@@ -4,14 +4,24 @@
 
 module ImageMap
 {        
-    var tmp = document.createElementNS ("http://www.w3.org/2000/svg", "g")
-    tmp.innerHTML
-        = `<filter id="blur-filter" x="0" y="0">`
-        + `<feGaussianBlur in="SourceGraphic" stdDeviation="9" />`
-        + `</filter>`
-        
-    const blurFilterElement = tmp.children[0]
-
+    /**
+     * A region is defined in the SVG file.
+     * 
+     * The regions MUST have a unique id and MUST defined inside the root element (see [[Map2d]]).
+     * 
+     * Example:
+     * ```svg
+     * <?xml version="1.0" encoding="UTF-8"?>
+     * <!DOCTYPE svg ... >
+     * <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0">
+     *     <g id="id1">
+     *         <path d=" ... ">
+     *         <polygon points=" ... ">
+     *     <g>
+     *     <circle id="id2" .../>
+     * </svg>
+     * ```
+     */
     export class Region2d 
     {
         readonly id: string
@@ -22,12 +32,12 @@ module ImageMap
 
         readonly infoPoint: InfoPoint
 
-        readonly HMouseOver = new ImageMap.Event.Handle <(region: this, evt: MouseEvent) => void> ()
-        readonly HClick     = new ImageMap.Event.Handle <(region: this, evt: MouseEvent) => void> ()
-        readonly HSelect    = new ImageMap.Event.Handle <(region: this) => void> ()
-        readonly HUnselect  = new ImageMap.Event.Handle <(region: this) => void> ()
-        readonly HEnable    = new ImageMap.Event.Handle <(region: this) => void> ()
-        readonly HDisable   = new ImageMap.Event.Handle <(region: this) => void> ()
+        readonly hMouseOver = new ImageMap.Event.Handle <(region: this, evt: MouseEvent) => void> ()
+        readonly hClick     = new ImageMap.Event.Handle <(region: this, evt: MouseEvent) => void> ()
+        readonly hSelect    = new ImageMap.Event.Handle <(region: this) => void> ()
+        readonly hUnselect  = new ImageMap.Event.Handle <(region: this) => void> ()
+        readonly hEnable    = new ImageMap.Event.Handle <(region: this) => void> ()
+        readonly hDisable   = new ImageMap.Event.Handle <(region: this) => void> ()
 
         constructor (protected map: Map2d, el: SVGGraphicsElement|string)
         {
@@ -102,7 +112,7 @@ module ImageMap
 
         protected onClick (evt: MouseEvent)
         {
-            this.HClick.trigger (this, evt)
+            this.hClick.trigger (this, evt)
 
             if( this.isSelected () )
                 this.unselect ()
@@ -112,7 +122,7 @@ module ImageMap
 
         protected onMouseOver (evt: MouseEvent)
         {
-            this.HMouseOver.trigger (this, evt)
+            this.hMouseOver.trigger (this, evt)
         }
 
         //#region Selection
@@ -126,14 +136,14 @@ module ImageMap
         {
             this.gElement.classList.add ("selected")
             this.infoPoint.select ()
-            this.HSelect.trigger (this)
+            this.hSelect.trigger (this)
         }
 
         unselect ()
         {
             this.gElement.classList.remove ("selected")
             this.infoPoint.unselect ()
-            this.HUnselect.trigger (this)
+            this.hUnselect.trigger (this)
         }
 
         //#end region
@@ -148,13 +158,13 @@ module ImageMap
         enable ()
         {
             this.gElement.classList.remove ("disabled")
-            this.HEnable.trigger (this)
+            this.hEnable.trigger (this)
         }
 
         disable ()
         {
             this.gElement.classList.add ("disabled")
-            this.HDisable.trigger (this)
+            this.hDisable.trigger (this)
         }
 
         //#end region

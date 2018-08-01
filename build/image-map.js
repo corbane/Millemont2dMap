@@ -983,7 +983,7 @@ var ImageMap;
         InfoPoint.prototype.setPopup = function (popup) {
             if (popup)
                 popup.classList.add("mmmfest", "map-popup");
-            if (!ImageMap.runOnMobile)
+            if (!ImageMap.isRunningOnMobile)
                 this.popup = popup;
         };
         InfoPoint.prototype.showPopup = function (evt) {
@@ -1041,21 +1041,33 @@ var ImageMap;
 /// <reference path="event.ts" />
 var ImageMap;
 (function (ImageMap) {
-    var tmp = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    tmp.innerHTML
-        = "<filter id=\"blur-filter\" x=\"0\" y=\"0\">"
-            + "<feGaussianBlur in=\"SourceGraphic\" stdDeviation=\"9\" />"
-            + "</filter>";
-    var blurFilterElement = tmp.children[0];
+    /**
+     * A region is defined in the SVG file.
+     *
+     * The regions MUST have a unique id and MUST defined inside the root element (see [[Map2d]]).
+     *
+     * Example:
+     * ```svg
+     * <?xml version="1.0" encoding="UTF-8"?>
+     * <!DOCTYPE svg ... >
+     * <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0">
+     *     <g id="id1">
+     *         <path d=" ... ">
+     *         <polygon points=" ... ">
+     *     <g>
+     *     <circle id="id2" .../>
+     * </svg>
+     * ```
+     */
     var Region2d = /** @class */ (function () {
         function Region2d(map, el) {
             this.map = map;
-            this.HMouseOver = new ImageMap.Event.Handle();
-            this.HClick = new ImageMap.Event.Handle();
-            this.HSelect = new ImageMap.Event.Handle();
-            this.HUnselect = new ImageMap.Event.Handle();
-            this.HEnable = new ImageMap.Event.Handle();
-            this.HDisable = new ImageMap.Event.Handle();
+            this.hMouseOver = new ImageMap.Event.Handle();
+            this.hClick = new ImageMap.Event.Handle();
+            this.hSelect = new ImageMap.Event.Handle();
+            this.hUnselect = new ImageMap.Event.Handle();
+            this.hEnable = new ImageMap.Event.Handle();
+            this.hDisable = new ImageMap.Event.Handle();
             var doc = map.container.ownerDocument;
             // Initialize path
             this.pathElement = typeof el == "string" ? doc.querySelector(el) : el;
@@ -1108,14 +1120,14 @@ var ImageMap;
             this.gElement.addEventListener("mouseover", this.onMouseOver.bind(this));
         }
         Region2d.prototype.onClick = function (evt) {
-            this.HClick.trigger(this, evt);
+            this.hClick.trigger(this, evt);
             if (this.isSelected())
                 this.unselect();
             else
                 this.select();
         };
         Region2d.prototype.onMouseOver = function (evt) {
-            this.HMouseOver.trigger(this, evt);
+            this.hMouseOver.trigger(this, evt);
         };
         //#region Selection
         Region2d.prototype.isSelected = function () {
@@ -1124,12 +1136,12 @@ var ImageMap;
         Region2d.prototype.select = function () {
             this.gElement.classList.add("selected");
             this.infoPoint.select();
-            this.HSelect.trigger(this);
+            this.hSelect.trigger(this);
         };
         Region2d.prototype.unselect = function () {
             this.gElement.classList.remove("selected");
             this.infoPoint.unselect();
-            this.HUnselect.trigger(this);
+            this.hUnselect.trigger(this);
         };
         //#end region
         //#region Activation
@@ -1138,11 +1150,11 @@ var ImageMap;
         };
         Region2d.prototype.enable = function () {
             this.gElement.classList.remove("disabled");
-            this.HEnable.trigger(this);
+            this.hEnable.trigger(this);
         };
         Region2d.prototype.disable = function () {
             this.gElement.classList.add("disabled");
-            this.HDisable.trigger(this);
+            this.hDisable.trigger(this);
         };
         return Region2d;
     }());
@@ -1152,10 +1164,28 @@ var ImageMap;
 /// <reference path="event.ts" />
 var ImageMap;
 (function (ImageMap) {
-    //@ts-ignore
-    ImageMap.runOnMobile = md = new MobileDetect(navigator.userAgent).mobile();
+    /**
+     * Use [mobile-detect.js](https://github.com/hgoebl/mobile-detect.js)
+     */
+    ImageMap.isRunningOnMobile = new MobileDetect(navigator.userAgent).mobile();
+    /**
+     * A `map2d` is defined in a SVG file and it's correspond to the `svg` tag element
+     *
+     * The `map2d` elements MUST contain an` SVGImageElement` and a series of [[Region2d]] elements.
+     * This image define the maximum `viewBox` of the SVG do it must define the `x`, `y`, `width`, `height` attributes.
+     *
+     * Example:
+     * ```svg
+     * <?xml version="1.0" encoding="UTF-8"?>
+     * <!DOCTYPE svg [...] >
+     * <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0">
+     *     <image width="600" height="600" x="0" y="0" xlink:href=" ... "/>
+     *     ... see Region2d api ...
+     * </svg>
+     * ```
+     */
     var Map2d = /** @class */ (function () {
-        function Map2d(container, options) {
+        function Map2d(container) {
             this.container = container;
             //#region Regions
             this.regionsRegister = [];
@@ -1191,9 +1221,9 @@ var ImageMap;
         }
         Map2d.prototype.addRegion = function (el) {
             var region = new ImageMap.Region2d(this, el);
-            region.HSelect.add(this.onRegionSelected.bind(this, region));
-            region.HUnselect.add(this.onRegionUnelected.bind(this, region));
-            region.HMouseOver.add(this.onOverRegion.bind(this, region));
+            region.hSelect.add(this.onRegionSelected.bind(this, region));
+            region.hUnselect.add(this.onRegionUnelected.bind(this, region));
+            region.hMouseOver.add(this.onOverRegion.bind(this, region));
             this.regionsRegister.push(region);
             // Initialize popup info
             var popup = document.querySelector("[data-for=\"" + region.id + "\"]");
@@ -1231,12 +1261,12 @@ var ImageMap;
             if (this.selectedSape)
                 this.selectedSape.unselect();
             this.selectedSape = region;
-            if (ImageMap.runOnMobile)
+            if (ImageMap.isRunningOnMobile)
                 this.setGhostMode(region);
         };
         Map2d.prototype.onRegionUnelected = function (region) {
             this.selectedSape = null;
-            if (ImageMap.runOnMobile)
+            if (ImageMap.isRunningOnMobile)
                 this.setNormalMode();
         };
         Map2d.prototype.onBackgroundClick = function (evt) {

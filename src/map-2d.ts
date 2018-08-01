@@ -3,15 +3,35 @@
 
 module ImageMap
 {
-    //@ts-ignore
-    export const runOnMobile: boolean = md = new MobileDetect(navigator.userAgent).mobile ()
+    /** @hidden */
+    declare const MobileDetect: any
 
+    /**
+     * Use [mobile-detect.js](https://github.com/hgoebl/mobile-detect.js)
+     */
+    export const isRunningOnMobile: boolean = new MobileDetect(navigator.userAgent).mobile ()
+
+    /**
+     * A `map2d` is defined in a SVG file and it's correspond to the `svg` tag element
+     * 
+     * The `map2d` elements MUST contain an` SVGImageElement` and a series of [[Region2d]] elements.
+     * This image define the maximum `viewBox` of the SVG do it must define the `x`, `y`, `width`, `height` attributes.
+     * 
+     * Example:
+     * ```svg
+     * <?xml version="1.0" encoding="UTF-8"?>
+     * <!DOCTYPE svg [...] >
+     * <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0">
+     *     <image width="600" height="600" x="0" y="0" xlink:href=" ... "/>
+     *     ... see Region2d api ...
+     * </svg>
+     * ```
+     */
     export class Map2d
     {
-
         readonly background: SVGImageElement
 
-        constructor (readonly container: SVGSVGElement, options: Map2d.IOptions)
+        constructor (readonly container: SVGSVGElement)
         {
             var childs = container.ownerDocument.querySelectorAll ("svg > *")
             for( var i = 0 ; i < childs.length ; ++i )
@@ -57,9 +77,9 @@ module ImageMap
         {
             var region = new Region2d (this, el)
 
-            region.HSelect.add (this.onRegionSelected.bind (this, region))
-            region.HUnselect.add (this.onRegionUnelected.bind (this, region))
-            region.HMouseOver.add (this.onOverRegion.bind (this, region))
+            region.hSelect.add (this.onRegionSelected.bind (this, region))
+            region.hUnselect.add (this.onRegionUnelected.bind (this, region))
+            region.hMouseOver.add (this.onOverRegion.bind (this, region))
 
             this.regionsRegister.push (region)
 
@@ -120,7 +140,7 @@ module ImageMap
                 
             this.selectedSape = region
 
-            if( runOnMobile )
+            if( isRunningOnMobile )
                 this.setGhostMode (region)
         }
 
@@ -128,7 +148,7 @@ module ImageMap
         {
             this.selectedSape = null
 
-            if( runOnMobile )
+            if( isRunningOnMobile )
                 this.setNormalMode ()
         }
 
@@ -208,13 +228,5 @@ module ImageMap
         }
 
         //#endregion
-    }
-
-    export module Map2d
-    {
-        export interface IOptions
-        {
-            background: SVGImageElement | string
-        }
     }
 }

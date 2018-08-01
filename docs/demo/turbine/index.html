@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><title>ImageMap Documentation</title><link rel="stylesheet" href="image-map.css"><style>/* W3.CSS 4.10 February 2018 by Jan Egil and Borge Refsnes */
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><title>ImageMap Documentation</title><link rel="stylesheet" href="../../image-map.css"><style>/* W3.CSS 4.10 February 2018 by Jan Egil and Borge Refsnes */
 html{box-sizing:border-box}*,*:before,*:after{box-sizing:inherit}
 /* Extract from normalize.css by Nicolas Gallagher and Jonathan Neal git.io/normalize */
 html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{margin:0}
@@ -247,7 +247,24 @@ h2 {
   max-height: 400px;
   background-color: antiquewhite;
 }
-</style></head><body class="w3"><div class="container"><div class="row"><h2>Demos</h2></div><div class="row"><div class="col s4"><div class="card-2"><a href="demo/millemont/"><img src="demo/millemont/thumb.jpg"><div class="container center"><p>Millemont</p></div></a></div></div><div class="col s4"><div class="card-2"><a href="demo/turbine/"> <img src="demo/turbine/thumb.jpg"><div class="container center"><p>Turbine</p></div></a></div></div></div></div><script>
+</style></head><body class="w3"><div class="container"><div class="row turbine-demo"><div class="col s6"><h2>Clip with multiple shape</h2></div><div class="col s6"><div class="demo2dmap"><object data="map.svg" type="image/svg+xml" onload="init (this)"></object></div></div></div><div class="row"><div class="col s12"><div class="bottombar cell hover-light-grey padding demo-tab-anchor" onclick="toggleTabDemo (event.currentTarget, 'tab-svg-source');">SVG</div><div class="demo-tab-content tab-svg-source"><pre class="code htmlHigh notranslate border-light-grey">&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;!DOCTYPE svg ... >
+&lt;?xml-stylesheet href=" ... " type="text/css"?>
+&lt;svg ... >
+    &lt;image ... />
+    &lt;g id="stator">
+        &lt;path d=" ... "/>
+        &lt;path d=" ... "/>
+    &lt;/g>
+    &lt;g id="blades">
+        &lt;path d=" ... "/>
+        &lt;polygon points=" ... "/>
+    &lt;/g>
+    &lt;g id="rotor">
+        &lt;path d=" ... "/>
+    &lt;/g>
+    ...
+&lt;/svg></pre></div></div></div></div><script>
 function toggleTabDemo(el, id)
 {
     var i, x, tablinks,
@@ -767,4 +784,38 @@ function w3CodeColor() {
       }  
       return [-1, -1, func];
     }  
-  }</script><script src="image-map.js"></script><script>w3CodeColor()</script></body></html>
+  }</script><script src="../../image-map.js"></script><script>function init (obj)
+{
+	var doc = obj.contentDocument,
+		map = new ImageMap.Map2d(doc.querySelector("svg"))
+
+	map.addFilter (
+		"blur-filter",
+		`<feConvolveMatrix
+			bias="0.10000000000000001"
+			result="result0"
+			preserveAlpha="true"
+			targetY="1"
+			targetX="1"
+			divisor="0.01"
+			in="SourceGraphic"
+			kernelMatrix="1 1 1 1 -8 1 1 1 1"
+			order="3 3"
+			id="feConvolveMatrix1188"/>
+		<feColorMatrix
+			values="-0.15 -0.3 -0.05 0 1 -0.15 -0.3 -0.05 0 1 -0.15 -0.3 -0.05 0 1 0 0 0 1 0"
+			result="result3"/>`
+	)
+
+	//var stat = map.addRegion("#stator")
+	//var roto = map.addRegion("#rotor")
+	//var shaf = map.addRegion("#shaft")
+	//var gate = map.addRegion("#gate")
+    //var blad = map.addRegion("#blades")
+    
+	//map.zoomTo (shaf.pathElement.getBBox (), 500)
+	//map.zoomTo (blad.gElement.getBBox ())
+
+	//map.addStylesheet ()
+}
+</script><script>w3CodeColor()</script></body></html>
