@@ -57,7 +57,7 @@ module ImageMap
 
             // Initialize svg container
 
-            this.container.classList.add ("mmmfest", "map2d")
+            this.container.classList.add ("image-map")
             this.container.setAttribute ("width", "100%")
             this.container.setAttribute ("height", "100%")
             this.restoreZoom ()
@@ -184,14 +184,32 @@ module ImageMap
             this.container.classList.add ("normal-view")
         }
 
+        disableOverEvents ()
+        {
+            //@ts-ignore
+            isRunningOnMobile = true
+        }
+
+        enableOverMouse ()
+        {
+            //@ts-ignore
+            isRunningOnMobile = false
+        }
+
         protected onOverRegion (region: Region2d, evt: MouseEvent)
         {
+            if( isRunningOnMobile )
+                return
+                
             this.background.onmouseover = this.onOverBackground.bind (this)
             this.setGhostMode (region)
         }
 
         protected onOverBackground (region: Region2d, evt: MouseEvent)
         {
+            if( isRunningOnMobile )
+                return
+
             this.background.onmouseover = null
             this.setNormalMode ()
         }

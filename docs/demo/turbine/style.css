@@ -1,0 +1,36 @@
+#turbine-demo .image-map-container {
+  width: 80%;
+  max-height: 400px;
+  margin: 30px auto;
+}
+#turbine-demo .image-map-container object {
+  max-height: 400px;
+  background-color: antiquewhite;
+}
+svg.image-map .background {
+  opacity: 1;
+  filter: url(#blur-filter);
+  transition: all 0.5s;
+}
+svg.image-map .region2d .path {
+  opacity: 0;
+  stroke: aqua;
+  stroke-width: 50;
+  fill: transparent;
+}
+svg.image-map .region2d .image {
+  opacity: 0;
+  transition: all 0.25s;
+}
+svg.image-map .region2d:hover .path {
+  opacity: 1;
+}
+svg.image-map .region2d.selected .path {
+  opacity: 0;
+}
+svg.image-map .region2d.selected .image {
+  opacity: 1 !important;
+}
+svg.image-map.ghost-view .region2d:hover .image {
+  opacity: 0.5;
+}

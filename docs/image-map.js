@@ -1214,7 +1214,7 @@ var ImageMap;
                 }
             }
             // Initialize svg container
-            this.container.classList.add("mmmfest", "map2d");
+            this.container.classList.add("image-map");
             this.container.setAttribute("width", "100%");
             this.container.setAttribute("height", "100%");
             this.restoreZoom();
@@ -1294,10 +1294,14 @@ var ImageMap;
             this.container.classList.add("normal-view");
         };
         Map2d.prototype.onOverRegion = function (region, evt) {
+            if (ImageMap.isRunningOnMobile)
+                return;
             this.background.onmouseover = this.onOverBackground.bind(this);
             this.setGhostMode(region);
         };
         Map2d.prototype.onOverBackground = function (region, evt) {
+            if (ImageMap.isRunningOnMobile)
+                return;
             this.background.onmouseover = null;
             this.setNormalMode();
         };
