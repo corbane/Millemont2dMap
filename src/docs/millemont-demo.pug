@@ -2,33 +2,81 @@
 script
     include millemont-demo.js
     
-.demo2dmap.millemont
+.row.millemont-demo
+    .col.s8
+        .demo2dmap
 
-    object(data='chateau-de-millemont_c.svg', type='image/svg+xml', onload='initMillemontDemo (this)')
+            object(data='chateau-de-millemont_c.svg', type='image/svg+xml', onload='initMillemontDemo (this)')
 
-    div(data-for='orangerie')
-        h1 L'orangerie
-        p - Repas
-        p - Détente
-        p - Music
+            div(data-for='orangerie')
+                h2 L'orangerie
+                p - Repas
+                p - Détente
+                p - Music
 
-    div(data-for='cochets')
-        h1 La cour des cochets
-        p - Ateliers
-        p - Construction
+            div(data-for='cochets')
+                h2 La cour des cochets
+                p - Ateliers
+                p - Construction
 
-    div(data-for='grchateau')
-        h1 Le petit château
-        p - Ateliers
-        p - Work-shop
+            div(data-for='grchateau')
+                h2 Le petit château
+                p - Ateliers
+                p - Work-shop
 
-    div(data-for='ptchateau')
-        h1 Le grand château
+            div(data-for='ptchateau')
+                h2 Le grand château
 
-    div(data-for='camping')
-        p
-        b Le camping
+            div(data-for='camping')
+                h2 Le camping
 
-    h2 Selected region: 
-        span#info
-            br
+    .col.s4
+        h2 Selected region: 
+            span#info
+                br
+            
+
+.row
+    .col.s12#millemont-demo-source
+
+        .bottombar.cell.hover-light-grey.padding.demo-tab-anchor(onclick="toggleTabDemo (event.currentTarget, 'tab-svg-source');") SVG
+        .bottombar.cell.hover-light-grey.padding.demo-tab-anchor(onclick="toggleTabDemo (event.currentTarget, 'tab-js-source');") Javascript
+        
+        .demo-tab-content.tab-svg-source
+            pre.code.htmlHigh.notranslate.border-light-grey.
+                &lt;?xml version="1.0" encoding="UTF-8"?>
+                &lt;!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+                &lt;?xml-stylesheet href="../build/image-map.css" type="text/css"?>
+                &lt;svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0">
+                    &lt;image id="background" width="8669.85" height="5782.73" x="0.01" y="-0" xlink:href="chateau-de-millemont_c.jpg"/>
+                    &lt;polygon id="camping" points=" ... "/>
+                    &lt;polygon id="ptchateau" points=" ... "/>
+                    &lt;polygon id="grchateau" points=" ... "/>
+                    &lt;polygon id="orangerie" points=" ... "/>
+                    &lt;polygon id="cochets" points=" ... "/>
+                &lt;/svg>
+        
+        .demo-tab-content.tab-js-source
+            pre.code.jsHigh.notranslate.border-light-grey.
+                var doc = document.querySelector ('object#millemont-demo'),
+                    map = new ImageMap.Map2d (doc.querySelector ("svg"), { background: "#background" })
+                    
+                var oran = map.addRegion ("#orangerie")
+                var grch = map.addRegion ("#grchateau")
+                var ptch = map.addRegion ("#ptchateau")
+                var coch = map.addRegion ("#cochets")
+                var camp = map.addRegion ("#camping")
+
+                oran.HSelect.add (fn)
+                oran.HUnselect.add (ufn)
+
+                grch.HSelect.add (fn)
+                grch.HUnselect.add (ufn)
+                
+                /* ... */
+
+                function fn (region)
+                { document.getElementById ("info").innerHTML = region.id }
+                    
+                function ufn (region)
+                { document.getElementById ("info").innerHTML = "&lt;br/>" }

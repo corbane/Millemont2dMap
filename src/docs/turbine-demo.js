@@ -12,4 +12,6 @@ function initTurbineDemo(obj)
     
 	//map.zoomTo (shaf.pathElement.getBBox (), 500)
 	//map.zoomTo (blad.gElement.getBBox ())
+
+	//map.addStylesheet ()
 }

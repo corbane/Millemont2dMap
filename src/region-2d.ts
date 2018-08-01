@@ -10,7 +10,6 @@ module ImageMap
         + `<feGaussianBlur in="SourceGraphic" stdDeviation="9" />`
         + `</filter>`
         
-    var blurFilterExists = false
     const blurFilterElement = tmp.children[0]
 
     export class Region2d 
@@ -30,6 +29,8 @@ module ImageMap
         readonly HEnable    = new ImageMap.Event.Handle <(region: this) => void> ()
         readonly HDisable   = new ImageMap.Event.Handle <(region: this) => void> ()
 
+        private blurFilterExists = false
+
         constructor (protected map: Map2d, el: SVGGraphicsElement|string)
         {
             var doc = map.container.ownerDocument
@@ -39,10 +40,10 @@ module ImageMap
             this.pathElement = typeof el == "string" ? doc.querySelector (el) : el
             this.pathElement.classList.add ("path")
 
-            if( !blurFilterExists )
+            if( !this.blurFilterExists )
             {
-                map.container.appendChild (blurFilterElement)
-                blurFilterExists = true
+                map.container.appendChild (blurFilterElement.cloneNode (true))
+                this.blurFilterExists = true
             }
 
             // Create clipping path

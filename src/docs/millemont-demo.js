@@ -2,8 +2,7 @@
 function initMillemontDemo (obj)
 {
     var doc = obj.contentDocument,
-        map = new ImageMap.Map2d (doc.querySelector ("svg"), { background: "#background" }),
-        backgroundImage = doc.querySelector ("#background")
+        map = new ImageMap.Map2d (doc.querySelector ("svg"), { background: "#background" })
         
     var oran = map.addRegion ("#orangerie")
     var grch = map.addRegion ("#grchateau")

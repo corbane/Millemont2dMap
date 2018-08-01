@@ -1046,7 +1046,6 @@ var ImageMap;
         = "<filter id=\"blur-filter\" x=\"0\" y=\"0\">"
             + "<feGaussianBlur in=\"SourceGraphic\" stdDeviation=\"9\" />"
             + "</filter>";
-    var blurFilterExists = false;
     var blurFilterElement = tmp.children[0];
     var Region2d = /** @class */ (function () {
         function Region2d(map, el) {
@@ -1057,13 +1056,14 @@ var ImageMap;
             this.HUnselect = new ImageMap.Event.Handle();
             this.HEnable = new ImageMap.Event.Handle();
             this.HDisable = new ImageMap.Event.Handle();
+            this.blurFilterExists = false;
             var doc = map.container.ownerDocument;
             // Initialize path
             this.pathElement = typeof el == "string" ? doc.querySelector(el) : el;
             this.pathElement.classList.add("path");
-            if (!blurFilterExists) {
-                map.container.appendChild(blurFilterElement);
-                blurFilterExists = true;
+            if (!this.blurFilterExists) {
+                map.container.appendChild(blurFilterElement.cloneNode(true));
+                this.blurFilterExists = true;
             }
             // Create clipping path
             var clipPath = doc.createElementNS("http://www.w3.org/2000/svg", "clipPath");
@@ -1173,11 +1173,7 @@ var ImageMap;
             this.container.classList.add("mmmfest", "map2d");
             this.container.setAttribute("width", "100%");
             this.container.setAttribute("height", "100%");
-            //this.container.viewBox.baseVal.x = this.background.x.baseVal.value
-            //this.container.viewBox.baseVal.y = this.background.y.baseVal.value
-            //this.container.viewBox.baseVal.width = this.background.width.baseVal.value
-            //this.container.viewBox.baseVal.height = this.background.height.baseVal.value 
-            this.zoomTo(this.background.getBBox());
+            this.restoreZoom();
         }
         Map2d.prototype.addRegion = function (el) {
             var region = new ImageMap.Region2d(this, el);
@@ -1198,6 +1194,9 @@ var ImageMap;
             this.container.viewBox.baseVal.y = b.y - margin;
             this.container.viewBox.baseVal.width = b.width + margin * 2;
             this.container.viewBox.baseVal.height = b.height + margin * 2;
+        };
+        Map2d.prototype.restoreZoom = function () {
+            this.zoomTo(this.background.getBBox());
         };
         //#region Selection
         Map2d.prototype.select = function (region) {
