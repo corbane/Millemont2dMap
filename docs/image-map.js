@@ -1056,15 +1056,12 @@ var ImageMap;
             this.HUnselect = new ImageMap.Event.Handle();
             this.HEnable = new ImageMap.Event.Handle();
             this.HDisable = new ImageMap.Event.Handle();
-            this.blurFilterExists = false;
             var doc = map.container.ownerDocument;
             // Initialize path
             this.pathElement = typeof el == "string" ? doc.querySelector(el) : el;
             this.pathElement.classList.add("path");
-            if (!this.blurFilterExists) {
-                map.container.appendChild(blurFilterElement.cloneNode(true));
-                this.blurFilterExists = true;
-            }
+            /*if( !doc.getElementById ("blur-filter") )
+                map.container.appendChild (blurFilterElement.cloneNode (true))*/
             // Create clipping path
             var clipPath = doc.createElementNS("http://www.w3.org/2000/svg", "clipPath");
             clipPath.id = "clip-" + this.pathElement.id;
@@ -1161,12 +1158,16 @@ var ImageMap;
     var Map2d = /** @class */ (function () {
         function Map2d(container, options) {
             this.container = container;
+            //#region Regions
             this.regionsRegister = [];
             this.regions = {
                 add: this.addRegion.bind(this),
                 get: this.getRegion.bind(this)
             };
             this.selectedSape = null;
+            //#endregion
+            //#region Filters
+            this.filtersRegister = {};
             var childs = container.ownerDocument.querySelectorAll("svg > *");
             for (var i = 0; i < childs.length; ++i) {
                 var name = childs[i].tagName.toLowerCase();
@@ -1208,6 +1209,7 @@ var ImageMap;
                 return el.parentElement.vElement;
             return null;
         };
+        //#endregion
         Map2d.prototype.zoomTo = function (b, margin) {
             if (margin === void 0) { margin = 0; }
             this.container.viewBox.baseVal.x = b.x - margin;
@@ -1269,6 +1271,25 @@ var ImageMap;
         Map2d.prototype.onOverBackground = function (region, evt) {
             this.background.onmouseover = null;
             this.setNormalMode();
+        };
+        Map2d.prototype.addFilter = function (id, def) {
+            if (def === void 0) { def = null; }
+            var doc = this.container.ownerDocument;
+            if (def) {
+                var defs = this.container.querySelector("defs");
+                if (!defs) {
+                    defs = doc.createElementNS("http://www.w3.org/2000/svg", "defs");
+                    this.container.appendChild(defs);
+                }
+                var filter = doc.createElementNS("http://www.w3.org/2000/svg", "filter");
+                filter.id = id;
+                filter.innerHTML = def;
+                defs.appendChild(filter);
+                this.filtersRegister[id] = def;
+            }
+            else {
+                //TODO default & global filters
+            }
         };
         return Map2d;
     }());

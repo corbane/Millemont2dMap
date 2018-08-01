@@ -3,6 +3,11 @@ function initMillemontDemo (obj)
 {
     var doc = obj.contentDocument,
         map = new ImageMap.Map2d (doc.querySelector("svg"), { background: "#background" })
+
+    map.addFilter (
+        "blur-filter",
+        `<feGaussianBlur in="SourceGraphic" stdDeviation="9" />`
+    )
         
     var oran = map.regions.get ("orangerie")
     var grch = map.regions.get ("grchateau")

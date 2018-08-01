@@ -29,8 +29,6 @@ module ImageMap
         readonly HEnable    = new ImageMap.Event.Handle <(region: this) => void> ()
         readonly HDisable   = new ImageMap.Event.Handle <(region: this) => void> ()
 
-        private blurFilterExists = false
-
         constructor (protected map: Map2d, el: SVGGraphicsElement|string)
         {
             var doc = map.container.ownerDocument
@@ -40,11 +38,8 @@ module ImageMap
             this.pathElement = typeof el == "string" ? doc.querySelector (el) : el
             this.pathElement.classList.add ("path")
 
-            if( !this.blurFilterExists )
-            {
-                map.container.appendChild (blurFilterElement.cloneNode (true))
-                this.blurFilterExists = true
-            }
+            /*if( !doc.getElementById ("blur-filter") )
+                map.container.appendChild (blurFilterElement.cloneNode (true))*/
 
             // Create clipping path
 

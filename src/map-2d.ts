@@ -9,7 +9,6 @@ module ImageMap
 
     export class Map2d
     {
-        private regionsRegister: Region2d [] = []
 
         readonly background: SVGImageElement
 
@@ -44,6 +43,10 @@ module ImageMap
             this.container.setAttribute ("height", "100%")
             this.restoreZoom ()
         }
+
+        //#region Regions
+
+        private regionsRegister: Region2d [] = []
 
         readonly regions =
         {
@@ -80,6 +83,8 @@ module ImageMap
 
             return null
         }
+
+        //#endregion
 
         zoomTo (b: SVGRect, margin = 0)
         {
@@ -170,6 +175,37 @@ module ImageMap
         {
             this.background.onmouseover = null
             this.setNormalMode ()
+        }
+
+        //#endregion
+    
+        //#region Filters
+
+        filtersRegister: { [key: string]: string } = {}
+
+        private addFilter (id: string, def: string = null)
+        {
+            var doc = this.container.ownerDocument
+            if( def )
+            {
+                var defs = this.container.querySelector ("defs") as SVGDefsElement
+                if( !defs )
+                {
+                    defs = doc.createElementNS ("http://www.w3.org/2000/svg", "defs")
+                    this.container.appendChild (defs)
+                }
+
+                var filter = doc.createElementNS ("http://www.w3.org/2000/svg", "filter")
+                filter.id = id
+                filter.innerHTML = def
+                defs.appendChild (filter)
+                
+                this.filtersRegister[id] = def
+            }
+            else
+            {
+                //TODO default & global filters
+            }
         }
 
         //#endregion
