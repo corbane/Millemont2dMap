@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "outDir": "build",
+        "outFile": "build/image-map.js",
+        "sourceMap": true,
+        "allowJs": true
+    },
+    "exclude": [
+        "node_modules"
+    ],
+    "files": [
+        "src/index.ts"
+    ]
+}

@@ -1148,7 +1148,6 @@ var ImageMap;
     }());
     ImageMap.Region2d = Region2d;
 })(ImageMap || (ImageMap = {}));
-/// <reference path="vendor/mobile-detect.js" />
 /// <reference path="region-2d.ts" />
 /// <reference path="event.ts" />
 var ImageMap;
@@ -1296,4 +1295,6 @@ var ImageMap;
     ImageMap.Map2d = Map2d;
 })(ImageMap || (ImageMap = {}));
 /// <reference path="map-2d.ts" />
+/// <reference path="vendor/mobile-detect.js" />
+/// <reference path="image-map.ts" />
 //# sourceMappingURL=image-map.js.map

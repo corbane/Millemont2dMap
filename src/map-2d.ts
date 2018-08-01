@@ -1,4 +1,3 @@
-/// <reference path="vendor/mobile-detect.js" />
 /// <reference path="region-2d.ts" />
 /// <reference path="event.ts" />
 
@@ -199,7 +198,7 @@ module ImageMap
                 filter.id = id
                 filter.innerHTML = def
                 defs.appendChild (filter)
-                
+
                 this.filtersRegister[id] = def
             }
             else
