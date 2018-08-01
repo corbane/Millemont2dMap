@@ -1039,18 +1039,19 @@ var ImageMap;
     (function (Event) {
         var Handle = /** @class */ (function () {
             function Handle() {
-                var _this = this;
                 this.registers = [];
-                this.trigger = (function () {
+                this.trigger = function () {
                     var args = [];
                     for (var _i = 0; _i < arguments.length; _i++) {
                         args[_i] = arguments[_i];
                     }
                     var e_1, _a;
+                    if (!this.enable)
+                        return;
                     try {
-                        for (var _b = __values(_this.registers), _c = _b.next(); !_c.done; _c = _b.next()) {
+                        for (var _b = __values(this.registers), _c = _b.next(); !_c.done; _c = _b.next()) {
                             var fn = _c.value;
-                            fn.apply(_this, args);
+                            fn.apply(this, arguments);
                         }
                     }
                     catch (e_1_1) { e_1 = { error: e_1_1 }; }
@@ -1060,7 +1061,8 @@ var ImageMap;
                         }
                         finally { if (e_1) throw e_1.error; }
                     }
-                });
+                };
+                this.enabled = true;
             }
             Handle.prototype.add = function (callback) {
                 this.registers.push(callback);
@@ -1070,6 +1072,12 @@ var ImageMap;
                 if (idx < 0 || this.registers.length < idx + 1)
                     return;
                 this.registers.splice(idx, 1);
+            };
+            Handle.prototype.disable = function () {
+                this.enabled = false;
+            };
+            Handle.prototype.enable = function () {
+                this.enabled = true;
             };
             return Handle;
         }());
@@ -1101,7 +1109,6 @@ var ImageMap;
      */
     var Region2d = /** @class */ (function () {
         function Region2d(map, el) {
-            var e_2, _a;
             this.map = map;
             this.hMouseOver = new ImageMap.Event.Handle();
             this.hClick = new ImageMap.Event.Handle();
@@ -1109,29 +1116,61 @@ var ImageMap;
             this.hUnselect = new ImageMap.Event.Handle();
             this.hEnable = new ImageMap.Event.Handle();
             this.hDisable = new ImageMap.Event.Handle();
-            var doc = map.container.ownerDocument;
-            // Initialize path
-            this.pathElement = typeof el == "string" ? doc.querySelector(el) : el;
+            //#endregion
+            //#region Selection
+            this.selected = false;
+            this.initGlobalElement();
+            this.initContourPath(el);
+            this.initClippedImage();
+            this.initInfoPoint();
+            this.gElement.appendChild(this.clipPath);
+            this.gElement.appendChild(this.imageElement);
+            this.gElement.appendChild(this.pathElement);
+            this.gElement.appendChild(this.infoPoint.svg);
+            this.map.container.appendChild(this.gElement);
+            this.id = this.pathElement.id;
+            this.initSelection();
+            this.updateDisplay();
+        }
+        Region2d.prototype.initGlobalElement = function () {
+            //@ts-ignore
+            this.gElement = this.map.container.ownerDocument.createElementNS("http://www.w3.org/2000/svg", "g");
+            this.gElement.classList.add("region2d");
+            this.gElement.vElement = this;
+            this.gElement.addEventListener("mouseover", this.onMouseOver.bind(this));
+        };
+        Region2d.prototype.onMouseOver = function (evt) {
+            this.hMouseOver.trigger(this, evt);
+        };
+        Region2d.prototype.initContourPath = function (el) {
+            //@ts-ignore
+            this.pathElement = typeof el == "string" ? map.container.ownerDocument.querySelector(el) : el;
             this.pathElement.classList.add("path");
-            /*if( !doc.getElementById ("blur-filter") )
-                map.container.appendChild (blurFilterElement.cloneNode (true))*/
-            // Create clipping path
-            var clipPath = doc.createElementNS("http://www.w3.org/2000/svg", "clipPath");
-            clipPath.id = "clip-" + this.pathElement.id;
+        };
+        Region2d.prototype.initClippedImage = function () {
+            var e_2, _a;
+            var clipid = "clip-" + this.pathElement.id; //!!!!!!!!!!
+            //@ts-ignore
+            this.imageElement = this.map.background.cloneNode(true);
+            this.imageElement.setAttribute("class", "image");
+            this.imageElement.setAttribute("clip-path", "url(#" + clipid + ")");
+            var doc = this.map.container.ownerDocument;
+            this.clipPath = doc.createElementNS("http://www.w3.org/2000/svg", "clipPath");
+            this.clipPath.id = clipid;
             var p;
             switch (this.pathElement.tagName) {
                 case "polygon":
                 case "polyline":
                     p = doc.createElementNS("http://www.w3.org/2000/svg", "polyline");
                     p.setAttributeNS(null, "points", this.pathElement.getAttributeNS(null, "points"));
-                    clipPath.appendChild(p);
+                    this.clipPath.appendChild(p);
                     break;
                 case "g":
                     try {
                         //@ts-ignore
                         for (var _b = __values(this.pathElement.children), _c = _b.next(); !_c.done; _c = _b.next()) {
                             var e = _c.value;
-                            clipPath.appendChild(e.cloneNode(true));
+                            this.clipPath.appendChild(e.cloneNode(true));
                         }
                     }
                     catch (e_2_1) { e_2 = { error: e_2_1 }; }
@@ -1145,55 +1184,42 @@ var ImageMap;
                 default:
                     throw "Not implemented";
             }
-            // Create info point
+        };
+        Region2d.prototype.initInfoPoint = function () {
+            //@ts-ignore
             this.infoPoint = new ImageMap.InfoPoint();
             var bbox = this.pathElement.getBBox();
             this.infoPoint.setPosition(bbox.x + bbox.width / 2, bbox.y + bbox.height / 2);
             this.infoPoint.setScale(10);
-            // Create clipping background
-            this.imageElement = this.map.background.cloneNode(true);
-            this.imageElement.setAttribute("class", "image");
-            this.imageElement.setAttribute("clip-path", "url(#" + clipPath.id + ")");
-            // Create master group element
-            var g = doc.createElementNS("http://www.w3.org/2000/svg", "g");
-            g.classList.add("region2d");
-            g.appendChild(clipPath);
-            g.appendChild(this.imageElement);
-            g.appendChild(this.pathElement);
-            g.appendChild(this.infoPoint.svg);
-            g.vElement = this;
-            this.gElement = g;
-            this.id = this.pathElement.id;
-            map.container.appendChild(g);
-            // Initialize event callbacks
+        };
+        Region2d.prototype.initSelection = function () {
             this.gElement.addEventListener("click", this.onClick.bind(this));
-            this.gElement.addEventListener("mouseover", this.onMouseOver.bind(this));
-        }
-        Region2d.prototype.onClick = function (evt) {
-            this.hClick.trigger(this, evt);
-            if (this.isSelected())
-                this.unselect();
-            else
-                this.select();
         };
-        Region2d.prototype.onMouseOver = function (evt) {
-            this.hMouseOver.trigger(this, evt);
-        };
-        //#region Selection
         Region2d.prototype.isSelected = function () {
-            return this.gElement.classList.contains("selected");
+            return this.selected;
         };
         Region2d.prototype.select = function () {
-            this.gElement.classList.add("selected");
-            this.infoPoint.select();
-            this.hSelect.trigger(this);
+            if (!this.selected)
+                this.onClick({ ctrlKey: false, shiftKey: false });
         };
         Region2d.prototype.unselect = function () {
-            this.gElement.classList.remove("selected");
-            this.infoPoint.unselect();
-            this.hUnselect.trigger(this);
+            if (this.selected)
+                this.onClick({ ctrlKey: false, shiftKey: false });
         };
-        //#end region
+        Region2d.prototype.onClick = function (evt) {
+            this.hClick.trigger(this, evt);
+            if (this.selected) {
+                this.selected = false;
+                this.updateDisplay();
+                this.hUnselect.trigger(this, evt);
+            }
+            else {
+                this.selected = true;
+                this.updateDisplay();
+                this.hSelect.trigger(this, evt);
+            }
+        };
+        //#endregion
         //#region Activation
         Region2d.prototype.isEnabled = function () {
             return !this.gElement.classList.contains("disabled");
@@ -1205,6 +1231,22 @@ var ImageMap;
         Region2d.prototype.disable = function () {
             this.gElement.classList.add("disabled");
             this.hDisable.trigger(this);
+        };
+        //#endregion
+        //#region display
+        Region2d.prototype.updateDisplay = function () {
+            if (this.selected) {
+                this.gElement.classList.add("selected");
+                this.infoPoint.select();
+            }
+            else {
+                this.gElement.classList.remove("selected");
+                this.infoPoint.unselect();
+            }
+            if (this.isEnabled)
+                this.gElement.classList.remove("disabled");
+            else
+                this.gElement.classList.add("disabled");
         };
         return Region2d;
     }());
@@ -1338,7 +1380,13 @@ var ImageMap;
             this.container = container;
             //#region Regions
             this.regions = new ImageMap.RegionCollection(this);
-            this.selectedSape = null;
+            //#endregion
+            //#region Selection
+            this.selectedSapes = [];
+            this.HSelectionChanged = new ImageMap.Event.Handle();
+            //#endregion
+            //#region Display
+            this.displayMode = "normal";
             /**
              * Use [mobile-detect.js](https://github.com/hgoebl/mobile-detect.js)
              */
@@ -1346,7 +1394,7 @@ var ImageMap;
             //#endregion
             //#region Filters
             this.filtersRegister = {};
-            this.regions.HRegionAdded.add(this.onRegionAdded.bind(this));
+            this.initRegions();
             // Initialize children of SVG
             var childs = container.ownerDocument.querySelectorAll("svg > *");
             for (var i = 0; i < childs.length; ++i) {
@@ -1370,11 +1418,14 @@ var ImageMap;
             this.container.setAttribute("height", "100%");
             this.restoreZoom();
         }
+        Map2d.prototype.initRegions = function () {
+            this.regions.HRegionAdded.add(this.onRegionAdded.bind(this));
+        };
         Map2d.prototype.onRegionAdded = function (region) {
-            region.hSelect.add(this.onRegionSelected.bind(this, region));
-            region.hUnselect.add(this.onRegionUnelected.bind(this, region));
-            region.hMouseOver.add(this.onOverRegion.bind(this, region));
-            this.setNormalMode();
+            region.hSelect.add(this.onRegionSelected.bind(this));
+            region.hUnselect.add(this.onRegionUnelected.bind(this));
+            region.hMouseOver.add(this.onOverRegion.bind(this));
+            this.setDisplayMode("normal");
         };
         //#endregion
         //#region Zoom
@@ -1388,70 +1439,109 @@ var ImageMap;
         Map2d.prototype.restoreZoom = function () {
             this.zoomTo(this.background.getBBox());
         };
-        //#endregion
-        //#region Selection
         Map2d.prototype.select = function (region) {
             region.select();
         };
-        Map2d.prototype.unselect = function () {
-            if (this.selectedSape)
-                this.selectedSape.unselect();
+        Map2d.prototype.unselect = function (region) {
+            if (region === void 0) { region = null; }
+            if (region)
+                region.unselect();
+            else {
+                while (this.selectedSapes.length)
+                    (this.selectedSapes.splice(0, 1))[0].unselect();
+            }
         };
-        Map2d.prototype.onRegionSelected = function (region) {
-            if (this.selectedSape)
-                this.selectedSape.unselect();
-            this.selectedSape = region;
-            if (this.mobileMode)
-                this.setGhostMode(region);
+        Map2d.prototype.getSelected = function () {
+            return this.selectedSapes.slice(0);
         };
-        Map2d.prototype.onRegionUnelected = function (region) {
-            this.selectedSape = null;
+        Map2d.prototype.onRegionSelected = function (region, evt) {
+            if (!(evt.shiftKey || evt.ctrlKey)) {
+                while (this.selectedSapes.length) {
+                    var r = (this.selectedSapes.splice(0, 1))[0];
+                    if (r != region)
+                        r.unselect();
+                }
+            }
+            this.selectedSapes.push(region);
             if (this.mobileMode)
-                this.setNormalMode();
+                this.setDisplayMode("ghost");
+            else
+                this.updateDisplay();
+        };
+        Map2d.prototype.onRegionUnelected = function (region, evt) {
+            var i = this.selectedSapes.indexOf(region);
+            if (i == -1)
+                return;
+            this.selectedSapes.splice(i, 1);
+            if (!(evt.shiftKey || evt.ctrlKey)) {
+                while (this.selectedSapes.length)
+                    (this.selectedSapes.splice(0, 1))[0].unselect();
+            }
+            if (this.mobileMode)
+                this.setDisplayMode("normal");
+            else
+                this.updateDisplay();
         };
         Map2d.prototype.onBackgroundClick = function (evt) {
             if (evt.target != this.background)
                 return;
             this.unselect();
         };
-        //#endregion
-        //#region display mode
-        Map2d.prototype.setGhostMode = function (sh) {
-            var e_5, _a;
-            try {
-                for (var _b = __values(this.regions), _c = _b.next(); !_c.done; _c = _b.next()) {
-                    var s = _c.value;
-                    s.disable();
-                }
-            }
-            catch (e_5_1) { e_5 = { error: e_5_1 }; }
-            finally {
-                try {
-                    if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
-                }
-                finally { if (e_5) throw e_5.error; }
-            }
-            sh.enable();
+        Map2d.prototype.setDisplayMode = function (mode) {
+            this.displayMode = mode;
             this.container.classList.remove("normal-view");
-            this.container.classList.add("ghost-view");
-        };
-        Map2d.prototype.setNormalMode = function () {
-            var e_6, _a;
-            try {
-                for (var _b = __values(this.regions), _c = _b.next(); !_c.done; _c = _b.next()) {
-                    var s = _c.value;
-                    s.disable();
-                }
-            }
-            catch (e_6_1) { e_6 = { error: e_6_1 }; }
-            finally {
-                try {
-                    if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
-                }
-                finally { if (e_6) throw e_6.error; }
-            }
             this.container.classList.remove("ghost-view");
-            this.container.classList.add("normal-view");
+            if (mode == "ghost")
+                this.container.classList.add("ghost-view");
+            else
+                this.container.classList.add("normal-view");
+            this.updateDisplay();
+        };
+        Map2d.prototype.updateDisplay = function () {
+            var e_5, _a, e_6, _b, e_7, _c;
+            if (this.displayMode == "ghost") {
+                try {
+                    for (var _d = __values(this.regions), _e = _d.next(); !_e.done; _e = _d.next()) {
+                        var s = _e.value;
+                        s.disable();
+                    }
+                }
+                catch (e_5_1) { e_5 = { error: e_5_1 }; }
+                finally {
+                    try {
+                        if (_e && !_e.done && (_a = _d.return)) _a.call(_d);
+                    }
+                    finally { if (e_5) throw e_5.error; }
+                }
+                try {
+                    for (var _f = __values(this.selectedSapes), _g = _f.next(); !_g.done; _g = _f.next()) {
+                        var r = _g.value;
+                        r.enable();
+                    }
+                }
+                catch (e_6_1) { e_6 = { error: e_6_1 }; }
+                finally {
+                    try {
+                        if (_g && !_g.done && (_b = _f.return)) _b.call(_f);
+                    }
+                    finally { if (e_6) throw e_6.error; }
+                }
+            }
+            else {
+                try {
+                    for (var _h = __values(this.regions), _j = _h.next(); !_j.done; _j = _h.next()) {
+                        var s = _j.value;
+                        s.disable();
+                    }
+                }
+                catch (e_7_1) { e_7 = { error: e_7_1 }; }
+                finally {
+                    try {
+                        if (_j && !_j.done && (_c = _h.return)) _c.call(_h);
+                    }
+                    finally { if (e_7) throw e_7.error; }
+                }
+            }
         };
         /**
          * Active or desactive the mouse over event for mobile view.
@@ -1464,13 +1554,13 @@ var ImageMap;
             if (this.mobileMode)
                 return;
             this.background.onmouseover = this.onOverBackground.bind(this);
-            this.setGhostMode(region);
+            this.setDisplayMode("ghost");
         };
         Map2d.prototype.onOverBackground = function (region, evt) {
             if (this.mobileMode)
                 return;
             this.background.onmouseover = null;
-            this.setNormalMode();
+            this.setDisplayMode("normal");
         };
         Map2d.prototype.addFilter = function (id, def) {
             if (def === void 0) { def = null; }

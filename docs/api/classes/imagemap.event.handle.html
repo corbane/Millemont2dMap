@@ -92,6 +92,7 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="imagemap.event.handle.html#enabled" class="tsd-kind-icon">enabled</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="imagemap.event.handle.html#registers" class="tsd-kind-icon">registers</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="imagemap.event.handle.html#trigger" class="tsd-kind-icon">trigger</a></li>
 							</ul>
@@ -100,6 +101,8 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="imagemap.event.handle.html#add" class="tsd-kind-icon">add</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="imagemap.event.handle.html#disable" class="tsd-kind-icon">disable</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="imagemap.event.handle.html#enable" class="tsd-kind-icon">enable</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="imagemap.event.handle.html#remove" class="tsd-kind-icon">remove</a></li>
 							</ul>
 						</section>
@@ -109,22 +112,32 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
+					<a name="enabled" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> enabled</h3>
+					<div class="tsd-signature tsd-kind-icon">enabled<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;true</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/cf98890/src/event.ts#L30">event.ts:30</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
 					<a name="registers" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> registers</h3>
 					<div class="tsd-signature tsd-kind-icon">registers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">F</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/5177f18/src/event.ts#L5">event.ts:5</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/cf98890/src/event.ts#L5">event.ts:5</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="trigger" class="tsd-anchor"></a>
 					<h3>trigger</h3>
-					<div class="tsd-signature tsd-kind-icon">trigger<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">F</span><span class="tsd-signature-symbol"> =&nbsp;&lt;F&gt; ((...args): any &#x3D;&gt;{for( var fn of this.registers )fn.apply (this, args)})</span></div>
+					<div class="tsd-signature tsd-kind-icon">trigger<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">F</span><span class="tsd-signature-symbol"> =&nbsp;&lt;F&gt; function (...args): any{if( !this.enable )returnfor( var fn of this.registers )fn.apply (this, arguments)}</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/5177f18/src/event.ts#L21">event.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/cf98890/src/event.ts#L21">event.ts:21</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -141,7 +154,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/5177f18/src/event.ts#L7">event.ts:7</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/cf98890/src/event.ts#L7">event.ts:7</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -155,6 +168,40 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="disable" class="tsd-anchor"></a>
+					<h3>disable</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">disable<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/cf98890/src/event.ts#L32">event.ts:32</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="enable" class="tsd-anchor"></a>
+					<h3>enable</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">enable<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/cf98890/src/event.ts#L37">event.ts:37</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
 					<a name="remove" class="tsd-anchor"></a>
 					<h3>remove</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
@@ -164,7 +211,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/5177f18/src/event.ts#L13">event.ts:13</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/cf98890/src/event.ts#L13">event.ts:13</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -201,6 +248,9 @@
 						<a href="imagemap.event.handle.html" class="tsd-kind-icon">Handle</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
+								<a href="imagemap.event.handle.html#enabled" class="tsd-kind-icon">enabled</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
 								<a href="imagemap.event.handle.html#registers" class="tsd-kind-icon">registers</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
@@ -208,6 +258,12 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="imagemap.event.handle.html#add" class="tsd-kind-icon">add</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="imagemap.event.handle.html#disable" class="tsd-kind-icon">disable</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="imagemap.event.handle.html#enable" class="tsd-kind-icon">enable</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="imagemap.event.handle.html#remove" class="tsd-kind-icon">remove</a>

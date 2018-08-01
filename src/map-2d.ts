@@ -36,7 +36,7 @@ module ImageMap
         {
             // Initialize regions collection
             
-            this.regions.HRegionAdded.add (this.onRegionAdded.bind (this))
+            this.initRegions ()
             
             // Initialize children of SVG
 
@@ -73,12 +73,17 @@ module ImageMap
 
         readonly regions = new RegionCollection (this)
 
+        initRegions ()
+        {
+            this.regions.HRegionAdded.add (this.onRegionAdded.bind (this))
+        }
+
         private onRegionAdded (region: Region2d)
         {
-            region.hSelect.add (this.onRegionSelected.bind (this, region))
-            region.hUnselect.add (this.onRegionUnelected.bind (this, region))
-            region.hMouseOver.add (this.onOverRegion.bind (this, region))
-            this.setNormalMode ()
+            region.hSelect.add (this.onRegionSelected.bind (this))
+            region.hUnselect.add (this.onRegionUnelected.bind (this))
+            region.hMouseOver.add (this.onOverRegion.bind (this))
+            this.setDisplayMode ("normal")
         }
 
         //#endregion
@@ -102,36 +107,69 @@ module ImageMap
 
         //#region Selection
 
+        private selectedSapes: Region2d[] = []
+
+        HSelectionChanged = new Event.Handle <(map: this) => void> ()
+
         select (region: Region2d)
         {
             region.select ()
         }
 
-        unselect ()
+        unselect (region: Region2d = null)
         {
-            if( this.selectedSape )
-                this.selectedSape.unselect ()
+            if( region )
+                region.unselect ()
+            else
+            {
+                while( this.selectedSapes.length )
+                    (this.selectedSapes.splice (0, 1))[0].unselect ()
+            }
         }
 
-        private selectedSape: Region2d = null
-
-        private onRegionSelected (region: Region2d)
+        getSelected (): Region2d []
         {
-            if( this.selectedSape )
-                this.selectedSape.unselect ()
+            return this.selectedSapes.slice (0)
+        }
+
+        private onRegionSelected (region: Region2d, evt: MouseEvent)
+        {
+            if( !(evt.shiftKey || evt.ctrlKey) )
+            {
+                while( this.selectedSapes.length )
+                {
+                    var r = (this.selectedSapes.splice (0, 1))[0]
+                    if( r != region )
+                        r.unselect ()
+                }
+            }
                 
-            this.selectedSape = region
+            this.selectedSapes.push (region)
 
             if( this.mobileMode )
-                this.setGhostMode (region)
+                this.setDisplayMode ("ghost")
+            else
+                this.updateDisplay ()
         }
 
-        private onRegionUnelected (region: Region2d)
+        private onRegionUnelected (region: Region2d, evt: MouseEvent)
         {
-            this.selectedSape = null
+            var i = this.selectedSapes.indexOf (region)
+            if( i == -1 )
+                return
+            
+            this.selectedSapes.splice (i, 1)
+
+            if( !(evt.shiftKey || evt.ctrlKey) )
+            {
+                while( this.selectedSapes.length )
+                    (this.selectedSapes.splice (0, 1))[0].unselect ()
+            }
 
             if( this.mobileMode )
-                this.setNormalMode ()
+                this.setDisplayMode ("normal")
+            else
+                this.updateDisplay ()
         }
 
         protected onBackgroundClick (evt: Event)
@@ -144,26 +182,40 @@ module ImageMap
 
         //#endregion
 
-        //#region display mode
+        //#region Display
 
-        setGhostMode (sh: Region2d)
+        protected displayMode: "ghost" | "normal" = "normal"
+
+        setDisplayMode (mode: "ghost" | "normal")
         {
-            for( var s of this.regions )
-                s.disable ()
-
-            sh.enable ()
+            this.displayMode = mode
 
             this.container.classList.remove ("normal-view")
-            this.container.classList.add ("ghost-view")
+            this.container.classList.remove ("ghost-view")
+
+            if( mode == "ghost" )
+                this.container.classList.add ("ghost-view")
+            else
+                this.container.classList.add ("normal-view")
+
+            this.updateDisplay ()
         }
 
-        setNormalMode ()
+        updateDisplay ()
         {
-            for( var s of this.regions )
-                s.disable ()
-            
-            this.container.classList.remove ("ghost-view")
-            this.container.classList.add ("normal-view")
+            if( this.displayMode == "ghost" )
+            {
+                for( var s of this.regions )
+                    s.disable ()
+
+                for( var r of this.selectedSapes )
+                    r.enable ()
+            }
+            else
+            {
+                for( var s of this.regions )
+                    s.disable ()
+            }
         }
 
         /**
@@ -185,7 +237,7 @@ module ImageMap
                 return
                 
             this.background.onmouseover = this.onOverBackground.bind (this)
-            this.setGhostMode (region)
+            this.setDisplayMode ("ghost")
         }
 
         protected onOverBackground (region: Region2d, evt: MouseEvent)
@@ -194,7 +246,7 @@ module ImageMap
                 return
 
             this.background.onmouseover = null
-            this.setNormalMode ()
+            this.setDisplayMode ("normal")
         }
 
         //#endregion

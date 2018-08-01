@@ -26,35 +26,86 @@ module ImageMap
     {
         readonly id: string
 
-        readonly gElement: SVGGElement
-        readonly pathElement: SVGGraphicsElement
-        readonly imageElement: SVGImageElement
-
-        readonly infoPoint: InfoPoint
-
         readonly hMouseOver = new ImageMap.Event.Handle <(region: this, evt: MouseEvent) => void> ()
         readonly hClick     = new ImageMap.Event.Handle <(region: this, evt: MouseEvent) => void> ()
-        readonly hSelect    = new ImageMap.Event.Handle <(region: this) => void> ()
-        readonly hUnselect  = new ImageMap.Event.Handle <(region: this) => void> ()
+        readonly hSelect    = new ImageMap.Event.Handle <(region: this, evt: MouseEvent) => void> ()
+        readonly hUnselect  = new ImageMap.Event.Handle <(region: this, evt: MouseEvent) => void> ()
         readonly hEnable    = new ImageMap.Event.Handle <(region: this) => void> ()
         readonly hDisable   = new ImageMap.Event.Handle <(region: this) => void> ()
 
-        constructor (protected map: Map2d, el: SVGGraphicsElement|string)
+        constructor (readonly map: Map2d, el: SVGGraphicsElement|string)
         {
-            var doc = map.container.ownerDocument
+            this.initGlobalElement ()
+            this.initContourPath (el)
+            this.initClippedImage ()
+            this.initInfoPoint ()
 
-            // Initialize path
+            this.gElement.appendChild (this.clipPath)
+            this.gElement.appendChild (this.imageElement)
+            this.gElement.appendChild (this.pathElement)
+            this.gElement.appendChild (this.infoPoint.svg)
 
-            this.pathElement = typeof el == "string" ? doc.querySelector (el) : el
+            this.map.container.appendChild (this.gElement)
+            
+            this.id = this.pathElement.id
+
+            this.initSelection ()
+
+            this.updateDisplay ()
+        }
+
+        //#region Global element
+
+        readonly gElement: SVGGElement
+
+        private initGlobalElement ()
+        {
+            //@ts-ignore
+            this.gElement = this.map.container.ownerDocument.createElementNS ("http://www.w3.org/2000/svg", "g")
+            this.gElement.classList.add ("region2d")
+            this.gElement.vElement = this
+            this.gElement.addEventListener ("mouseover", this.onMouseOver.bind (this))
+        }
+
+        protected onMouseOver (evt: MouseEvent)
+        {
+            this.hMouseOver.trigger (this, evt)
+        }
+
+        //#endregion
+
+        //#region Contour path
+
+        readonly pathElement: SVGGraphicsElement
+
+        private initContourPath (el: SVGGraphicsElement|string)
+        {
+            //@ts-ignore
+            this.pathElement = typeof el == "string" ? map.container.ownerDocument.querySelector (el) : el
             this.pathElement.classList.add ("path")
+        }
 
-            /*if( !doc.getElementById ("blur-filter") )
-                map.container.appendChild (blurFilterElement.cloneNode (true))*/
+        //#endregion
 
-            // Create clipping path
+        //#region Clipped image
 
-            var clipPath = doc.createElementNS ("http://www.w3.org/2000/svg", "clipPath")
-            clipPath.id = "clip-" + this.pathElement.id
+        readonly imageElement: SVGImageElement
+
+        private clipPath: SVGClipPathElement
+
+        private initClippedImage ()
+        {
+            var clipid = "clip-" + this.pathElement.id //!!!!!!!!!!
+
+            //@ts-ignore
+            this.imageElement = this.map.background.cloneNode (true) as SVGImageElement
+            this.imageElement.setAttribute ("class", "image")
+            this.imageElement.setAttribute ("clip-path", `url(#${clipid})`)
+
+            var doc = this.map.container.ownerDocument
+
+            this.clipPath = doc.createElementNS ("http://www.w3.org/2000/svg", "clipPath")
+            this.clipPath.id = clipid
 
             var p: SVGElement
             switch (this.pathElement.tagName)
@@ -63,90 +114,82 @@ module ImageMap
             case "polyline":
                 p = doc.createElementNS ("http://www.w3.org/2000/svg", "polyline")
                 p.setAttributeNS (null, "points", this.pathElement.getAttributeNS (null, "points"))
-                clipPath.appendChild (p)
+                this.clipPath.appendChild (p)
                 break
         
             case "g":
                 //@ts-ignore
                 for( var e of this.pathElement.children )
-                    clipPath.appendChild (e.cloneNode (true))
+                this.clipPath.appendChild (e.cloneNode (true))
                 break
                 
             default:
                 throw "Not implemented"
             }
-            
-            // Create info point
+        }
 
+        //#endregion
+
+        //#region Info
+
+        readonly infoPoint: InfoPoint
+
+        private initInfoPoint ()
+        {
+            //@ts-ignore
             this.infoPoint = new InfoPoint ()
             var bbox = this.pathElement.getBBox ()
             this.infoPoint.setPosition (bbox.x + bbox.width / 2, bbox.y + bbox.height / 2)
             this.infoPoint.setScale (10)
+        }
 
-            // Create clipping background
-            
-            this.imageElement = this.map.background.cloneNode (true) as SVGImageElement
-            this.imageElement.setAttribute ("class", "image")
-            this.imageElement.setAttribute ("clip-path", `url(#${clipPath.id})`)
+        //#endregion
 
-            // Create master group element
+        //#region Selection
+        
+        protected selected = false
 
-            var g = doc.createElementNS ("http://www.w3.org/2000/svg", "g")
-            g.classList.add ("region2d")
-            g.appendChild (clipPath)
-            g.appendChild (this.imageElement)
-            g.appendChild (this.pathElement)
-            g.appendChild (this.infoPoint.svg)
-            g.vElement = this
-            this.gElement = g
-
-            this.id = this.pathElement.id
-
-            map.container.appendChild (g)
-
-            // Initialize event callbacks
-
+        private initSelection ()
+        {
             this.gElement.addEventListener ("click", this.onClick.bind (this))
-            this.gElement.addEventListener ("mouseover", this.onMouseOver.bind (this))
+        }
+
+        isSelected (): boolean
+        {
+            return this.selected
+        }
+
+        select ()
+        {
+            if( !this.selected )
+                this.onClick ({ctrlKey: false, shiftKey: false} as MouseEvent)
+        }
+
+        unselect ()
+        {
+            if( this.selected )
+                this.onClick ({ctrlKey: false, shiftKey: false} as MouseEvent)
         }
 
         protected onClick (evt: MouseEvent)
         {
             this.hClick.trigger (this, evt)
 
-            if( this.isSelected () )
-                this.unselect ()
+            if( this.selected )
+            {
+                this.selected = false
+                this.updateDisplay ()
+                this.hUnselect.trigger (this, evt)
+            }
             else
-                this.select ()
+            {
+                this.selected = true
+                this.updateDisplay ()
+                this.hSelect.trigger (this, evt)
+            }
         }
 
-        protected onMouseOver (evt: MouseEvent)
-        {
-            this.hMouseOver.trigger (this, evt)
-        }
-
-        //#region Selection
-        
-        isSelected (): boolean
-        {
-            return this.gElement.classList.contains ("selected")
-        }
-
-        select ()
-        {
-            this.gElement.classList.add ("selected")
-            this.infoPoint.select ()
-            this.hSelect.trigger (this)
-        }
-
-        unselect ()
-        {
-            this.gElement.classList.remove ("selected")
-            this.infoPoint.unselect ()
-            this.hUnselect.trigger (this)
-        }
-
-        //#end region
+        //#endregion
 
         //#region Activation
 
@@ -167,6 +210,29 @@ module ImageMap
             this.hDisable.trigger (this)
         }
 
-        //#end region
+        //#endregion
+
+        //#region display
+
+        updateDisplay ()
+        {
+            if( this.selected )
+            {
+                this.gElement.classList.add ("selected")
+                this.infoPoint.select ()
+            }
+            else
+            {
+                this.gElement.classList.remove ("selected")
+                this.infoPoint.unselect ()
+            }
+
+            if( this.isEnabled )
+                this.gElement.classList.remove ("disabled")
+            else
+                this.gElement.classList.add ("disabled")
+        }
+
+        //#endregion
     }
 }

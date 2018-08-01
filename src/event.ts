@@ -4,13 +4,13 @@ module ImageMap.Event
     {
         private registers: F[] = []
 
-        public add (callback: F): number
+        add (callback: F): number
         {
             this.registers.push (callback)
             return this.registers.length - 1
         }
 
-        public remove (idx: number)
+        remove (idx: number)
         {
             if( idx < 0 || this.registers.length < idx + 1 )
                 return
@@ -18,10 +18,25 @@ module ImageMap.Event
             this.registers.splice(idx, 1)
         }
         
-        public trigger = <F> ((...args): any =>
+        trigger = <F> function (...args): any
         {
+            if( !this.enable )
+                return
+                
             for( var fn of this.registers )
-                fn.apply (this, args)
-        })
+                fn.apply (this, arguments)
+        }
+
+        private enabled = true
+
+        disable ()
+        {
+            this.enabled = false
+        }
+
+        enable ()
+        {
+            this.enabled = true
+        }
     }
 }

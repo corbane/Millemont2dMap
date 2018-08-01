@@ -483,16 +483,18 @@ body {
 </style></head><body class="w3"><div class="container"><h1>Demos</h1><div class="row"><div class="col l3 s4"><div class="card-2"><a href="demo/millemont/"><img src="demo/millemont/thumb.jpg" width="100%"><div class="container center"><p>Millemont</p></div></a></div></div><div class="col l3 s4"><div class="card-2"><a href="demo/turbine/"><img src="demo/turbine/thumb.jpg" width="100%"><div class="container center"><p>Millemont</p></div></a></div></div></div></div><script>function toggleTabDemo(el, id)	
 {	
     var i, x, tablinks,	
-        parent = el.parentElement,	
+        parent = document.querySelector (".demo-source-tab-content"),	
         content = parent.getElementsByClassName(id)[0],	
         isOpen = content.style.display == "block"	
     	
-	x = parent.getElementsByClassName("demo-tab-content")	
+	x = parent.getElementsByClassName("demo-source-tab")	
 	for (i = 0; i < x.length; i++)	
-		x[i].style.display = "none"	
- 	tablinks = parent.getElementsByClassName("demo-tab-anchor")	
+        x[i].style.display = "none"	
+        
+ 	tablinks = el.parentElement.getElementsByClassName("demo-tab-anchor")	
 	for (i = 0; i < tablinks.length; i++)	
-		tablinks[i].classList.remove ("border-amber")	
+        tablinks[i].classList.remove ("border-amber")	
+        
      if( !isOpen )	
     {	
         content.style.display = "block"	

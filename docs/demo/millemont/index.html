@@ -791,27 +791,25 @@ function init (obj)
         `<feGaussianBlur in="SourceGraphic" stdDeviation="9" />`
     )
     
-    var oran = map.regions.get ("orangerie")
-    var grch = map.regions.get ("grchateau")
-    var ptch = map.regions.get ("ptchateau")
-    var coch = map.regions.get ("cochets")
     var camp = map.regions.get ("camping")
-
     camp.infoPoint.offsetY (-100)
+
+    function printSelected (region)
+    {
+        var ids = []
+        for( var r of region.map.getSelected () )
+            ids.push (r.id)
+
+        document.getElementById ("info").innerHTML = ids.join (", ")
+    }
 
     for( var region of map.regions )
     {
-        region.hSelect.add (fn)
-        region.hUnselect.add (ufn)
+        region.hSelect.add (printSelected)
+        region.hUnselect.add (printSelected)
     }
-
+    
     console.log (map)
-
-    function fn (region)
-    { document.getElementById ("info").innerHTML = region.id }
-        
-    function ufn (region)
-    { document.getElementById ("info").innerHTML = "<br/>" }
 }
 
 function toggleMobileView ()
