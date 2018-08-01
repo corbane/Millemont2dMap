@@ -1,7 +1,7 @@
 
 default: less ts
 
-all: default doc demo api
+all: default doc api
 
 ts:
 	tsc
@@ -13,6 +13,7 @@ doc:
 	lessc  src/docs/style/index.less  src/docs/style/index.css
 	pug  --out docs/  src/docs/index.pug
 	cp  build/*  docs/
+	make demo
 
 demo:
 	lessc  src/docs/demo/millemont/style.less  src/docs/demo/millemont/style.css
