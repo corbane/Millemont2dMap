@@ -100,8 +100,10 @@ module ImageMap
 
             var b = this.svg.getBoundingClientRect () as DOMRect,
                 offsetY = this.popup.getBoundingClientRect().height / 2 - b.height / 2
-            this.popup.style.left = (b.left + b.width + 20) + "px"
-            this.popup.style.top = (window.screenY + b.top + offsetY) + "px"
+            //this.popup.style.left = (b.left + b.width + 20) + "px"
+            //this.popup.style.top = (window.screenY + b.top + offsetY) + "px"
+            this.popup.style.left = evt.pageX + "px"
+            this.popup.style.top = evt.pageY + "px"
         }
 
         hidePopup ()
