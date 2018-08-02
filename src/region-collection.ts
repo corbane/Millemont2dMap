@@ -49,7 +49,7 @@ module ImageMap
 
         get (id: string): Region2d
         {
-            var el = this.parent.container.getElementById (id)
+            var el = this.parent.root.getElementById (id)
             if( el )
                 return el.parentElement.vElement as Region2d
 

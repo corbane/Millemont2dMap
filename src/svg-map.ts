@@ -13,61 +13,95 @@ module ImageMap
     export const isRunningOnMobile: boolean = new MobileDetect(navigator.userAgent).mobile ()
 
     /**
-     * A `map2d` is defined in a SVG file and it's correspond to the `svg` tag element
+     * A `SvgMap` is defined in a SVG file and it's correspond to the `svg` tag element
      * 
-     * The `map2d` elements MUST contain an` SVGImageElement` and a series of [[Region2d]] elements.
-     * This image define the maximum `viewBox` of the SVG do it must define the `x`, `y`, `width`, `height` attributes.
+     * The `SvgMap` elements contain an `SVGImageElement` and a series of [[Region2d]] elements.
+     * 
+     * This image define the maximum `viewBox` of the SVG, so it MUST define the `x`, `y`, `width`, `height` attributes.
+     * 
+     * By default this image must have the id equal to `"background"`, ~~you can change the query selector with [[SvgMap.Options.backgroundSelector]]~~
      * 
      * Example:
      * ```svg
      * <?xml version="1.0" encoding="UTF-8"?>
      * <!DOCTYPE svg [...] >
      * <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0">
-     *     <image width="600" height="600" x="0" y="0" xlink:href=" ... "/>
+     *     <image id="background" width="600" height="600" x="0" y="0" xlink:href=" ... "/>
      *     ... see Region2d api ...
      * </svg>
      * ```
      */
     export class SvgMap
     {
+        readonly options = new SvgMap.Options ()
+
         readonly background: SVGImageElement
 
-        constructor (readonly container: SVGSVGElement)
+        readonly container: HTMLObjectElement
+        readonly doc: Document
+        readonly root: SVGSVGElement
+
+        constructor (object: HTMLObjectElement)
         {
-            this.initRegions ()
+            if( object.tagName.toLowerCase () != "object" )
+                throw "The container object MUST be an `<object/>` element :("
+
+            this.container = object
+            this.container.style.padding = "0"
+
+            this.doc = object.contentDocument
+
+            this.root = this.doc.querySelector ("svg")
+            this.root.classList.add ("image-map")
+            this.root.setAttribute ("width", "100%")
+            this.root.setAttribute ("height", "100%")
             
-            // Initialize children of SVG
-
-            var childs = container.ownerDocument.querySelectorAll ("svg > *")
-            for( var i = 0 ; i < childs.length ; ++i )
-            {
-                var name = childs[i].tagName.toLowerCase () 
-                if( name == "script" )
-                    continue // Live reload inject a script element
-
-                if( name == "image" )
-                {
-                    // Initialize background
-                    this.background = childs[i] as SVGImageElement
-                    this.background.classList.add ("background")
-                    this.background.onclick = this.onBackgroundClick.bind (this)
-                }
-                else
-                {
-                    // Initialize regions
-                    this.regions.add (childs[i] as SVGGraphicsElement)
-                }
-            }
-
+            this.initBackground ()
+            this.initRegions ()
             this.initFilters ()
 
-            // Initialize svg container
-
-            this.container.classList.add ("image-map")
-            this.container.setAttribute ("width", "100%")
-            this.container.setAttribute ("height", "100%")
             this.zoomAll ()
         }
+
+        /** @hidden */
+        getClientRectFor (el: string|SVGGraphicsElement): DOMRect
+        {
+            var a = this.container.getBoundingClientRect () as DOMRect,
+                margin = Number.parseFloat (window.getComputedStyle (this.container).borderWidth)
+            
+            if( typeof el == "string" )
+                var b = this.doc.querySelector (el).getBoundingClientRect () as DOMRect
+            else
+                var b = el.getBoundingClientRect () as DOMRect
+            //var b = this.doc.querySelector ("#cochets").getBoundingClientRect () as DOMRect
+
+            return {
+                width  : b.width,
+                height : b.height,
+                x      : a.x + margin + b.x,
+                y      : a.y + margin + b.y,
+                left   : a.x + margin + b.x,
+                right  : a.x + margin + b.x + b.width,
+                top    : a.y + margin + b.y,
+                bottom : a.y + margin + b.y + b.height
+            }
+        }
+
+        //#region Background
+
+        private initBackground ()
+        {
+            var el = this.doc.querySelector (this.options.backgroundSelector)
+            if( !el )
+                throw "Can not find the background element"
+                
+            //@ts-ignore
+            this.background = el as SVGImageElement
+            this.background.classList.add ("background")
+            this.background.onclick = this.onBackgroundClick.bind (this)
+        }
+
+        //#endregion
 
         //#region Regions
 
@@ -76,6 +110,11 @@ module ImageMap
         private initRegions ()
         {
             this.regions.HRegionAdded.add (this.onRegionAdded.bind (this))
+
+            var els = this.doc.querySelectorAll (this.options.regionsSelector)
+            //@ts-ignore
+            for( var el of els )
+                this.regions.add (el as SVGGraphicsElement)
         }
 
         private onRegionAdded (region: Region2d)
@@ -92,10 +131,10 @@ module ImageMap
 
         zoomTo (b: SVGRect, margin = 0)
         {
-            this.container.viewBox.baseVal.x = b.x - margin
-            this.container.viewBox.baseVal.y = b.y - margin
-            this.container.viewBox.baseVal.width = b.width + margin*2
-            this.container.viewBox.baseVal.height = b.height + margin*2
+            this.root.viewBox.baseVal.x = b.x - margin
+            this.root.viewBox.baseVal.y = b.y - margin
+            this.root.viewBox.baseVal.width = b.width + margin*2
+            this.root.viewBox.baseVal.height = b.height + margin*2
         }
 
         zoomAll ()
@@ -195,13 +234,13 @@ module ImageMap
 
             this.displayMode = mode
 
-            this.container.classList.remove ("normal-view")
-            this.container.classList.remove ("ghost-view")
+            this.root.classList.remove ("normal-view")
+            this.root.classList.remove ("ghost-view")
 
             if( mode == "ghost" )
-                this.container.classList.add ("ghost-view")
+                this.root.classList.add ("ghost-view")
             else
-                this.container.classList.add ("normal-view")
+                this.root.classList.add ("normal-view")
 
             this.updateDisplay ()
         }
@@ -268,16 +307,26 @@ module ImageMap
 
         private initFilters ()
         {
-            var defs = this.container.querySelector ("defs") as SVGDefsElement
+            var defs = this.root.querySelector ("defs") as SVGDefsElement
             if( !defs )
             {
-                defs = this.container.ownerDocument.createElementNS ("http://www.w3.org/2000/svg", "defs")
-                this.container.appendChild (defs)
+                defs = this.doc.createElementNS ("http://www.w3.org/2000/svg", "defs")
+                this.root.appendChild (defs)
             }
             this.defsElement = defs
+
+            var filters = this.doc.querySelectorAll (this.options.filtersSelector)
+            //@ts-ignore
+            for( var f of filters )
+            {
+                if( !f.id )
+                    continue
+
+                //this.addFilter (f.id, f.innerHTML)
+            }
         }
 
-        addFilter (id: string, def: string = null)
+        /*addFilter (id: string, def: string = null)
         {
             var doc = this.container.ownerDocument
             if( def )
@@ -293,8 +342,19 @@ module ImageMap
             {
                 //TODO default & global filters
             }
-        }
+        }*/
 
         //#endregion
+    }
+
+    export module SvgMap
+    {
+        export class Options
+        {
+            backgroundSelector : string = "#background"
+            regionsSelector    : string = "g#regions > *"
+            infoPointSelector  : string = "g#info-points > *"
+            filtersSelector    : string = "defs > filter"
+        }
     }
 }

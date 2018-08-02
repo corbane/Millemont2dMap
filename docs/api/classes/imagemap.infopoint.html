@@ -88,6 +88,7 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-external"><a href="imagemap.infopoint.html#active" class="tsd-kind-icon">active</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="imagemap.infopoint.html#map" class="tsd-kind-icon">map</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-external"><a href="imagemap.infopoint.html#popup" class="tsd-kind-icon">popup</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-external"><a href="imagemap.infopoint.html#scale" class="tsd-kind-icon">scale</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="imagemap.infopoint.html#svg" class="tsd-kind-icon">svg</a></li>
@@ -100,7 +101,7 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="imagemap.infopoint.html#getinnersvg" class="tsd-kind-icon">get<wbr>Inner<wbr>Svg</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="imagemap.infopoint.html#getinnerhtml" class="tsd-kind-icon">get<wbr>Inner<wbr>Html</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="imagemap.infopoint.html#hidepopup" class="tsd-kind-icon">hide<wbr>Popup</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="imagemap.infopoint.html#offsetx" class="tsd-kind-icon">offsetX</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="imagemap.infopoint.html#offsety" class="tsd-kind-icon">offsetY</a></li>
@@ -122,15 +123,21 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Info<wbr>Point<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="imagemap.infopoint.html" class="tsd-signature-type">InfoPoint</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Info<wbr>Point<span class="tsd-signature-symbol">(</span>map<span class="tsd-signature-symbol">: </span><a href="imagemap.svgmap.html" class="tsd-signature-type">SvgMap</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="imagemap.infopoint.html" class="tsd-signature-type">InfoPoint</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/info-point.ts#L13">info-point.ts:13</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/info-point.ts#L15">info-point.ts:15</a></li>
 								</ul>
 							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>map: <a href="imagemap.svgmap.html" class="tsd-signature-type">SvgMap</a></h5>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="imagemap.infopoint.html" class="tsd-signature-type">InfoPoint</a></h4>
 						</li>
 					</ul>
@@ -144,7 +151,17 @@
 					<div class="tsd-signature tsd-kind-icon">active<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/info-point.ts#L68">info-point.ts:68</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/info-point.ts#L93">info-point.ts:93</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="map" class="tsd-anchor"></a>
+					<h3>map</h3>
+					<div class="tsd-signature tsd-kind-icon">map<span class="tsd-signature-symbol">:</span> <a href="imagemap.svgmap.html" class="tsd-signature-type">SvgMap</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/info-point.ts#L7">info-point.ts:7</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -154,7 +171,7 @@
 					<div class="tsd-signature tsd-kind-icon">popup<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HTMLElement</span><span class="tsd-signature-symbol"> =&nbsp;null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/info-point.ts#L7">info-point.ts:7</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/info-point.ts#L9">info-point.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -164,7 +181,7 @@
 					<div class="tsd-signature tsd-kind-icon">scale<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;1</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/info-point.ts#L9">info-point.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/info-point.ts#L11">info-point.ts:11</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -174,7 +191,7 @@
 					<div class="tsd-signature tsd-kind-icon">svg<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">SVGGraphicsElement</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/info-point.ts#L6">info-point.ts:6</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/info-point.ts#L8">info-point.ts:8</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -184,7 +201,7 @@
 					<div class="tsd-signature tsd-kind-icon">x<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/info-point.ts#L10">info-point.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/info-point.ts#L12">info-point.ts:12</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -194,7 +211,7 @@
 					<div class="tsd-signature tsd-kind-icon">x_<wbr>origin<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/info-point.ts#L12">info-point.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/info-point.ts#L14">info-point.ts:14</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -204,7 +221,7 @@
 					<div class="tsd-signature tsd-kind-icon">y<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/info-point.ts#L11">info-point.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/info-point.ts#L13">info-point.ts:13</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -214,7 +231,7 @@
 					<div class="tsd-signature tsd-kind-icon">y_<wbr>origin<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/info-point.ts#L13">info-point.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/info-point.ts#L15">info-point.ts:15</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -222,16 +239,16 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
-					<a name="getinnersvg" class="tsd-anchor"></a>
-					<h3>get<wbr>Inner<wbr>Svg</h3>
+					<a name="getinnerhtml" class="tsd-anchor"></a>
+					<h3>get<wbr>Inner<wbr>Html</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Inner<wbr>Svg<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Inner<wbr>Html<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/info-point.ts#L34">info-point.ts:34</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/info-point.ts#L55">info-point.ts:55</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -253,7 +270,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/info-point.ts#L106">info-point.ts:106</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/info-point.ts#L131">info-point.ts:131</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -270,7 +287,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/info-point.ts#L50">info-point.ts:50</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/info-point.ts#L73">info-point.ts:73</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -293,7 +310,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/info-point.ts#L56">info-point.ts:56</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/info-point.ts#L79">info-point.ts:79</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -316,7 +333,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/info-point.ts#L70">info-point.ts:70</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/info-point.ts#L95">info-point.ts:95</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -333,7 +350,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/info-point.ts#L82">info-point.ts:82</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/info-point.ts#L109">info-point.ts:109</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -356,7 +373,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/info-point.ts#L42">info-point.ts:42</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/info-point.ts#L65">info-point.ts:65</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -382,7 +399,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/info-point.ts#L62">info-point.ts:62</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/info-point.ts#L85">info-point.ts:85</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -405,7 +422,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/info-point.ts#L91">info-point.ts:91</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/info-point.ts#L118">info-point.ts:118</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -428,7 +445,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/info-point.ts#L76">info-point.ts:76</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/info-point.ts#L101">info-point.ts:101</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -445,7 +462,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/info-point.ts#L24">info-point.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/info-point.ts#L45">info-point.ts:45</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -481,6 +498,9 @@
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-external">
 								<a href="imagemap.infopoint.html#active" class="tsd-kind-icon">active</a>
 							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="imagemap.infopoint.html#map" class="tsd-kind-icon">map</a>
+							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-external">
 								<a href="imagemap.infopoint.html#popup" class="tsd-kind-icon">popup</a>
 							</li>
@@ -503,7 +523,7 @@
 								<a href="imagemap.infopoint.html#y_origin" class="tsd-kind-icon">y_<wbr>origin</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="imagemap.infopoint.html#getinnersvg" class="tsd-kind-icon">get<wbr>Inner<wbr>Svg</a>
+								<a href="imagemap.infopoint.html#getinnerhtml" class="tsd-kind-icon">get<wbr>Inner<wbr>Html</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="imagemap.infopoint.html#hidepopup" class="tsd-kind-icon">hide<wbr>Popup</a>

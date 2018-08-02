@@ -959,30 +959,49 @@ var __spread = (this && this.__spread) || function () {
         throw new Error('unknown environment');
     }
 })());
+/// <reference path="svg-map.ts" />
 var ImageMap;
 (function (ImageMap) {
     var InfoPoint = /** @class */ (function () {
-        function InfoPoint() {
+        // var p = InfoPoint.createFrom (element)
+        // p.attachTo (element, position)
+        // bar pp = new InfoPoint ("query")
+        // pp.attachTo (p)
+        function InfoPoint(map) {
             this.popup = null;
             this.scale = 1;
+            //#endregion
             this.active = false;
+            this.map = map;
             this.svg = document.createElementNS("http://www.w3.org/2000/svg", "g");
             this.svg.setAttributeNS(null, "pointer-events", "all");
             this.svg.addEventListener("mouseover", this.showPopup.bind(this));
             this.svg.addEventListener("mouseout", this.hidePopup.bind(this));
             this.setPosition(100, 100);
         }
+        /*static load (doc: Document, query: string): InfoPoint
+        {
+            var el = doc.querySelector (query)
+            if( !el )
+                throw "Can not load info point :("
+
+            var ip = new InfoPoint ()
+            ip.getInnerHtml = (): string => el.innerHTML
+
+            return ip
+        }*/
         InfoPoint.prototype.updateSvg = function () {
             this.svg.style.transform = "scale(" + this.scale + ")";
             this.svg.style.transformOrigin = this.x + "px " + this.y + "px"; // "center center"
-            this.svg.innerHTML = this.getInnerSvg();
+            this.svg.innerHTML = this.getInnerHtml();
         };
         /**
          * Overrides this method for build a custom style point
          */
-        InfoPoint.prototype.getInnerSvg = function () {
+        InfoPoint.prototype.getInnerHtml = function () {
             return "\n                <circle cx=\"" + this.x + "\" cy=\"" + this.y + "\" r=\"14\" fill=\"" + (this.active ? "#FFD50055" : "none") + "\" stroke=\"gold\" stroke-width=\"2\"/>\n                <circle cx=\"" + this.x + "\" cy=\"" + (this.y - 6) + "\" r=\"2\" fill=\"gold\"/>\n                <rect x=\"" + (this.x - 1.5) + "\" y=\"" + (this.y - 2) + "\" width=\"3\" height=\"10\" fill=\"gold\"/>";
         };
+        //#region Transform
         InfoPoint.prototype.setPosition = function (x, y) {
             this.x = this.x_origin = x;
             this.y = this.y_origin = y;
@@ -1008,6 +1027,7 @@ var ImageMap;
             this.active = false;
             this.updateSvg();
         };
+        //#region Popup
         InfoPoint.prototype.setPopup = function (popup) {
             if (popup)
                 popup.classList.add("mmmfest", "map-popup");
@@ -1018,11 +1038,10 @@ var ImageMap;
             if (!this.popup)
                 return;
             this.popup.style.display = "block";
-            var b = this.svg.getBoundingClientRect(), offsetY = this.popup.getBoundingClientRect().height / 2 - b.height / 2;
-            //this.popup.style.left = (b.left + b.width + 20) + "px"
-            //this.popup.style.top = (window.screenY + b.top + offsetY) + "px"
-            this.popup.style.left = evt.pageX + 30 + "px";
-            this.popup.style.top = evt.pageY + 30 + "px";
+            var b = this.svg.getBoundingClientRect();
+            //var bbox = this.map.getClientRectFor (this.svg)
+            this.popup.style.left = (b.x + b.width) + "px";
+            this.popup.style.top = (b.y + b.height) + 30 + "px";
         };
         InfoPoint.prototype.hidePopup = function () {
             if (!this.popup)
@@ -1092,18 +1111,24 @@ var ImageMap;
     /**
      * A region is defined in the SVG file.
      *
-     * The regions MUST have a unique id and MUST defined inside the root element (see [[SvgMap]]).
+     * The regions MUST have a unique id
+     *
+     * By default te regions is defined inside a `g` element with id equal to `"regions"`.
+     * ~~You can change this query selector with [[SvgMap.Options.regionsSelector]]~~
      *
      * Example:
      * ```svg
      * <?xml version="1.0" encoding="UTF-8"?>
      * <!DOCTYPE svg ... >
      * <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0">
-     *     <g id="id1">
-     *         <path d=" ... ">
-     *         <polygon points=" ... ">
-     *     <g>
-     *     <circle id="id2" .../>
+     *     ... see SvgMap ...
+     *     <g id="regions">
+     *         <g id="id1">
+     *             <path d=" ... ">
+     *             <polygon points=" ... ">
+     *         <g>
+     *         <circle id="id2" .../>
+     *     </g>
      * </svg>
      * ```
      */
@@ -1119,6 +1144,7 @@ var ImageMap;
             //#endregion
             //#region Selection
             this.selected = false;
+            this.doc = map.doc;
             this.initGlobalElement();
             this.initContourPath(el);
             this.initClippedImage();
@@ -1127,14 +1153,14 @@ var ImageMap;
             this.gElement.appendChild(this.imageElement);
             this.gElement.appendChild(this.pathElement);
             this.gElement.appendChild(this.infoPoint.svg);
-            this.map.container.appendChild(this.gElement);
+            this.map.root.appendChild(this.gElement);
             this.id = this.pathElement.id;
             this.initSelection();
             this.updateDisplay();
         }
         Region2d.prototype.initGlobalElement = function () {
             //@ts-ignore
-            this.gElement = this.map.container.ownerDocument.createElementNS("http://www.w3.org/2000/svg", "g");
+            this.gElement = this.doc.createElementNS("http://www.w3.org/2000/svg", "g");
             this.gElement.classList.add("region2d");
             this.gElement.vElement = this;
             this.gElement.addEventListener("mouseover", this.onMouseOver.bind(this));
@@ -1154,14 +1180,13 @@ var ImageMap;
             this.imageElement = this.map.background.cloneNode(true);
             this.imageElement.setAttribute("class", "image");
             this.imageElement.setAttribute("clip-path", "url(#" + clipid + ")");
-            var doc = this.map.container.ownerDocument;
-            this.clipPath = doc.createElementNS("http://www.w3.org/2000/svg", "clipPath");
+            this.clipPath = this.doc.createElementNS("http://www.w3.org/2000/svg", "clipPath");
             this.clipPath.id = clipid;
             var p;
             switch (this.pathElement.tagName) {
                 case "polygon":
                 case "polyline":
-                    p = doc.createElementNS("http://www.w3.org/2000/svg", "polyline");
+                    p = this.doc.createElementNS("http://www.w3.org/2000/svg", "polyline");
                     p.setAttributeNS(null, "points", this.pathElement.getAttributeNS(null, "points"));
                     this.clipPath.appendChild(p);
                     break;
@@ -1187,7 +1212,7 @@ var ImageMap;
         };
         Region2d.prototype.initInfoPoint = function () {
             //@ts-ignore
-            this.infoPoint = new ImageMap.InfoPoint();
+            this.infoPoint = new ImageMap.InfoPoint(this.map);
             var bbox = this.pathElement.getBBox();
             this.infoPoint.setPosition(bbox.x + bbox.width / 2, bbox.y + bbox.height / 2);
             this.infoPoint.setScale(10);
@@ -1298,7 +1323,7 @@ var ImageMap;
             return -1;
         };
         RegionCollection.prototype.get = function (id) {
-            var el = this.parent.container.getElementById(id);
+            var el = this.parent.root.getElementById(id);
             if (el)
                 return el.parentElement.vElement;
             return null;
@@ -1359,24 +1384,28 @@ var ImageMap;
      */
     ImageMap.isRunningOnMobile = new MobileDetect(navigator.userAgent).mobile();
     /**
-     * A `map2d` is defined in a SVG file and it's correspond to the `svg` tag element
+     * A `SvgMap` is defined in a SVG file and it's correspond to the `svg` tag element
      *
-     * The `map2d` elements MUST contain an` SVGImageElement` and a series of [[Region2d]] elements.
-     * This image define the maximum `viewBox` of the SVG do it must define the `x`, `y`, `width`, `height` attributes.
+     * The `SvgMap` elements contain an `SVGImageElement` and a series of [[Region2d]] elements.
+     *
+     * This image define the maximum `viewBox` of the SVG, so it MUST define the `x`, `y`, `width`, `height` attributes.
+     *
+     * By default this image must have the id equal to `"background"`, ~~you can change the query selector with [[SvgMap.Options.backgroundSelector]]~~
      *
      * Example:
      * ```svg
      * <?xml version="1.0" encoding="UTF-8"?>
      * <!DOCTYPE svg [...] >
      * <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0">
-     *     <image width="600" height="600" x="0" y="0" xlink:href=" ... "/>
+     *     <image id="background" width="600" height="600" x="0" y="0" xlink:href=" ... "/>
      *     ... see Region2d api ...
      * </svg>
      * ```
      */
     var SvgMap = /** @class */ (function () {
-        function SvgMap(container) {
-            this.container = container;
+        function SvgMap(object) {
+            this.options = new SvgMap.Options();
+            //#endregion
             //#region Regions
             this.regions = new ImageMap.RegionCollection(this);
             //#endregion
@@ -1393,33 +1422,67 @@ var ImageMap;
             //#endregion
             //#region Filters
             this.filtersRegister = {};
+            if (object.tagName.toLowerCase() != "object")
+                throw "The container object MUST be an `<object/>` element :(";
+            this.container = object;
+            this.container.style.padding = "0";
+            this.doc = object.contentDocument;
+            this.root = this.doc.querySelector("svg");
+            this.root.classList.add("image-map");
+            this.root.setAttribute("width", "100%");
+            this.root.setAttribute("height", "100%");
+            this.initBackground();
             this.initRegions();
-            // Initialize children of SVG
-            var childs = container.ownerDocument.querySelectorAll("svg > *");
-            for (var i = 0; i < childs.length; ++i) {
-                var name = childs[i].tagName.toLowerCase();
-                if (name == "script")
-                    continue; // Live reload inject a script element
-                if (name == "image") {
-                    // Initialize background
-                    this.background = childs[i];
-                    this.background.classList.add("background");
-                    this.background.onclick = this.onBackgroundClick.bind(this);
-                }
-                else {
-                    // Initialize regions
-                    this.regions.add(childs[i]);
-                }
-            }
             this.initFilters();
-            // Initialize svg container
-            this.container.classList.add("image-map");
-            this.container.setAttribute("width", "100%");
-            this.container.setAttribute("height", "100%");
             this.zoomAll();
         }
+        /** @hidden */
+        SvgMap.prototype.getClientRectFor = function (el) {
+            var a = this.container.getBoundingClientRect(), margin = Number.parseFloat(window.getComputedStyle(this.container).borderWidth);
+            if (typeof el == "string")
+                var b = this.doc.querySelector(el).getBoundingClientRect();
+            else
+                var b = el.getBoundingClientRect();
+            //var b = this.doc.querySelector ("#cochets").getBoundingClientRect () as DOMRect
+            return {
+                width: b.width,
+                height: b.height,
+                x: a.x + margin + b.x,
+                y: a.y + margin + b.y,
+                left: a.x + margin + b.x,
+                right: a.x + margin + b.x + b.width,
+                top: a.y + margin + b.y,
+                bottom: a.y + margin + b.y + b.height
+            };
+        };
+        //#region Background
+        SvgMap.prototype.initBackground = function () {
+            var el = this.doc.querySelector(this.options.backgroundSelector);
+            if (!el)
+                throw "Can not find the background element";
+            //@ts-ignore
+            this.background = el;
+            this.background.classList.add("background");
+            this.background.onclick = this.onBackgroundClick.bind(this);
+        };
         SvgMap.prototype.initRegions = function () {
+            var e_5, _a;
             this.regions.HRegionAdded.add(this.onRegionAdded.bind(this));
+            var els = this.doc.querySelectorAll(this.options.regionsSelector);
+            try {
+                //@ts-ignore
+                for (var els_1 = __values(els), els_1_1 = els_1.next(); !els_1_1.done; els_1_1 = els_1.next()) {
+                    var el = els_1_1.value;
+                    this.regions.add(el);
+                }
+            }
+            catch (e_5_1) { e_5 = { error: e_5_1 }; }
+            finally {
+                try {
+                    if (els_1_1 && !els_1_1.done && (_a = els_1["return"])) _a.call(els_1);
+                }
+                finally { if (e_5) throw e_5.error; }
+            }
         };
         SvgMap.prototype.onRegionAdded = function (region) {
             region.HSelect.add(this.onRegionSelected.bind(this));
@@ -1431,10 +1494,10 @@ var ImageMap;
         //#region Zoom
         SvgMap.prototype.zoomTo = function (b, margin) {
             if (margin === void 0) { margin = 0; }
-            this.container.viewBox.baseVal.x = b.x - margin;
-            this.container.viewBox.baseVal.y = b.y - margin;
-            this.container.viewBox.baseVal.width = b.width + margin * 2;
-            this.container.viewBox.baseVal.height = b.height + margin * 2;
+            this.root.viewBox.baseVal.x = b.x - margin;
+            this.root.viewBox.baseVal.y = b.y - margin;
+            this.root.viewBox.baseVal.width = b.width + margin * 2;
+            this.root.viewBox.baseVal.height = b.height + margin * 2;
         };
         SvgMap.prototype.zoomAll = function () {
             this.zoomTo(this.background.getBBox());
@@ -1487,12 +1550,12 @@ var ImageMap;
             if (this.displayMode == mode)
                 return;
             this.displayMode = mode;
-            this.container.classList.remove("normal-view");
-            this.container.classList.remove("ghost-view");
+            this.root.classList.remove("normal-view");
+            this.root.classList.remove("ghost-view");
             if (mode == "ghost")
-                this.container.classList.add("ghost-view");
+                this.root.classList.add("ghost-view");
             else
-                this.container.classList.add("normal-view");
+                this.root.classList.add("normal-view");
             this.updateDisplay();
         };
         /**
@@ -1504,7 +1567,7 @@ var ImageMap;
             this.updateDisplay();
         };
         SvgMap.prototype.updateDisplay = function () {
-            var e_5, _a, e_6, _b, e_7, _c;
+            var e_6, _a, e_7, _b, e_8, _c;
             if (this.mobileMode) {
                 if (this.selectedSapes.length)
                     this.setDisplayMode("ghost");
@@ -1518,12 +1581,12 @@ var ImageMap;
                         s.disable();
                     }
                 }
-                catch (e_5_1) { e_5 = { error: e_5_1 }; }
+                catch (e_6_1) { e_6 = { error: e_6_1 }; }
                 finally {
                     try {
                         if (_e && !_e.done && (_a = _d["return"])) _a.call(_d);
                     }
-                    finally { if (e_5) throw e_5.error; }
+                    finally { if (e_6) throw e_6.error; }
                 }
                 try {
                     for (var _f = __values(this.selectedSapes), _g = _f.next(); !_g.done; _g = _f.next()) {
@@ -1531,12 +1594,12 @@ var ImageMap;
                         r.enable();
                     }
                 }
-                catch (e_6_1) { e_6 = { error: e_6_1 }; }
+                catch (e_7_1) { e_7 = { error: e_7_1 }; }
                 finally {
                     try {
                         if (_g && !_g.done && (_b = _f["return"])) _b.call(_f);
                     }
-                    finally { if (e_6) throw e_6.error; }
+                    finally { if (e_7) throw e_7.error; }
                 }
             }
             else //"normal"
@@ -1547,12 +1610,12 @@ var ImageMap;
                         s.disable();
                     }
                 }
-                catch (e_7_1) { e_7 = { error: e_7_1 }; }
+                catch (e_8_1) { e_8 = { error: e_8_1 }; }
                 finally {
                     try {
                         if (_j && !_j.done && (_c = _h["return"])) _c.call(_h);
                     }
-                    finally { if (e_7) throw e_7.error; }
+                    finally { if (e_8) throw e_8.error; }
                 }
             }
         };
@@ -1569,30 +1632,46 @@ var ImageMap;
             this.setDisplayMode("normal");
         };
         SvgMap.prototype.initFilters = function () {
-            var defs = this.container.querySelector("defs");
+            var e_9, _a;
+            var defs = this.root.querySelector("defs");
             if (!defs) {
-                defs = this.container.ownerDocument.createElementNS("http://www.w3.org/2000/svg", "defs");
-                this.container.appendChild(defs);
+                defs = this.doc.createElementNS("http://www.w3.org/2000/svg", "defs");
+                this.root.appendChild(defs);
             }
             this.defsElement = defs;
-        };
-        SvgMap.prototype.addFilter = function (id, def) {
-            if (def === void 0) { def = null; }
-            var doc = this.container.ownerDocument;
-            if (def) {
-                var filter = doc.createElementNS("http://www.w3.org/2000/svg", "filter");
-                filter.id = id;
-                filter.innerHTML = def;
-                this.defsElement.appendChild(filter);
-                this.filtersRegister[id] = def;
+            var filters = this.doc.querySelectorAll(this.options.filtersSelector);
+            try {
+                //@ts-ignore
+                for (var filters_1 = __values(filters), filters_1_1 = filters_1.next(); !filters_1_1.done; filters_1_1 = filters_1.next()) {
+                    var f = filters_1_1.value;
+                    if (!f.id)
+                        continue;
+                    //this.addFilter (f.id, f.innerHTML)
+                }
             }
-            else {
-                //TODO default & global filters
+            catch (e_9_1) { e_9 = { error: e_9_1 }; }
+            finally {
+                try {
+                    if (filters_1_1 && !filters_1_1.done && (_a = filters_1["return"])) _a.call(filters_1);
+                }
+                finally { if (e_9) throw e_9.error; }
             }
         };
         return SvgMap;
     }());
     ImageMap.SvgMap = SvgMap;
+    (function (SvgMap) {
+        var Options = /** @class */ (function () {
+            function Options() {
+                this.backgroundSelector = "#background";
+                this.regionsSelector = "g#regions > *";
+                this.infoPointSelector = "g#info-points > *";
+                this.filtersSelector = "defs > filter";
+            }
+            return Options;
+        }());
+        SvgMap.Options = Options;
+    })(SvgMap = ImageMap.SvgMap || (ImageMap.SvgMap = {}));
 })(ImageMap || (ImageMap = {}));
 /// <reference path="svg-map.ts" />
 /// <reference path="vendor/mobile-detect.js" />

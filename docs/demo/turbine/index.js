@@ -3,7 +3,7 @@ function init (obj)
 	var doc = obj.contentDocument,
 		map = new ImageMap.SvgMap(doc.querySelector("svg"))
 
-	map.addFilter (
+	/*map.addFilter (
 		"blur-filter",
 		`<feConvolveMatrix
 			bias="0.10000000000000001"
@@ -19,7 +19,7 @@ function init (obj)
 		<feColorMatrix
 			values="-0.15 -0.3 -0.05 0 1 -0.15 -0.3 -0.05 0 1 -0.15 -0.3 -0.05 0 1 0 0 0 1 0"
 			result="result3"/>`
-	)
+	)*/
 
 	//var stat = map.addRegion("#stator")
 	//var roto = map.addRegion("#rotor")

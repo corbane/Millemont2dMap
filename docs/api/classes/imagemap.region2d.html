@@ -71,16 +71,21 @@
 					<div class="lead">
 						<p>A region is defined in the SVG file.</p>
 					</div>
-					<p>The regions MUST have a unique id and MUST defined inside the root element (see <a href="imagemap.svgmap.html">SvgMap</a>).</p>
+					<p>The regions MUST have a unique id</p>
+					<p>By default te regions is defined inside a <code>g</code> element with id equal to <code>&quot;regions&quot;</code>.
+					<del>You can change this query selector with <a href="imagemap.svgmap.options.html#regionsselector">SvgMap.Options.regionsSelector</a></del></p>
 					<p>Example:</p>
 					<pre><code class="lang-svg">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;!DOCTYPE svg ... &gt;
 &lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; version=&quot;1.0&quot;&gt;
-    &lt;g id=&quot;id1&quot;&gt;
-        &lt;path d=&quot; ... &quot;&gt;
-        &lt;polygon points=&quot; ... &quot;&gt;
-    &lt;g&gt;
-    &lt;circle id=&quot;id2&quot; .../&gt;
+    ... see SvgMap ...
+    &lt;g id=&quot;regions&quot;&gt;
+        &lt;g id=&quot;id1&quot;&gt;
+            &lt;path d=&quot; ... &quot;&gt;
+            &lt;polygon points=&quot; ... &quot;&gt;
+        &lt;g&gt;
+        &lt;circle id=&quot;id2&quot; .../&gt;
+    &lt;/g&gt;
 &lt;/svg&gt;
 </code></pre>
 				</div>
@@ -113,6 +118,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="imagemap.region2d.html#hselect" class="tsd-kind-icon">HSelect</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="imagemap.region2d.html#hunselect" class="tsd-kind-icon">HUnselect</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="imagemap.region2d.html#clippath" class="tsd-kind-icon">clip<wbr>Path</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="imagemap.region2d.html#doc" class="tsd-kind-icon">doc</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="imagemap.region2d.html#gelement" class="tsd-kind-icon">g<wbr>Element</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="imagemap.region2d.html#id" class="tsd-kind-icon">id</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="imagemap.region2d.html#imageelement" class="tsd-kind-icon">image<wbr>Element</a></li>
@@ -156,7 +162,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L34">region-2d.ts:34</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L42">region-2d.ts:42</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -181,7 +187,7 @@
 					<div class="tsd-signature tsd-kind-icon">HClick<span class="tsd-signature-symbol">:</span> <a href="imagemap.event.handle.html" class="tsd-signature-type">Handle</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;new ImageMap.Event.Handle &lt;(region: this, evt: MouseEvent) &#x3D;&gt; void&gt; ()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L30">region-2d.ts:30</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L36">region-2d.ts:36</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -191,7 +197,7 @@
 					<div class="tsd-signature tsd-kind-icon">HDisable<span class="tsd-signature-symbol">:</span> <a href="imagemap.event.handle.html" class="tsd-signature-type">Handle</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;new ImageMap.Event.Handle &lt;(region: this) &#x3D;&gt; void&gt; ()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L34">region-2d.ts:34</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L40">region-2d.ts:40</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -201,7 +207,7 @@
 					<div class="tsd-signature tsd-kind-icon">HEnable<span class="tsd-signature-symbol">:</span> <a href="imagemap.event.handle.html" class="tsd-signature-type">Handle</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;new ImageMap.Event.Handle &lt;(region: this) &#x3D;&gt; void&gt; ()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L33">region-2d.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L39">region-2d.ts:39</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -211,7 +217,7 @@
 					<div class="tsd-signature tsd-kind-icon">HMouse<wbr>Over<span class="tsd-signature-symbol">:</span> <a href="imagemap.event.handle.html" class="tsd-signature-type">Handle</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;new ImageMap.Event.Handle &lt;(region: this, evt: MouseEvent) &#x3D;&gt; void&gt; ()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L29">region-2d.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L35">region-2d.ts:35</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -221,7 +227,7 @@
 					<div class="tsd-signature tsd-kind-icon">HSelect<span class="tsd-signature-symbol">:</span> <a href="imagemap.event.handle.html" class="tsd-signature-type">Handle</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;new ImageMap.Event.Handle &lt;(region: this, evt: MouseEvent) &#x3D;&gt; void&gt; ()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L31">region-2d.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L37">region-2d.ts:37</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -231,7 +237,7 @@
 					<div class="tsd-signature tsd-kind-icon">HUnselect<span class="tsd-signature-symbol">:</span> <a href="imagemap.event.handle.html" class="tsd-signature-type">Handle</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;new ImageMap.Event.Handle &lt;(region: this, evt: MouseEvent) &#x3D;&gt; void&gt; ()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L32">region-2d.ts:32</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L38">region-2d.ts:38</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -241,7 +247,17 @@
 					<div class="tsd-signature tsd-kind-icon">clip<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">SVGClipPathElement</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L94">region-2d.ts:94</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L104">region-2d.ts:104</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
+					<a name="doc" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> doc</h3>
+					<div class="tsd-signature tsd-kind-icon">doc<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Document</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L42">region-2d.ts:42</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -251,7 +267,7 @@
 					<div class="tsd-signature tsd-kind-icon">g<wbr>Element<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">SVGGElement</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L59">region-2d.ts:59</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L69">region-2d.ts:69</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -261,7 +277,7 @@
 					<div class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L27">region-2d.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L33">region-2d.ts:33</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -271,7 +287,7 @@
 					<div class="tsd-signature tsd-kind-icon">image<wbr>Element<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">SVGImageElement</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L92">region-2d.ts:92</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L102">region-2d.ts:102</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -281,7 +297,7 @@
 					<div class="tsd-signature tsd-kind-icon">info<wbr>Point<span class="tsd-signature-symbol">:</span> <a href="imagemap.infopoint.html" class="tsd-signature-type">InfoPoint</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L135">region-2d.ts:135</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L143">region-2d.ts:143</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -291,7 +307,7 @@
 					<div class="tsd-signature tsd-kind-icon">map<span class="tsd-signature-symbol">:</span> <a href="imagemap.svgmap.html" class="tsd-signature-type">SvgMap</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L36">region-2d.ts:36</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L44">region-2d.ts:44</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -301,7 +317,7 @@
 					<div class="tsd-signature tsd-kind-icon">path<wbr>Element<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">SVGGraphicsElement</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L79">region-2d.ts:79</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L89">region-2d.ts:89</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -311,7 +327,7 @@
 					<div class="tsd-signature tsd-kind-icon">selected<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L150">region-2d.ts:150</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L158">region-2d.ts:158</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -328,7 +344,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L207">region-2d.ts:207</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L215">region-2d.ts:215</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -345,7 +361,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L201">region-2d.ts:201</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L209">region-2d.ts:209</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -362,7 +378,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L96">region-2d.ts:96</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L106">region-2d.ts:106</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -379,7 +395,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L81">region-2d.ts:81</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L91">region-2d.ts:91</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -402,7 +418,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L61">region-2d.ts:61</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L71">region-2d.ts:71</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -419,7 +435,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L137">region-2d.ts:137</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L145">region-2d.ts:145</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -436,7 +452,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L152">region-2d.ts:152</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L160">region-2d.ts:160</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -453,7 +469,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L196">region-2d.ts:196</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L204">region-2d.ts:204</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -470,7 +486,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L157">region-2d.ts:157</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L165">region-2d.ts:165</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -487,7 +503,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L174">region-2d.ts:174</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L182">region-2d.ts:182</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -510,7 +526,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L70">region-2d.ts:70</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L80">region-2d.ts:80</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -533,7 +549,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L162">region-2d.ts:162</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L170">region-2d.ts:170</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -550,7 +566,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L168">region-2d.ts:168</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L176">region-2d.ts:176</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -567,7 +583,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/region-2d.ts#L217">region-2d.ts:217</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/region-2d.ts#L225">region-2d.ts:225</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -623,6 +639,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
 								<a href="imagemap.region2d.html#clippath" class="tsd-kind-icon">clip<wbr>Path</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
+								<a href="imagemap.region2d.html#doc" class="tsd-kind-icon">doc</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="imagemap.region2d.html#gelement" class="tsd-kind-icon">g<wbr>Element</a>

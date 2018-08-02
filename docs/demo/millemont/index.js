@@ -3,12 +3,12 @@ var map
 
 function init (obj)
 {
-    map = new ImageMap.SvgMap (obj.contentDocument.querySelector("svg"))
+    map = new ImageMap.SvgMap (obj)
 
-    map.addFilter (
+    /*map.addFilter (
         "blur-filter",
         `<feGaussianBlur in="SourceGraphic" stdDeviation="9" />`
-    )
+    )*/
     
     var camp = map.regions.get ("camping")
     camp.infoPoint.offsetY (-100)

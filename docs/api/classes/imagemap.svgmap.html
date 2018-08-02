@@ -69,15 +69,16 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>A <code>map2d</code> is defined in a SVG file and it&#39;s correspond to the <code>svg</code> tag element</p>
+						<p>A <code>SvgMap</code> is defined in a SVG file and it&#39;s correspond to the <code>svg</code> tag element</p>
 					</div>
-					<p>The <code>map2d</code> elements MUST contain an<code>SVGImageElement</code> and a series of <a href="imagemap.region2d.html">Region2d</a> elements.
-					This image define the maximum <code>viewBox</code> of the SVG do it must define the <code>x</code>, <code>y</code>, <code>width</code>, <code>height</code> attributes.</p>
+					<p>The <code>SvgMap</code> elements contain an <code>SVGImageElement</code> and a series of <a href="imagemap.region2d.html">Region2d</a> elements.</p>
+					<p>This image define the maximum <code>viewBox</code> of the SVG, so it MUST define the <code>x</code>, <code>y</code>, <code>width</code>, <code>height</code> attributes.</p>
+					<p>By default this image must have the id equal to <code>&quot;background&quot;</code>, <del>you can change the query selector with <a href="imagemap.svgmap.options.html#backgroundselector">SvgMap.Options.backgroundSelector</a></del></p>
 					<p>Example:</p>
 					<pre><code class="lang-svg">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;!DOCTYPE svg [...] &gt;
 &lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; version=&quot;1.0&quot;&gt;
-    &lt;image width=&quot;600&quot; height=&quot;600&quot; x=&quot;0&quot; y=&quot;0&quot; xlink:href=&quot; ... &quot;/&gt;
+    &lt;image id=&quot;background&quot; width=&quot;600&quot; height=&quot;600&quot; x=&quot;0&quot; y=&quot;0&quot; xlink:href=&quot; ... &quot;/&gt;
     ... see Region2d api ...
 &lt;/svg&gt;
 </code></pre>
@@ -96,6 +97,12 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section tsd-is-external">
+							<h3>Classes</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-class tsd-parent-kind-class tsd-is-external"><a href="imagemap.svgmap.options.html" class="tsd-kind-icon">Options</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-external">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-external"><a href="imagemap.svgmap.html#constructor" class="tsd-kind-icon">constructor</a></li>
@@ -109,17 +116,20 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="imagemap.svgmap.html#container" class="tsd-kind-icon">container</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="imagemap.svgmap.html#defselement" class="tsd-kind-icon">defs<wbr>Element</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-external"><a href="imagemap.svgmap.html#displaymode" class="tsd-kind-icon">display<wbr>Mode</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="imagemap.svgmap.html#doc" class="tsd-kind-icon">doc</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="imagemap.svgmap.html#filtersregister" class="tsd-kind-icon">filters<wbr>Register</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="imagemap.svgmap.html#mobilemode" class="tsd-kind-icon">mobile<wbr>Mode</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="imagemap.svgmap.html#options-1" class="tsd-kind-icon">options</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="imagemap.svgmap.html#regions" class="tsd-kind-icon">regions</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="imagemap.svgmap.html#root" class="tsd-kind-icon">root</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="imagemap.svgmap.html#selectedsapes" class="tsd-kind-icon">selected<wbr>Sapes</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="imagemap.svgmap.html#addfilter" class="tsd-kind-icon">add<wbr>Filter</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="imagemap.svgmap.html#getselected" class="tsd-kind-icon">get<wbr>Selected</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="imagemap.svgmap.html#initbackground" class="tsd-kind-icon">init<wbr>Background</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="imagemap.svgmap.html#initfilters" class="tsd-kind-icon">init<wbr>Filters</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="imagemap.svgmap.html#initregions" class="tsd-kind-icon">init<wbr>Regions</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-external"><a href="imagemap.svgmap.html#onbackgroundclick" class="tsd-kind-icon">on<wbr>Background<wbr>Click</a></li>
@@ -146,19 +156,19 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Svg<wbr>Map<span class="tsd-signature-symbol">(</span>container<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">SVGSVGElement</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="imagemap.svgmap.html" class="tsd-signature-type">SvgMap</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Svg<wbr>Map<span class="tsd-signature-symbol">(</span>object<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLObjectElement</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="imagemap.svgmap.html" class="tsd-signature-type">SvgMap</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L33">svg-map.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L42">svg-map.ts:42</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>container: <span class="tsd-signature-type">SVGSVGElement</span></h5>
+									<h5>object: <span class="tsd-signature-type">HTMLObjectElement</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="imagemap.svgmap.html" class="tsd-signature-type">SvgMap</a></h4>
@@ -174,7 +184,7 @@
 					<div class="tsd-signature tsd-kind-icon">HSelection<wbr>Changed<span class="tsd-signature-symbol">:</span> <a href="imagemap.event.handle.html" class="tsd-signature-type">Handle</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;new Event.Handle &lt;(map: this) &#x3D;&gt; void&gt; ()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L112">svg-map.ts:112</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L151">svg-map.ts:151</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -184,17 +194,17 @@
 					<div class="tsd-signature tsd-kind-icon">background<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">SVGImageElement</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L33">svg-map.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L38">svg-map.ts:38</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="container" class="tsd-anchor"></a>
 					<h3>container</h3>
-					<div class="tsd-signature tsd-kind-icon">container<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">SVGSVGElement</span></div>
+					<div class="tsd-signature tsd-kind-icon">container<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HTMLObjectElement</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L35">svg-map.ts:35</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L40">svg-map.ts:40</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -204,7 +214,7 @@
 					<div class="tsd-signature tsd-kind-icon">defs<wbr>Element<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">SVGDefsElement</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L267">svg-map.ts:267</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L306">svg-map.ts:306</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -214,7 +224,17 @@
 					<div class="tsd-signature tsd-kind-icon">display<wbr>Mode<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"ghost"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"normal"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;normal&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L184">svg-map.ts:184</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L223">svg-map.ts:223</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="doc" class="tsd-anchor"></a>
+					<h3>doc</h3>
+					<div class="tsd-signature tsd-kind-icon">doc<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Document</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L41">svg-map.ts:41</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -224,7 +244,7 @@
 					<div class="tsd-signature tsd-kind-icon">filters<wbr>Register<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L265">svg-map.ts:265</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L304">svg-map.ts:304</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -242,7 +262,7 @@
 					<div class="tsd-signature tsd-kind-icon">mobile<wbr>Mode<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;isRunningOnMobile</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L189">svg-map.ts:189</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L228">svg-map.ts:228</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -252,12 +272,32 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="options-1" class="tsd-anchor"></a>
+					<h3>options</h3>
+					<div class="tsd-signature tsd-kind-icon">options<span class="tsd-signature-symbol">:</span> <a href="imagemap.svgmap.options.html" class="tsd-signature-type">Options</a><span class="tsd-signature-symbol"> =&nbsp;new SvgMap.Options ()</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L36">svg-map.ts:36</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="regions" class="tsd-anchor"></a>
 					<h3>regions</h3>
 					<div class="tsd-signature tsd-kind-icon">regions<span class="tsd-signature-symbol">:</span> <a href="imagemap.regioncollection.html" class="tsd-signature-type">RegionCollection</a><span class="tsd-signature-symbol"> =&nbsp;new RegionCollection (this)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L74">svg-map.ts:74</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L108">svg-map.ts:108</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="root" class="tsd-anchor"></a>
+					<h3>root</h3>
+					<div class="tsd-signature tsd-kind-icon">root<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">SVGSVGElement</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L42">svg-map.ts:42</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -267,39 +307,13 @@
 					<div class="tsd-signature tsd-kind-icon">selected<wbr>Sapes<span class="tsd-signature-symbol">:</span> <a href="imagemap.region2d.html" class="tsd-signature-type">Region2d</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L110">svg-map.ts:110</a></li>
+							<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L149">svg-map.ts:149</a></li>
 						</ul>
 					</aside>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
-					<a name="addfilter" class="tsd-anchor"></a>
-					<h3>add<wbr>Filter</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">add<wbr>Filter<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, def<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L280">svg-map.ts:280</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>id: <span class="tsd-signature-type">string</span></h5>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> def: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;null</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
 					<a name="getselected" class="tsd-anchor"></a>
 					<h3>get<wbr>Selected</h3>
@@ -310,10 +324,27 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L130">svg-map.ts:130</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L169">svg-map.ts:169</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="imagemap.region2d.html" class="tsd-signature-type">Region2d</a><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-external">
+					<a name="initbackground" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> init<wbr>Background</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">init<wbr>Background<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L92">svg-map.ts:92</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -327,7 +358,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L269">svg-map.ts:269</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L308">svg-map.ts:308</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -344,7 +375,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L76">svg-map.ts:76</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L110">svg-map.ts:110</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -361,7 +392,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L169">svg-map.ts:169</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L208">svg-map.ts:208</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -384,7 +415,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L252">svg-map.ts:252</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L291">svg-map.ts:291</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -410,7 +441,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L243">svg-map.ts:243</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L282">svg-map.ts:282</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -436,7 +467,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L81">svg-map.ts:81</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L120">svg-map.ts:120</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -459,7 +490,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L135">svg-map.ts:135</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L174">svg-map.ts:174</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -485,7 +516,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L152">svg-map.ts:152</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L191">svg-map.ts:191</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -511,7 +542,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L114">svg-map.ts:114</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L153">svg-map.ts:153</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -534,7 +565,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L191">svg-map.ts:191</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L230">svg-map.ts:230</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -557,7 +588,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L212">svg-map.ts:212</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L251">svg-map.ts:251</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -585,7 +616,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L119">svg-map.ts:119</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L158">svg-map.ts:158</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -608,7 +639,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L218">svg-map.ts:218</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L257">svg-map.ts:257</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -625,7 +656,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L101">svg-map.ts:101</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L140">svg-map.ts:140</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -642,7 +673,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/4a692f4/src/svg-map.ts#L93">svg-map.ts:93</a></li>
+									<li>Defined in <a href="https://github.com/corbane/Millemont2dMap/blob/2def952/src/svg-map.ts#L132">svg-map.ts:132</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -690,6 +721,9 @@
 					<li class="current tsd-kind-class tsd-parent-kind-module tsd-is-external">
 						<a href="imagemap.svgmap.html" class="tsd-kind-icon">Svg<wbr>Map</a>
 						<ul>
+							<li class=" tsd-kind-class tsd-parent-kind-class tsd-is-external">
+								<a href="imagemap.svgmap.options.html" class="tsd-kind-icon">Options</a>
+							</li>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-external">
 								<a href="imagemap.svgmap.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
@@ -709,22 +743,31 @@
 								<a href="imagemap.svgmap.html#displaymode" class="tsd-kind-icon">display<wbr>Mode</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="imagemap.svgmap.html#doc" class="tsd-kind-icon">doc</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="imagemap.svgmap.html#filtersregister" class="tsd-kind-icon">filters<wbr>Register</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
 								<a href="imagemap.svgmap.html#mobilemode" class="tsd-kind-icon">mobile<wbr>Mode</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="imagemap.svgmap.html#options-1" class="tsd-kind-icon">options</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="imagemap.svgmap.html#regions" class="tsd-kind-icon">regions</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="imagemap.svgmap.html#root" class="tsd-kind-icon">root</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
 								<a href="imagemap.svgmap.html#selectedsapes" class="tsd-kind-icon">selected<wbr>Sapes</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="imagemap.svgmap.html#addfilter" class="tsd-kind-icon">add<wbr>Filter</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="imagemap.svgmap.html#getselected" class="tsd-kind-icon">get<wbr>Selected</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-external">
+								<a href="imagemap.svgmap.html#initbackground" class="tsd-kind-icon">init<wbr>Background</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-external">
 								<a href="imagemap.svgmap.html#initfilters" class="tsd-kind-icon">init<wbr>Filters</a>

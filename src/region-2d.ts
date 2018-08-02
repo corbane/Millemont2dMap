@@ -7,18 +7,24 @@ module ImageMap
     /**
      * A region is defined in the SVG file.
      * 
-     * The regions MUST have a unique id and MUST defined inside the root element (see [[SvgMap]]).
+     * The regions MUST have a unique id
+     * 
+     * By default te regions is defined inside a `g` element with id equal to `"regions"`.
+     * ~~You can change this query selector with [[SvgMap.Options.regionsSelector]]~~
      * 
      * Example:
      * ```svg
      * <?xml version="1.0" encoding="UTF-8"?>
      * <!DOCTYPE svg ... >
      * <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0">
-     *     <g id="id1">
-     *         <path d=" ... ">
-     *         <polygon points=" ... ">
-     *     <g>
-     *     <circle id="id2" .../>
+     *     ... see SvgMap ...
+     *     <g id="regions">
+     *         <g id="id1">
+     *             <path d=" ... ">
+     *             <polygon points=" ... ">
+     *         <g>
+     *         <circle id="id2" .../>
+     *     </g>
      * </svg>
      * ```
      */
@@ -33,8 +39,12 @@ module ImageMap
         readonly HEnable    = new ImageMap.Event.Handle <(region: this) => void> ()
         readonly HDisable   = new ImageMap.Event.Handle <(region: this) => void> ()
 
+        private readonly doc: Document
+
         constructor (readonly map: SvgMap, el: SVGGraphicsElement|string)
         {
+            this.doc = map.doc
+            
             this.initGlobalElement ()
             this.initContourPath (el)
             this.initClippedImage ()
@@ -45,7 +55,7 @@ module ImageMap
             this.gElement.appendChild (this.pathElement)
             this.gElement.appendChild (this.infoPoint.svg)
 
-            this.map.container.appendChild (this.gElement)
+            this.map.root.appendChild (this.gElement)
             
             this.id = this.pathElement.id
 
@@ -61,7 +71,7 @@ module ImageMap
         private initGlobalElement ()
         {
             //@ts-ignore
-            this.gElement = this.map.container.ownerDocument.createElementNS ("http://www.w3.org/2000/svg", "g")
+            this.gElement = this.doc.createElementNS ("http://www.w3.org/2000/svg", "g")
             this.gElement.classList.add ("region2d")
             this.gElement.vElement = this
             this.gElement.addEventListener ("mouseover", this.onMouseOver.bind (this))
@@ -102,9 +112,7 @@ module ImageMap
             this.imageElement.setAttribute ("class", "image")
             this.imageElement.setAttribute ("clip-path", `url(#${clipid})`)
 
-            var doc = this.map.container.ownerDocument
-
-            this.clipPath = doc.createElementNS ("http://www.w3.org/2000/svg", "clipPath")
+            this.clipPath = this.doc.createElementNS ("http://www.w3.org/2000/svg", "clipPath")
             this.clipPath.id = clipid
 
             var p: SVGElement
@@ -112,7 +120,7 @@ module ImageMap
             {
             case "polygon":
             case "polyline":
-                p = doc.createElementNS ("http://www.w3.org/2000/svg", "polyline")
+                p = this.doc.createElementNS ("http://www.w3.org/2000/svg", "polyline")
                 p.setAttributeNS (null, "points", this.pathElement.getAttributeNS (null, "points"))
                 this.clipPath.appendChild (p)
                 break
@@ -137,7 +145,7 @@ module ImageMap
         private initInfoPoint ()
         {
             //@ts-ignore
-            this.infoPoint = new InfoPoint ()
+            this.infoPoint = new InfoPoint (this.map)
             var bbox = this.pathElement.getBBox ()
             this.infoPoint.setPosition (bbox.x + bbox.width / 2, bbox.y + bbox.height / 2)
             this.infoPoint.setScale (10)
