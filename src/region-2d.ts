@@ -7,7 +7,7 @@ module ImageMap
     /**
      * A region is defined in the SVG file.
      * 
-     * The regions MUST have a unique id and MUST defined inside the root element (see [[Map2d]]).
+     * The regions MUST have a unique id and MUST defined inside the root element (see [[SvgMap]]).
      * 
      * Example:
      * ```svg
@@ -26,12 +26,12 @@ module ImageMap
     {
         readonly id: string
 
-        readonly hMouseOver = new ImageMap.Event.Handle <(region: this, evt: MouseEvent) => void> ()
-        readonly hClick     = new ImageMap.Event.Handle <(region: this, evt: MouseEvent) => void> ()
-        readonly hSelect    = new ImageMap.Event.Handle <(region: this, evt: MouseEvent) => void> ()
-        readonly hUnselect  = new ImageMap.Event.Handle <(region: this, evt: MouseEvent) => void> ()
-        readonly hEnable    = new ImageMap.Event.Handle <(region: this) => void> ()
-        readonly hDisable   = new ImageMap.Event.Handle <(region: this) => void> ()
+        readonly HMouseOver = new ImageMap.Event.Handle <(region: this, evt: MouseEvent) => void> ()
+        readonly HClick     = new ImageMap.Event.Handle <(region: this, evt: MouseEvent) => void> ()
+        readonly HSelect    = new ImageMap.Event.Handle <(region: this, evt: MouseEvent) => void> ()
+        readonly HUnselect  = new ImageMap.Event.Handle <(region: this, evt: MouseEvent) => void> ()
+        readonly HEnable    = new ImageMap.Event.Handle <(region: this) => void> ()
+        readonly HDisable   = new ImageMap.Event.Handle <(region: this) => void> ()
 
         constructor (readonly map: SvgMap, el: SVGGraphicsElement|string)
         {
@@ -69,7 +69,7 @@ module ImageMap
 
         protected onMouseOver (evt: MouseEvent)
         {
-            this.hMouseOver.trigger (this, evt)
+            this.HMouseOver.trigger (this, evt)
         }
 
         //#endregion
@@ -173,19 +173,19 @@ module ImageMap
 
         protected onClick (evt: MouseEvent)
         {
-            this.hClick.trigger (this, evt)
+            this.HClick.trigger (this, evt)
 
             if( this.selected )
             {
                 this.selected = false
                 this.updateDisplay ()
-                this.hUnselect.trigger (this, evt)
+                this.HUnselect.trigger (this, evt)
             }
             else
             {
                 this.selected = true
                 this.updateDisplay ()
-                this.hSelect.trigger (this, evt)
+                this.HSelect.trigger (this, evt)
             }
         }
 
@@ -201,13 +201,13 @@ module ImageMap
         enable ()
         {
             this.gElement.classList.remove ("disabled")
-            this.hEnable.trigger (this)
+            this.HEnable.trigger (this)
         }
 
         disable ()
         {
             this.gElement.classList.add ("disabled")
-            this.hDisable.trigger (this)
+            this.HDisable.trigger (this)
         }
 
         //#endregion

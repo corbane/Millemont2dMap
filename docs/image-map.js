@@ -1092,7 +1092,7 @@ var ImageMap;
     /**
      * A region is defined in the SVG file.
      *
-     * The regions MUST have a unique id and MUST defined inside the root element (see [[Map2d]]).
+     * The regions MUST have a unique id and MUST defined inside the root element (see [[SvgMap]]).
      *
      * Example:
      * ```svg
@@ -1110,12 +1110,12 @@ var ImageMap;
     var Region2d = /** @class */ (function () {
         function Region2d(map, el) {
             this.map = map;
-            this.hMouseOver = new ImageMap.Event.Handle();
-            this.hClick = new ImageMap.Event.Handle();
-            this.hSelect = new ImageMap.Event.Handle();
-            this.hUnselect = new ImageMap.Event.Handle();
-            this.hEnable = new ImageMap.Event.Handle();
-            this.hDisable = new ImageMap.Event.Handle();
+            this.HMouseOver = new ImageMap.Event.Handle();
+            this.HClick = new ImageMap.Event.Handle();
+            this.HSelect = new ImageMap.Event.Handle();
+            this.HUnselect = new ImageMap.Event.Handle();
+            this.HEnable = new ImageMap.Event.Handle();
+            this.HDisable = new ImageMap.Event.Handle();
             //#endregion
             //#region Selection
             this.selected = false;
@@ -1140,7 +1140,7 @@ var ImageMap;
             this.gElement.addEventListener("mouseover", this.onMouseOver.bind(this));
         };
         Region2d.prototype.onMouseOver = function (evt) {
-            this.hMouseOver.trigger(this, evt);
+            this.HMouseOver.trigger(this, evt);
         };
         Region2d.prototype.initContourPath = function (el) {
             //@ts-ignore
@@ -1207,16 +1207,16 @@ var ImageMap;
                 this.onClick({ ctrlKey: false, shiftKey: false });
         };
         Region2d.prototype.onClick = function (evt) {
-            this.hClick.trigger(this, evt);
+            this.HClick.trigger(this, evt);
             if (this.selected) {
                 this.selected = false;
                 this.updateDisplay();
-                this.hUnselect.trigger(this, evt);
+                this.HUnselect.trigger(this, evt);
             }
             else {
                 this.selected = true;
                 this.updateDisplay();
-                this.hSelect.trigger(this, evt);
+                this.HSelect.trigger(this, evt);
             }
         };
         //#endregion
@@ -1226,11 +1226,11 @@ var ImageMap;
         };
         Region2d.prototype.enable = function () {
             this.gElement.classList.remove("disabled");
-            this.hEnable.trigger(this);
+            this.HEnable.trigger(this);
         };
         Region2d.prototype.disable = function () {
             this.gElement.classList.add("disabled");
-            this.hDisable.trigger(this);
+            this.HDisable.trigger(this);
         };
         //#endregion
         //#region display
@@ -1422,9 +1422,9 @@ var ImageMap;
             this.regions.HRegionAdded.add(this.onRegionAdded.bind(this));
         };
         SvgMap.prototype.onRegionAdded = function (region) {
-            region.hSelect.add(this.onRegionSelected.bind(this));
-            region.hUnselect.add(this.onRegionUnelected.bind(this));
-            region.hMouseOver.add(this.onOverRegion.bind(this));
+            region.HSelect.add(this.onRegionSelected.bind(this));
+            region.HUnselect.add(this.onRegionUnelected.bind(this));
+            region.HMouseOver.add(this.onOverRegion.bind(this));
             this.updateDisplay();
         };
         //#endregion

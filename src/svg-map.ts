@@ -80,9 +80,9 @@ module ImageMap
 
         private onRegionAdded (region: Region2d)
         {
-            region.hSelect.add (this.onRegionSelected.bind (this))
-            region.hUnselect.add (this.onRegionUnelected.bind (this))
-            region.hMouseOver.add (this.onOverRegion.bind (this))
+            region.HSelect.add (this.onRegionSelected.bind (this))
+            region.HUnselect.add (this.onRegionUnelected.bind (this))
+            region.HMouseOver.add (this.onOverRegion.bind (this))
             this.updateDisplay ()
         }
 

@@ -24,8 +24,8 @@ function init (obj)
 
     for( var region of map.regions )
     {
-        region.hSelect.add (printSelected)
-        region.hUnselect.add (printSelected)
+        region.HSelect.add (printSelected)
+        region.HUnselect.add (printSelected)
     }
     
     console.log (map)
