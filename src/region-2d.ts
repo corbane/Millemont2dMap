@@ -53,10 +53,7 @@ module ImageMap
             this.gElement.appendChild (this.clipPath)
             this.gElement.appendChild (this.imageElement)
             this.gElement.appendChild (this.pathElement)
-            this.gElement.appendChild (this.infoPoint.svg)
 
-            this.map.root.appendChild (this.gElement)
-            
             this.id = this.pathElement.id
 
             this.initSelection ()
@@ -75,6 +72,7 @@ module ImageMap
             this.gElement.classList.add ("region2d")
             this.gElement.vElement = this
             this.gElement.addEventListener ("mouseover", this.onMouseOver.bind (this))
+            this.map.root.appendChild (this.gElement)
         }
 
         protected onMouseOver (evt: MouseEvent)
@@ -145,7 +143,8 @@ module ImageMap
         private initInfoPoint ()
         {
             //@ts-ignore
-            this.infoPoint = new InfoPoint (this.map)
+            this.infoPoint = new InfoPoint ()
+            this.infoPoint.attachTo (this.gElement, "center", "center")
             var bbox = this.pathElement.getBBox ()
             this.infoPoint.setPosition (bbox.x + bbox.width / 2, bbox.y + bbox.height / 2)
             this.infoPoint.setScale (10)

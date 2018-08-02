@@ -4,7 +4,6 @@ module ImageMap
 {
     export class InfoPoint
     {
-        readonly map: SvgMap
         readonly svg: SVGGraphicsElement
         protected popup: HTMLElement = null
 
@@ -15,15 +14,13 @@ module ImageMap
         protected y_origin: number
 
         // suggest
-        // var p = InfoPoint.createFrom (element)
+        // var p = ImageMap.InfoPoint.createFrom (element)
         // p.attachTo (element, position)
-        // bar pp = new InfoPoint ("query")
+        // bar pp = new ImageMap.Popup ("query")
         // pp.attachTo (p)
 
-        constructor (map: SvgMap)
+        constructor ()
         {
-            this.map = map
-
             this.svg = document.createElementNS ("http://www.w3.org/2000/svg", "g")
             this.svg.setAttributeNS (null, "pointer-events", "all")
             this.svg.addEventListener ("mouseover", this.showPopup.bind (this))
@@ -42,6 +39,32 @@ module ImageMap
 
             return ip
         }*/
+
+        attachTo (el: SVGGraphicsElement, x: "left"|"center"|"right"|number, y: "top"|"center"|"bottom"|number)
+        {
+            var bbox = el.getBBox ()
+
+            if( x == "left" )
+                x = bbox.x
+            else if( x == "center" )
+                x = bbox.x + bbox.width / 2
+            else if( x == "right" )
+                x = bbox.x + bbox.width
+
+            if( y == "top" )
+                y = bbox.y
+            else if( y == "center" )
+                y = bbox.y + bbox.height / 2
+            else if( y == "bottom" )
+                y = bbox.y + bbox.height
+
+            this.setPosition (x, y)
+
+            if( el.nextSibling )
+                el.parentNode.insertBefore (this.svg, el.nextSibling)
+            else
+                el.parentNode.appendChild (this.svg)
+        }
 
         protected updateSvg ()
         {

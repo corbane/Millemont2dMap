@@ -963,16 +963,17 @@ var __spread = (this && this.__spread) || function () {
 var ImageMap;
 (function (ImageMap) {
     var InfoPoint = /** @class */ (function () {
-        // var p = InfoPoint.createFrom (element)
+        // suggest
+        // var p = ImageMap.InfoPoint.createFrom (element)
         // p.attachTo (element, position)
-        // bar pp = new InfoPoint ("query")
+        // bar pp = new ImageMap.Popup ("query")
         // pp.attachTo (p)
-        function InfoPoint(map) {
+        function InfoPoint( /*map: SvgMap*/) {
+            //this.map = map
             this.popup = null;
             this.scale = 1;
             //#endregion
             this.active = false;
-            this.map = map;
             this.svg = document.createElementNS("http://www.w3.org/2000/svg", "g");
             this.svg.setAttributeNS(null, "pointer-events", "all");
             this.svg.addEventListener("mouseover", this.showPopup.bind(this));
@@ -990,6 +991,26 @@ var ImageMap;
 
             return ip
         }*/
+        InfoPoint.prototype.attachTo = function (el, x, y) {
+            var bbox = el.getBBox();
+            if (x == "left")
+                x = bbox.x;
+            else if (x == "center")
+                x = bbox.x + bbox.width / 2;
+            else if (x == "right")
+                x = bbox.x + bbox.width;
+            if (y == "top")
+                y = bbox.y;
+            else if (y == "center")
+                y = bbox.y + bbox.height / 2;
+            else if (y == "bottom")
+                y = bbox.y + bbox.height;
+            this.setPosition(x, y);
+            if (el.nextSibling)
+                el.parentNode.insertBefore(this.svg, el.nextSibling);
+            else
+                el.parentNode.appendChild(this.svg);
+        };
         InfoPoint.prototype.updateSvg = function () {
             this.svg.style.transform = "scale(" + this.scale + ")";
             this.svg.style.transformOrigin = this.x + "px " + this.y + "px"; // "center center"
@@ -1152,8 +1173,7 @@ var ImageMap;
             this.gElement.appendChild(this.clipPath);
             this.gElement.appendChild(this.imageElement);
             this.gElement.appendChild(this.pathElement);
-            this.gElement.appendChild(this.infoPoint.svg);
-            this.map.root.appendChild(this.gElement);
+            //this.gElement.appendChild (this.infoPoint.svg)
             this.id = this.pathElement.id;
             this.initSelection();
             this.updateDisplay();
@@ -1164,6 +1184,7 @@ var ImageMap;
             this.gElement.classList.add("region2d");
             this.gElement.vElement = this;
             this.gElement.addEventListener("mouseover", this.onMouseOver.bind(this));
+            this.map.root.appendChild(this.gElement);
         };
         Region2d.prototype.onMouseOver = function (evt) {
             this.HMouseOver.trigger(this, evt);
@@ -1212,7 +1233,8 @@ var ImageMap;
         };
         Region2d.prototype.initInfoPoint = function () {
             //@ts-ignore
-            this.infoPoint = new ImageMap.InfoPoint(this.map);
+            this.infoPoint = new ImageMap.InfoPoint( /*this.map*/);
+            this.infoPoint.attachTo(this.gElement, "center", "center");
             var bbox = this.pathElement.getBBox();
             this.infoPoint.setPosition(bbox.x + bbox.width / 2, bbox.y + bbox.height / 2);
             this.infoPoint.setScale(10);
