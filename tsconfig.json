@@ -1,14 +1,14 @@
 {
     "compilerOptions": {
         "outDir": "build",
-        "target": "es5",
         "outFile": "build/image-map.js",
         "sourceMap": true,
         "allowJs": true,
         "downlevelIteration": true,
+        /*"target": "es5",*/
         "lib": [
             "dom",
-            "es6"
+            "es2015"
         ]
     },
     "exclude": [

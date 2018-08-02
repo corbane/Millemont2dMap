@@ -1,4 +1,4 @@
-/// <reference path="map-2d.ts" />
+/// <reference path="svg-map.ts" />
 
 declare interface Element
 {

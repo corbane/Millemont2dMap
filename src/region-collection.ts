@@ -1,5 +1,5 @@
 /// <reference path="region-2d.ts" />
-/// <reference path="map-2d.ts" />
+/// <reference path="svg-map.ts" />
 /// <reference path="event.ts" />
 
 module ImageMap
@@ -11,7 +11,7 @@ module ImageMap
         HRegionAdded = new Event.Handle <(region: Region2d) => void> ()
         HRegionRemoved = new Event.Handle <(region: Region2d) => void> ()
         
-        constructor (protected parent: Map2d)
+        constructor (protected parent: SvgMap)
         { }
 
         add (el: SVGGraphicsElement|string): Region2d

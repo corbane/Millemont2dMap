@@ -1,4 +1,4 @@
-/// <reference path="map-2d.ts" />
+/// <reference path="svg-map.ts" />
 /// <reference path="info-point.ts" />
 /// <reference path="event.ts" />
 
@@ -33,7 +33,7 @@ module ImageMap
         readonly hEnable    = new ImageMap.Event.Handle <(region: this) => void> ()
         readonly hDisable   = new ImageMap.Event.Handle <(region: this) => void> ()
 
-        constructor (readonly map: Map2d, el: SVGGraphicsElement|string)
+        constructor (readonly map: SvgMap, el: SVGGraphicsElement|string)
         {
             this.initGlobalElement ()
             this.initContourPath (el)

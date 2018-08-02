@@ -28,7 +28,7 @@ module ImageMap
      * </svg>
      * ```
      */
-    export class Map2d
+    export class SvgMap
     {
         readonly background: SVGImageElement
 
@@ -58,7 +58,7 @@ module ImageMap
                     this.regions.add (childs[i] as SVGGraphicsElement)
                 }
             }
-            
+
             this.initFilters ()
 
             // Initialize svg container
@@ -66,14 +66,14 @@ module ImageMap
             this.container.classList.add ("image-map")
             this.container.setAttribute ("width", "100%")
             this.container.setAttribute ("height", "100%")
-            this.restoreZoom ()
+            this.zoomAll ()
         }
 
         //#region Regions
 
         readonly regions = new RegionCollection (this)
 
-        initRegions ()
+        private initRegions ()
         {
             this.regions.HRegionAdded.add (this.onRegionAdded.bind (this))
         }
@@ -98,7 +98,7 @@ module ImageMap
             this.container.viewBox.baseVal.height = b.height + margin*2
         }
 
-        restoreZoom ()
+        zoomAll ()
         {
             this.zoomTo (this.background.getBBox ())
         }
@@ -266,7 +266,7 @@ module ImageMap
 
         private defsElement: SVGDefsElement
 
-        initFilters ()
+        private initFilters ()
         {
             var defs = this.container.querySelector ("defs") as SVGDefsElement
             if( !defs )
@@ -277,7 +277,7 @@ module ImageMap
             this.defsElement = defs
         }
 
-        private addFilter (id: string, def: string = null)
+        addFilter (id: string, def: string = null)
         {
             var doc = this.container.ownerDocument
             if( def )

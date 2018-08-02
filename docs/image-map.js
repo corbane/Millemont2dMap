@@ -1057,7 +1057,7 @@ var ImageMap;
                     catch (e_1_1) { e_1 = { error: e_1_1 }; }
                     finally {
                         try {
-                            if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                            if (_c && !_c.done && (_a = _b["return"])) _a.call(_b);
                         }
                         finally { if (e_1) throw e_1.error; }
                     }
@@ -1084,7 +1084,7 @@ var ImageMap;
         Event.Handle = Handle;
     })(Event = ImageMap.Event || (ImageMap.Event = {}));
 })(ImageMap || (ImageMap = {}));
-/// <reference path="map-2d.ts" />
+/// <reference path="svg-map.ts" />
 /// <reference path="info-point.ts" />
 /// <reference path="event.ts" />
 var ImageMap;
@@ -1176,7 +1176,7 @@ var ImageMap;
                     catch (e_2_1) { e_2 = { error: e_2_1 }; }
                     finally {
                         try {
-                            if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                            if (_c && !_c.done && (_a = _b["return"])) _a.call(_b);
                         }
                         finally { if (e_2) throw e_2.error; }
                     }
@@ -1253,7 +1253,7 @@ var ImageMap;
     ImageMap.Region2d = Region2d;
 })(ImageMap || (ImageMap = {}));
 /// <reference path="region-2d.ts" />
-/// <reference path="map-2d.ts" />
+/// <reference path="svg-map.ts" />
 /// <reference path="event.ts" />
 var ImageMap;
 (function (ImageMap) {
@@ -1291,7 +1291,7 @@ var ImageMap;
             catch (e_3_1) { e_3 = { error: e_3_1 }; }
             finally {
                 try {
-                    if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                    if (_c && !_c.done && (_a = _b["return"])) _a.call(_b);
                 }
                 finally { if (e_3) throw e_3.error; }
             }
@@ -1322,7 +1322,7 @@ var ImageMap;
             catch (e_4_1) { e_4 = { error: e_4_1 }; }
             finally {
                 try {
-                    if (regions_1_1 && !regions_1_1.done && (_a = regions_1.return)) _a.call(regions_1);
+                    if (regions_1_1 && !regions_1_1.done && (_a = regions_1["return"])) _a.call(regions_1);
                 }
                 finally { if (e_4) throw e_4.error; }
             }
@@ -1374,8 +1374,8 @@ var ImageMap;
      * </svg>
      * ```
      */
-    var Map2d = /** @class */ (function () {
-        function Map2d(container) {
+    var SvgMap = /** @class */ (function () {
+        function SvgMap(container) {
             this.container = container;
             //#region Regions
             this.regions = new ImageMap.RegionCollection(this);
@@ -1416,12 +1416,12 @@ var ImageMap;
             this.container.classList.add("image-map");
             this.container.setAttribute("width", "100%");
             this.container.setAttribute("height", "100%");
-            this.restoreZoom();
+            this.zoomAll();
         }
-        Map2d.prototype.initRegions = function () {
+        SvgMap.prototype.initRegions = function () {
             this.regions.HRegionAdded.add(this.onRegionAdded.bind(this));
         };
-        Map2d.prototype.onRegionAdded = function (region) {
+        SvgMap.prototype.onRegionAdded = function (region) {
             region.hSelect.add(this.onRegionSelected.bind(this));
             region.hUnselect.add(this.onRegionUnelected.bind(this));
             region.hMouseOver.add(this.onOverRegion.bind(this));
@@ -1429,20 +1429,20 @@ var ImageMap;
         };
         //#endregion
         //#region Zoom
-        Map2d.prototype.zoomTo = function (b, margin) {
+        SvgMap.prototype.zoomTo = function (b, margin) {
             if (margin === void 0) { margin = 0; }
             this.container.viewBox.baseVal.x = b.x - margin;
             this.container.viewBox.baseVal.y = b.y - margin;
             this.container.viewBox.baseVal.width = b.width + margin * 2;
             this.container.viewBox.baseVal.height = b.height + margin * 2;
         };
-        Map2d.prototype.restoreZoom = function () {
+        SvgMap.prototype.zoomAll = function () {
             this.zoomTo(this.background.getBBox());
         };
-        Map2d.prototype.select = function (region) {
+        SvgMap.prototype.select = function (region) {
             region.select();
         };
-        Map2d.prototype.unselect = function (region) {
+        SvgMap.prototype.unselect = function (region) {
             if (region === void 0) { region = null; }
             if (region)
                 region.unselect();
@@ -1451,10 +1451,10 @@ var ImageMap;
                     (this.selectedSapes.splice(0, 1))[0].unselect();
             }
         };
-        Map2d.prototype.getSelected = function () {
+        SvgMap.prototype.getSelected = function () {
             return this.selectedSapes.slice(0);
         };
-        Map2d.prototype.onRegionSelected = function (region, evt) {
+        SvgMap.prototype.onRegionSelected = function (region, evt) {
             if (!(evt.shiftKey || evt.ctrlKey)) {
                 while (this.selectedSapes.length) {
                     var r = (this.selectedSapes.splice(0, 1))[0];
@@ -1465,7 +1465,7 @@ var ImageMap;
             this.selectedSapes.push(region);
             this.updateDisplay();
         };
-        Map2d.prototype.onRegionUnelected = function (region, evt) {
+        SvgMap.prototype.onRegionUnelected = function (region, evt) {
             var i = this.selectedSapes.indexOf(region);
             if (i == -1)
                 return;
@@ -1476,14 +1476,14 @@ var ImageMap;
             }
             this.updateDisplay();
         };
-        Map2d.prototype.onBackgroundClick = function (evt) {
+        SvgMap.prototype.onBackgroundClick = function (evt) {
             if (evt.target != this.background)
                 return;
             while (this.selectedSapes.length)
                 (this.selectedSapes.splice(0, 1))[0].unselect();
             this.updateDisplay();
         };
-        Map2d.prototype.setDisplayMode = function (mode) {
+        SvgMap.prototype.setDisplayMode = function (mode) {
             if (this.displayMode == mode)
                 return;
             this.displayMode = mode;
@@ -1498,12 +1498,12 @@ var ImageMap;
         /**
          * Active or desactive the mouse over event for mobile view.
          */
-        Map2d.prototype.setMobileMode = function (v) {
+        SvgMap.prototype.setMobileMode = function (v) {
             if (v === void 0) { v = true; }
             this.mobileMode = v;
             this.updateDisplay();
         };
-        Map2d.prototype.updateDisplay = function () {
+        SvgMap.prototype.updateDisplay = function () {
             var e_5, _a, e_6, _b, e_7, _c;
             if (this.mobileMode) {
                 if (this.selectedSapes.length)
@@ -1521,7 +1521,7 @@ var ImageMap;
                 catch (e_5_1) { e_5 = { error: e_5_1 }; }
                 finally {
                     try {
-                        if (_e && !_e.done && (_a = _d.return)) _a.call(_d);
+                        if (_e && !_e.done && (_a = _d["return"])) _a.call(_d);
                     }
                     finally { if (e_5) throw e_5.error; }
                 }
@@ -1534,7 +1534,7 @@ var ImageMap;
                 catch (e_6_1) { e_6 = { error: e_6_1 }; }
                 finally {
                     try {
-                        if (_g && !_g.done && (_b = _f.return)) _b.call(_f);
+                        if (_g && !_g.done && (_b = _f["return"])) _b.call(_f);
                     }
                     finally { if (e_6) throw e_6.error; }
                 }
@@ -1550,25 +1550,25 @@ var ImageMap;
                 catch (e_7_1) { e_7 = { error: e_7_1 }; }
                 finally {
                     try {
-                        if (_j && !_j.done && (_c = _h.return)) _c.call(_h);
+                        if (_j && !_j.done && (_c = _h["return"])) _c.call(_h);
                     }
                     finally { if (e_7) throw e_7.error; }
                 }
             }
         };
-        Map2d.prototype.onOverRegion = function (region, evt) {
+        SvgMap.prototype.onOverRegion = function (region, evt) {
             if (this.mobileMode)
                 return;
             this.background.onmouseover = this.onOverBackground.bind(this);
             this.setDisplayMode("ghost");
         };
-        Map2d.prototype.onOverBackground = function (region, evt) {
+        SvgMap.prototype.onOverBackground = function (region, evt) {
             if (this.mobileMode)
                 return;
             this.background.onmouseover = null;
             this.setDisplayMode("normal");
         };
-        Map2d.prototype.initFilters = function () {
+        SvgMap.prototype.initFilters = function () {
             var defs = this.container.querySelector("defs");
             if (!defs) {
                 defs = this.container.ownerDocument.createElementNS("http://www.w3.org/2000/svg", "defs");
@@ -1576,7 +1576,7 @@ var ImageMap;
             }
             this.defsElement = defs;
         };
-        Map2d.prototype.addFilter = function (id, def) {
+        SvgMap.prototype.addFilter = function (id, def) {
             if (def === void 0) { def = null; }
             var doc = this.container.ownerDocument;
             if (def) {
@@ -1590,11 +1590,11 @@ var ImageMap;
                 //TODO default & global filters
             }
         };
-        return Map2d;
+        return SvgMap;
     }());
-    ImageMap.Map2d = Map2d;
+    ImageMap.SvgMap = SvgMap;
 })(ImageMap || (ImageMap = {}));
-/// <reference path="map-2d.ts" />
+/// <reference path="svg-map.ts" />
 /// <reference path="vendor/mobile-detect.js" />
 /// <reference path="image-map.ts" />
 //# sourceMappingURL=image-map.js.map
