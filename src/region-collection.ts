@@ -4,26 +4,26 @@
 
 module ImageMap
 {
-    export class RegionCollection implements Iterable <Region2d>
+    export class RegionCollection implements Iterable <Region2d> // == <g id="regions"> ... </g>
     {
         protected registry: Region2d [] = []
    
         HRegionAdded = new Event.Handle <(region: Region2d) => void> ()
         HRegionRemoved = new Event.Handle <(region: Region2d) => void> ()
         
-        constructor (protected parent: SvgMap)
+        constructor (protected map: SvgMap)
         { }
 
-        add (el: SVGGraphicsElement|string|Region2d.IJson|Region2d.IJson []): Region2d
+        add (def: Region2d.TDefinition|Region2d.TDefinition[]): Region2d
         {
-            if( Array.isArray (el) )
+            if( Array.isArray (def) )
             {
-                for( var r of el )
+                for( var r of def )
                     this.add (r)
                 return
             }
             
-            var region = new Region2d (this.parent, el)
+            var region = new Region2d (this.map, def)
             this.registry.push (region)
 
             // Initialize popup info
@@ -56,7 +56,7 @@ module ImageMap
 
         get (id: string): Region2d
         {
-            var el = this.parent.root.getElementById (id)
+            var el = this.map.root.getElementById (id)
             if( el )
                 return el.parentElement.vElement as Region2d
 

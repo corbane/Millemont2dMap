@@ -16,16 +16,12 @@ module ImageMap
         protected h: number
         protected scale = 1
 
-        // suggest
-        // bar pp = new ImageMap.Popup ("query")
-        // pp.attachTo (InfoPoint)
-
-        constructor (readonly doc: Document, el: SVGElement = null)
+        constructor (readonly doc: Document, definition: SVGElement|string = null)
         {
             this.root = doc.querySelector ("svg") as SVGSVGElement
 
-            if( el )
-                this.symbol = this.getSymbolFrom (el)
+            if( definition )
+                this.symbol = this.getSymbolFrom (definition)
             else
                 this.symbol = this.getStandardSymbol ()
 
@@ -44,8 +40,7 @@ module ImageMap
 
         private symbol: SVGSymbolElement
 
-        // createFromTemplate
-        protected getSymbolFrom (el: SVGElement): SVGSymbolElement
+        protected getSymbolFrom (definition: SVGElement|string): SVGSymbolElement
         {
             var defs = this.root.querySelector ("defs")
             if( !defs )
@@ -54,14 +49,17 @@ module ImageMap
                 this.root.appendChild (defs)
             }
 
-            if( el.tagName.toLowerCase () == "symbol" )
+            if( typeof definition == "string" )
+                definition = this.doc.querySelector (definition) as SVGElement
+
+            if( definition.tagName.toLowerCase () == "symbol" )
             {
-                var s = el.cloneNode (true) as SVGSymbolElement
+                var s = definition.cloneNode (true) as SVGSymbolElement
             }
             else
             {
                 var s = this.doc.createElementNS ("http://www.w3.org/2000/svg", "symbol")
-                s.appendChild (el)
+                s.appendChild (definition)
             }
 
             s.id = newId ()
@@ -224,5 +222,16 @@ module ImageMap
         }
 
         //#endregion
+    }
+
+    export module InfoPoint
+    {
+        export interface IJson
+        {
+            "data-for": string
+            scale: number
+            offsetX: number
+            offdetY: number
+        }
     }
 }

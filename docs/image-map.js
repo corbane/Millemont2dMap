@@ -67,19 +67,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var ImageMap;
 (function (ImageMap) {
     var InfoPoint = /** @class */ (function () {
-        // suggest
-        // bar pp = new ImageMap.Popup ("query")
-        // pp.attachTo (InfoPoint)
-        function InfoPoint(doc, el) {
-            if (el === void 0) { el = null; }
+        function InfoPoint(doc, definition) {
+            if (definition === void 0) { definition = null; }
             this.doc = doc;
             this.popup = null;
             this.ox = 0;
             this.oy = 0;
             this.scale = 1;
             this.root = doc.querySelector("svg");
-            if (el)
-                this.symbol = this.getSymbolFrom(el);
+            if (definition)
+                this.symbol = this.getSymbolFrom(definition);
             else
                 this.symbol = this.getStandardSymbol();
             this.x = this.symbol.viewBox.baseVal.x;
@@ -92,19 +89,20 @@ var ImageMap;
             this.useElement.addEventListener("mouseout", this.hidePopup.bind(this));
             //this.updateSvg ()
         }
-        // createFromTemplate
-        InfoPoint.prototype.getSymbolFrom = function (el) {
+        InfoPoint.prototype.getSymbolFrom = function (definition) {
             var defs = this.root.querySelector("defs");
             if (!defs) {
                 defs = this.doc.createElementNS("http://www.w3.org/2000/svg", "defs");
                 this.root.appendChild(defs);
             }
-            if (el.tagName.toLowerCase() == "symbol") {
-                var s = el.cloneNode(true);
+            if (typeof definition == "string")
+                definition = this.doc.querySelector(definition);
+            if (definition.tagName.toLowerCase() == "symbol") {
+                var s = definition.cloneNode(true);
             }
             else {
                 var s = this.doc.createElementNS("http://www.w3.org/2000/svg", "symbol");
-                s.appendChild(el);
+                s.appendChild(definition);
             }
             s.id = ImageMap.newId();
             defs.appendChild(s);
@@ -303,7 +301,7 @@ var ImageMap;
      * ```
      */
     var Region2d = /** @class */ (function () {
-        function Region2d(map, contour) {
+        function Region2d(map, def) {
             this.map = map;
             this.HMouseOver = new ImageMap.Event.Handle();
             this.HClick = new ImageMap.Event.Handle();
@@ -316,13 +314,9 @@ var ImageMap;
             this.selected = false;
             this.doc = map.doc;
             this.initGlobalElement();
-            this.map.root.appendChild(this.gElement);
-            this.initContourPath(contour);
-            this.gElement.appendChild(this.pathElement);
+            this.initContourPath(def);
             this.id = this.pathElement.id;
             this.initClippedImage();
-            this.gElement.appendChild(this.clipPath);
-            this.gElement.appendChild(this.imageElement);
             this.initInfoPoint();
             this.initSelection();
             this.updateDisplay();
@@ -333,28 +327,42 @@ var ImageMap;
             this.gElement.classList.add("region2d");
             this.gElement.vElement = this;
             this.gElement.addEventListener("mouseover", this.onMouseOver.bind(this));
+            this.map.root.appendChild(this.gElement);
         };
         Region2d.prototype.onMouseOver = function (evt) {
             this.HMouseOver.trigger(this, evt);
         };
-        Region2d.prototype.initContourPath = function (el) {
-            if (typeof el == "string")
+        Region2d.prototype.initContourPath = function (def) {
+            if (typeof def == "string")
                 //@ts-ignore
-                this.pathElement = map.container.ownerDocument.querySelector(el);
-            else if (el instanceof SVGGraphicsElement)
+                this.pathElement = this.doc.querySelector(def);
+            else if (def instanceof SVGGraphicsElement)
                 //@ts-ignore
-                this.pathElement = el;
+                this.pathElement = def;
             else {
-                var p = this.doc.createElementNS("http://www.w3.org/2000/svg", "polygon");
-                p.id = el._id;
-                p.setAttribute("class", el._class || "");
-                p.setAttribute("points", el._points);
                 //@ts-ignore
-                this.pathElement = p;
-                this.gElement.appendChild(p);
+                this.pathElement = this.createRegionElement(def);
+                this.gElement.appendChild(this.pathElement);
             }
-            //this.pathElement = typeof el == "string" ? map.container.ownerDocument.querySelector (el) : el
             this.pathElement.classList.add("path");
+            this.gElement.appendChild(this.pathElement);
+        };
+        Region2d.prototype.createRegionElement = function (def) {
+            if (def.polygon) {
+                var poly = this.doc.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                poly.id = def.id;
+                poly.setAttribute("class", def["class"] || "");
+                poly.setAttribute("points", def.polygon);
+                return poly;
+            }
+            else if (def.path) {
+                var path = this.doc.createElementNS("http://www.w3.org/2000/svg", "path");
+                path.id = def.id;
+                path.setAttribute("class", def["class"] || "");
+                path.setAttribute("d", def.path);
+                return path;
+            }
+            throw "Unable to read region definition";
         };
         Region2d.prototype.initClippedImage = function () {
             var e_2, _a;
@@ -392,6 +400,8 @@ var ImageMap;
                 default:
                     throw "Not implemented";
             }
+            this.gElement.appendChild(this.clipPath);
+            this.gElement.appendChild(this.imageElement);
         };
         Region2d.prototype.initInfoPoint = function () {
             var s = this.doc.querySelector("defs > symbol#info-point");
@@ -470,31 +480,31 @@ var ImageMap;
 var ImageMap;
 (function (ImageMap) {
     var RegionCollection = /** @class */ (function () {
-        function RegionCollection(parent) {
-            this.parent = parent;
+        function RegionCollection(map) {
+            this.map = map;
             this.registry = [];
             this.HRegionAdded = new ImageMap.Event.Handle();
             this.HRegionRemoved = new ImageMap.Event.Handle();
         }
-        RegionCollection.prototype.add = function (el) {
+        RegionCollection.prototype.add = function (def) {
             var e_3, _a;
-            if (Array.isArray(el)) {
+            if (Array.isArray(def)) {
                 try {
-                    for (var el_1 = __values(el), el_1_1 = el_1.next(); !el_1_1.done; el_1_1 = el_1.next()) {
-                        var r = el_1_1.value;
+                    for (var def_1 = __values(def), def_1_1 = def_1.next(); !def_1_1.done; def_1_1 = def_1.next()) {
+                        var r = def_1_1.value;
                         this.add(r);
                     }
                 }
                 catch (e_3_1) { e_3 = { error: e_3_1 }; }
                 finally {
                     try {
-                        if (el_1_1 && !el_1_1.done && (_a = el_1["return"])) _a.call(el_1);
+                        if (def_1_1 && !def_1_1.done && (_a = def_1["return"])) _a.call(def_1);
                     }
                     finally { if (e_3) throw e_3.error; }
                 }
                 return;
             }
-            var region = new ImageMap.Region2d(this.parent, el);
+            var region = new ImageMap.Region2d(this.map, def);
             this.registry.push(region);
             // Initialize popup info
             var popup = document.querySelector("[data-for=\"" + region.id + "\"]"); //TODO: make popup external
@@ -527,7 +537,7 @@ var ImageMap;
             return -1;
         };
         RegionCollection.prototype.get = function (id) {
-            var el = this.parent.root.getElementById(id);
+            var el = this.map.root.getElementById(id);
             if (el)
                 return el.parentElement.vElement;
             return null;
@@ -642,83 +652,99 @@ var ImageMap;
             this.root.classList.add("image-map");
             this.root.setAttribute("width", "100%");
             this.root.setAttribute("height", "100%");
-            this.initBackground();
-            this.zoomAll();
-            this.initFilters();
-            this.getRegionsDefinitions().then(function (els) {
-                _this.initRegions(els);
+            this.loadDefinitions(object.getAttribute("data-url"))
+                .then(function (def) {
+                _this.initBackground(def.background);
+                _this.initRegions(def.regions);
+                _this.zoomToAll();
+                _this.initFilters();
                 _this.HLoaded.trigger(_this);
             });
         }
-        /** @hidden */
-        SvgMap.prototype.getClientRectFor = function (el) {
-            var a = this.container.getBoundingClientRect(), margin = Number.parseFloat(window.getComputedStyle(this.container).borderWidth);
-            if (typeof el == "string")
-                var b = this.doc.querySelector(el).getBoundingClientRect();
-            else
-                var b = el.getBoundingClientRect();
-            //var b = this.doc.querySelector ("#cochets").getBoundingClientRect () as DOMRect
-            return {
-                width: b.width,
-                height: b.height,
-                x: a.x + margin + b.x,
-                y: a.y + margin + b.y,
-                left: a.x + margin + b.x,
-                right: a.x + margin + b.x + b.width,
-                top: a.y + margin + b.y,
-                bottom: a.y + margin + b.y + b.height
-            };
+        SvgMap.prototype.load = function (url) {
+            this.regions.clear();
+            this.loadDefinitions(url);
         };
-        //#region Background
-        SvgMap.prototype.initBackground = function () {
-            var el = this.doc.querySelector(this.options.backgroundSelector);
-            if (!el)
-                throw "Can not find the background element";
-            //@ts-ignore
-            this.background = el;
-            this.background.classList.add("background");
-            this.background.onclick = this.onBackgroundClick.bind(this);
-        };
-        SvgMap.prototype.getRegionsDefinitions = function () {
+        SvgMap.prototype.loadDefinitions = function (url) {
             return __awaiter(this, void 0, void 0, function () {
-                var url, selector, els;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            url = this.container.getAttribute("data-region-url");
                             if (!url) return [3 /*break*/, 2];
-                            return [4 /*yield*/, fetch(url).then(function (rep) { return rep.json(); })];
-                        case 1: return [2 /*return*/, (_a.sent()).regions];
-                        case 2:
-                            selector = this.container.getAttribute("data-region-selector");
-                            els = selector
-                                ? this.doc.querySelectorAll(selector)
-                                : this.doc.querySelectorAll(this.options.regionsSelector);
-                            return [2 /*return*/, els];
+                            return [4 /*yield*/, (fetch(url).then(function (rep) { return rep.json(); }))];
+                        case 1: return [2 /*return*/, _a.sent()];
+                        case 2: return [2 /*return*/, {}];
                     }
                 });
             });
         };
-        SvgMap.prototype.initRegions = function (els) {
-            var e_6, _a;
-            this.regions.HRegionAdded.add(this.onRegionAdded.bind(this));
-            try {
-                /*var selector = this.container.getAttribute ("data-region-selector")
-                var els = selector
-                        ? this.doc.querySelectorAll (selector)
-                        : this.doc.querySelectorAll (this.options.regionsSelector)*/
+        //#region Background
+        SvgMap.prototype.initBackground = function (def) {
+            if (def) {
                 //@ts-ignore
-                for (var els_1 = __values(els), els_1_1 = els_1.next(); !els_1_1.done; els_1_1 = els_1.next()) {
-                    var el = els_1_1.value;
-                    this.regions.add(el);
+                this.background = this.createBackgroundElement(def);
+                if (this.root.firstChild)
+                    this.root.insertBefore(this.root.firstChild, this.background);
+                else
+                    this.root.appendChild(this.background);
+            }
+            else {
+                //@ts-ignore
+                this.background = this.container.hasAttribute("data-background")
+                    ? this.doc.querySelector(this.container.getAttribute("data-background"))
+                    : this.doc.querySelector(this.options.backgroundSelector);
+            }
+            if (!this.background)
+                throw "Can not find the background element";
+            this.background.classList.add("background");
+            this.background.onclick = this.onBackgroundClick.bind(this);
+        };
+        SvgMap.prototype.createBackgroundElement = function (def) {
+            var img = this.doc.createElementNS("http://www.w3.org/2000/svg", "image");
+            img.setAttributeNS("http://www.w3.org/1999/xlink", "href", def.href);
+            img.id = def.id || "background";
+            img.setAttribute("x", def.x.toString());
+            img.setAttribute("y", def.y.toString());
+            img.setAttribute("width", def.width.toString());
+            img.setAttribute("height", def.height.toString());
+            return img;
+        };
+        SvgMap.prototype.initRegions = function (defs) {
+            var e_6, _a, e_7, _b;
+            this.regions.HRegionAdded.add(this.onRegionAdded.bind(this));
+            if (defs) {
+                try {
+                    for (var defs_1 = __values(defs), defs_1_1 = defs_1.next(); !defs_1_1.done; defs_1_1 = defs_1.next()) {
+                        var el = defs_1_1.value;
+                        this.regions.add(el);
+                    }
+                }
+                catch (e_6_1) { e_6 = { error: e_6_1 }; }
+                finally {
+                    try {
+                        if (defs_1_1 && !defs_1_1.done && (_a = defs_1["return"])) _a.call(defs_1);
+                    }
+                    finally { if (e_6) throw e_6.error; }
                 }
             }
-            catch (e_6_1) { e_6 = { error: e_6_1 }; }
-            finally {
+            else {
+                var els = this.container.hasAttribute("data-regions-selector")
+                    ? this.doc.querySelectorAll(this.container.getAttribute("data-regions-selector"))
+                    : this.doc.querySelectorAll(this.options.regionsSelector);
                 try {
-                    if (els_1_1 && !els_1_1.done && (_a = els_1["return"])) _a.call(els_1);
+                    //@ts-ignore
+                    for (var els_1 = __values(els), els_1_1 = els_1.next(); !els_1_1.done; els_1_1 = els_1.next()) {
+                        var el = els_1_1.value;
+                        this.regions.add(el);
+                    }
                 }
-                finally { if (e_6) throw e_6.error; }
+                catch (e_7_1) { e_7 = { error: e_7_1 }; }
+                finally {
+                    try {
+                        if (els_1_1 && !els_1_1.done && (_b = els_1["return"])) _b.call(els_1);
+                    }
+                    finally { if (e_7) throw e_7.error; }
+                }
             }
         };
         SvgMap.prototype.onRegionAdded = function (region) {
@@ -736,7 +762,7 @@ var ImageMap;
             this.root.viewBox.baseVal.width = b.width + margin * 2;
             this.root.viewBox.baseVal.height = b.height + margin * 2;
         };
-        SvgMap.prototype.zoomAll = function () {
+        SvgMap.prototype.zoomToAll = function () {
             this.zoomTo(this.background.getBBox());
         };
         SvgMap.prototype.select = function (region) {
@@ -807,7 +833,7 @@ var ImageMap;
             this.updateDisplay();
         };
         SvgMap.prototype.updateDisplay = function () {
-            var e_7, _a, e_8, _b, e_9, _c;
+            var e_8, _a, e_9, _b, e_10, _c;
             if (this.mobileMode) {
                 if (this.selectedSapes.length)
                     this.setDisplayMode("ghost");
@@ -821,12 +847,12 @@ var ImageMap;
                         s.disable();
                     }
                 }
-                catch (e_7_1) { e_7 = { error: e_7_1 }; }
+                catch (e_8_1) { e_8 = { error: e_8_1 }; }
                 finally {
                     try {
                         if (_e && !_e.done && (_a = _d["return"])) _a.call(_d);
                     }
-                    finally { if (e_7) throw e_7.error; }
+                    finally { if (e_8) throw e_8.error; }
                 }
                 try {
                     for (var _f = __values(this.selectedSapes), _g = _f.next(); !_g.done; _g = _f.next()) {
@@ -834,12 +860,12 @@ var ImageMap;
                         r.enable();
                     }
                 }
-                catch (e_8_1) { e_8 = { error: e_8_1 }; }
+                catch (e_9_1) { e_9 = { error: e_9_1 }; }
                 finally {
                     try {
                         if (_g && !_g.done && (_b = _f["return"])) _b.call(_f);
                     }
-                    finally { if (e_8) throw e_8.error; }
+                    finally { if (e_9) throw e_9.error; }
                 }
             }
             else //"normal"
@@ -850,12 +876,12 @@ var ImageMap;
                         s.disable();
                     }
                 }
-                catch (e_9_1) { e_9 = { error: e_9_1 }; }
+                catch (e_10_1) { e_10 = { error: e_10_1 }; }
                 finally {
                     try {
                         if (_j && !_j.done && (_c = _h["return"])) _c.call(_h);
                     }
-                    finally { if (e_9) throw e_9.error; }
+                    finally { if (e_10) throw e_10.error; }
                 }
             }
         };
@@ -872,7 +898,7 @@ var ImageMap;
             this.setDisplayMode("normal");
         };
         SvgMap.prototype.initFilters = function () {
-            var e_10, _a;
+            var e_11, _a;
             var defs = this.root.querySelector("defs");
             if (!defs) {
                 defs = this.doc.createElementNS("http://www.w3.org/2000/svg", "defs");
@@ -889,12 +915,12 @@ var ImageMap;
                     //this.addFilter (f.id, f.innerHTML)
                 }
             }
-            catch (e_10_1) { e_10 = { error: e_10_1 }; }
+            catch (e_11_1) { e_11 = { error: e_11_1 }; }
             finally {
                 try {
                     if (filters_1_1 && !filters_1_1.done && (_a = filters_1["return"])) _a.call(filters_1);
                 }
-                finally { if (e_10) throw e_10.error; }
+                finally { if (e_11) throw e_11.error; }
             }
         };
         return SvgMap;
@@ -907,6 +933,8 @@ var ImageMap;
                 this.regionsSelector = "g#regions > *";
                 this.infoPointSelector = "g#info-points > *";
                 this.filtersSelector = "defs > filter";
+                //background : selector|element
+                //regions: selector|elements
             }
             return Options;
         }());

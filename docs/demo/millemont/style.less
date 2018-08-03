@@ -1,0 +1,104 @@
+
+#millemont-demo
+{
+    .image-map-container
+    {
+        width: 80%;
+        max-width: 800px;
+        margin: 30px auto;
+        
+        object {
+            border: 8px dashed #F0F0F0;
+            transform: rotate(-1deg);
+        }
+
+        [data-for]
+        {
+            padding: 10px;
+            font-family: Arial, sans-serif;
+            font-size: 10pt;
+            background-color: rgba(255, 255, 255, 0.75);
+            box-shadow: 0px 0px 5px 0px rgba(206, 206, 206, 0.75);
+            border-radius: 6px;
+            /*border: 2px solid #FFD500;*/
+            position: absolute;
+            display: none;
+
+            /*&::before {
+                content: "";
+                width: 12px;
+                height: 12px;
+                transform: rotate(45deg);
+                background-color: white;
+                position: absolute;
+                left: -6px;
+                top: calc(50% - 6px);
+            }*/
+
+            > * {
+                margin: 0;
+            }
+        }
+    }
+}
+
+
+svg.image-map
+{
+    .background {
+        transition: all 0.5s;
+        filter: url(#blur-filter);
+    }
+
+    .region2d 
+    {
+        .path {
+            opacity: 0;
+            stroke: black;
+            stroke-width: 15;
+            fill: transparent;
+        }
+        .image {
+            opacity: 1;
+            transition: all 0.25s;
+        }
+
+        &:hover
+        {
+            .path {
+                opacity: 1;
+            }
+        }
+    }
+
+    .region2d.selected
+    {
+        .path {
+            opacity: 1 !important;
+            stroke: white;
+            filter: url(#blur-filter);
+        }
+    }
+}
+
+svg.image-map.normal-view
+{
+    .background {
+        opacity: 1;
+    }
+}
+
+svg.image-map.ghost-view
+{
+    .background {
+        opacity: 0.5;
+    }
+
+    .region2d.disabled
+    {
+        .image
+        {
+            opacity: 0.5;
+        }
+    }
+}

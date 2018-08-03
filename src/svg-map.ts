@@ -64,56 +64,70 @@ module ImageMap
             this.root.setAttribute ("width", "100%")
             this.root.setAttribute ("height", "100%")
             
-            this.initBackground ()
-            this.zoomAll ()
-
-            this.initFilters ()
-
-            this.getRegionsDefinitions ().then (els => 
+            this.loadDefinitions (object.getAttribute ("data-url") )
+            .then (def =>
             {
-                this.initRegions (els)
+                this.initBackground (def.background)
+                this.initRegions (def.regions)
+                this.zoomToAll ()
+                this.initFilters ()
                 this.HLoaded.trigger (this)
             })
-
-
         }
 
-        /** @hidden */
-        getClientRectFor (el: string|SVGGraphicsElement): DOMRect
+        load (url: string)
         {
-            var a = this.container.getBoundingClientRect () as DOMRect,
-                margin = Number.parseFloat (window.getComputedStyle (this.container).borderWidth)
-            
-            if( typeof el == "string" )
-                var b = this.doc.querySelector (el).getBoundingClientRect () as DOMRect
-            else
-                var b = el.getBoundingClientRect () as DOMRect
-            //var b = this.doc.querySelector ("#cochets").getBoundingClientRect () as DOMRect
+            this.regions.clear ()
+            this.loadDefinitions (url)
+        }
 
-            return {
-                width  : b.width,
-                height : b.height,
-                x      : a.x + margin + b.x,
-                y      : a.y + margin + b.y,
-                left   : a.x + margin + b.x,
-                right  : a.x + margin + b.x + b.width,
-                top    : a.y + margin + b.y,
-                bottom : a.y + margin + b.y + b.height
-            }
+        private async loadDefinitions (url: string)
+        {
+            if( url )
+                return <SvgMap.IJson> await (fetch (url).then (rep => rep.json ()))
+            
+            return <SvgMap.IJson> {}
         }
 
         //#region Background
 
-        private initBackground ()
+        private initBackground (def?: SvgMap.IJsonBackground)
         {
-            var el = this.doc.querySelector (this.options.backgroundSelector)
-            if( !el )
+            if( def )
+            {
+                //@ts-ignore
+                this.background = this.createBackgroundElement (def)
+
+                if( this.root.firstChild )
+                    this.root.insertBefore (this.root.firstChild, this.background)
+                else
+                    this.root.appendChild (this.background)
+            } 
+            else
+            {
+                //@ts-ignore
+                this.background = this.container.hasAttribute ("data-background")  
+                                ? this.doc.querySelector (this.container.getAttribute ("data-background") )
+                                : this.doc.querySelector (this.options.backgroundSelector)
+            }
+
+            if( !this.background )
                 throw "Can not find the background element"
                 
-            //@ts-ignore
-            this.background = el as SVGImageElement
             this.background.classList.add ("background")
             this.background.onclick = this.onBackgroundClick.bind (this)
+        }
+
+        private createBackgroundElement (def: SvgMap.IJsonBackground)
+        {
+            var img = this.doc.createElementNS ("http://www.w3.org/2000/svg", "image")
+            img.setAttributeNS ("http://www.w3.org/1999/xlink", "href", def.href)
+            img.id = def.id || "background"
+            img.setAttribute ("x", def.x.toString ())
+            img.setAttribute ("y", def.y.toString ())
+            img.setAttribute ("width", def.width.toString ())
+            img.setAttribute ("height", def.height.toString ())
+            return img
         }
 
         //#endregion
@@ -122,32 +136,25 @@ module ImageMap
 
         readonly regions = new RegionCollection (this)
 
-        private async getRegionsDefinitions (): Promise <NodeListOf <SVGGraphicsElement>|Region2d.IJson[]>
-        {
-            var url = this.container.getAttribute ("data-region-url") 
-            if( url )
-                return (await fetch (url).then (rep => rep.json ())).regions
-            
-            var selector = this.container.getAttribute ("data-region-selector") 
-            var els = selector 
-                    ? this.doc.querySelectorAll (selector)
-                    : this.doc.querySelectorAll (this.options.regionsSelector)
-                
-            return els as NodeListOf <SVGGraphicsElement>
-        }
-
-        private initRegions (els: NodeListOf <SVGGraphicsElement>|Region2d.IJson[])
+        private initRegions (defs: Region2d.IJson[])
         {
             this.regions.HRegionAdded.add (this.onRegionAdded.bind (this))
-
-            /*var selector = this.container.getAttribute ("data-region-selector") 
-            var els = selector 
-                    ? this.doc.querySelectorAll (selector)
-                    : this.doc.querySelectorAll (this.options.regionsSelector)*/
             
-            //@ts-ignore
-            for( var el of els )
-                this.regions.add (el)
+            if( defs )
+            {
+                for( var el of defs )
+                    this.regions.add (el)
+            }
+            else
+            {
+                var els = this.container.hasAttribute ("data-regions-selector")  
+                        ? this.doc.querySelectorAll (this.container.getAttribute ("data-regions-selector") )
+                        : this.doc.querySelectorAll (this.options.regionsSelector)
+            
+                //@ts-ignore
+                for( var el of els )
+                    this.regions.add (el)
+            }
         }
 
         private onRegionAdded (region: Region2d)
@@ -170,7 +177,7 @@ module ImageMap
             this.root.viewBox.baseVal.height = b.height + margin*2
         }
 
-        zoomAll ()
+        zoomToAll ()
         {
             this.zoomTo (this.background.getBBox ())
         }
@@ -370,12 +377,33 @@ module ImageMap
 
     export module SvgMap
     {
+        export interface IJson
+        {
+            "@type": "https://corbane.github.io/ImageMap/schema"
+            background: IJsonBackground
+            regions: Region2d.IJson []
+            infoPoints: InfoPoint.IJson
+        }
+
+        export interface IJsonBackground
+        {
+            "@type": "https://corbane.github.io/ImageMap/schema/background"
+            href: string
+            id?: string
+            x: number
+            y: number
+            width: number
+            height: number
+        }
+
         export class Options
         {
             backgroundSelector : string = "#background"
             regionsSelector    : string = "g#regions > *"
             infoPointSelector  : string = "g#info-points > *"
             filtersSelector    : string = "defs > filter"
+            //background : selector|element
+            //regions: selector|elements
         }
     }
 }

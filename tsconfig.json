@@ -4,9 +4,7 @@
         "outFile": "build/image-map.js",
         "sourceMap": true,
         "declaration": true,
-        /*"allowJs": true,*/
         "downlevelIteration": true,
-        /*"target": "es5",*/
         "lib": [
             "dom",
             "es2015"

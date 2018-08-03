@@ -41,24 +41,17 @@ module ImageMap
 
         private readonly doc: Document
 
-        constructor (readonly map: SvgMap, contour: SVGGraphicsElement|string|Region2d.IJson)
+        constructor (readonly map: SvgMap, def: Region2d.TDefinition)
         {
             this.doc = map.doc
             
             this.initGlobalElement ()
-            this.map.root.appendChild (this.gElement)
-
-            this.initContourPath (contour)
-            this.gElement.appendChild (this.pathElement)
+            this.initContourPath (def)
 
             this.id = this.pathElement.id
 
             this.initClippedImage ()
-            this.gElement.appendChild (this.clipPath)
-            this.gElement.appendChild (this.imageElement)
-
             this.initInfoPoint ()
-
             this.initSelection ()
 
             this.updateDisplay ()
@@ -75,6 +68,7 @@ module ImageMap
             this.gElement.classList.add ("region2d")
             this.gElement.vElement = this
             this.gElement.addEventListener ("mouseover", this.onMouseOver.bind (this))
+            this.map.root.appendChild (this.gElement)
         }
 
         private onMouseOver (evt: MouseEvent)
@@ -88,27 +82,44 @@ module ImageMap
 
         readonly pathElement: SVGGraphicsElement
 
-        private initContourPath (el: SVGGraphicsElement|string|Region2d.IJson)
+        private initContourPath (def: SVGGraphicsElement|string|Region2d.IJson)
         {
-            if( typeof el == "string"  )
+            if( typeof def == "string"  )
                 //@ts-ignore
-                this.pathElement = map.container.ownerDocument.querySelector (el)
-            else if( el instanceof SVGGraphicsElement )
+                this.pathElement = this.doc.querySelector (def)
+            else if( def instanceof SVGGraphicsElement )
                 //@ts-ignore
-                this.pathElement = el
+                this.pathElement = def
             else
             {
-                var p = this.doc.createElementNS ("http://www.w3.org/2000/svg", "polygon")
-                p.id = el._id
-                p.setAttribute ("class", el._class || "")
-                p.setAttribute ("points", el._points)
                 //@ts-ignore
-                this.pathElement = p
-                this.gElement.appendChild (p)
+                this.pathElement = this.createRegionElement (def)
+                this.gElement.appendChild (this.pathElement)
             }
 
-            //this.pathElement = typeof el == "string" ? map.container.ownerDocument.querySelector (el) : el
             this.pathElement.classList.add ("path")
+            this.gElement.appendChild (this.pathElement)
+        }
+
+        private createRegionElement (def: Region2d.IJson)
+        {
+            if( def.polygon )
+            {
+                var poly = this.doc.createElementNS ("http://www.w3.org/2000/svg", "polygon")
+                poly.id = def.id
+                poly.setAttribute ("class", def.class || "")
+                poly.setAttribute ("points", def.polygon)
+                return poly
+            }
+            else if( def.path )
+            {
+                var path = this.doc.createElementNS ("http://www.w3.org/2000/svg", "path")
+                path.id = def.id
+                path.setAttribute ("class", def.class || "")
+                path.setAttribute ("d", def.path)
+                return path
+            }
+            throw "Unable to read region definition"
         }
 
         //#endregion
@@ -150,6 +161,9 @@ module ImageMap
             default:
                 throw "Not implemented"
             }
+
+            this.gElement.appendChild (this.clipPath)
+            this.gElement.appendChild (this.imageElement)
         }
 
         //#endregion
@@ -267,11 +281,15 @@ module ImageMap
 
     export module Region2d
     {
+        export type TDefinition = string | SVGGraphicsElement | IJson
+
         export interface IJson
         {
-            _id: string
-            _points: string
-            _class?: string
+            "@type": "https://corbane.github.io/ImageMap/schema/region2d"
+            id: string
+            polygon?: string
+            path?: string
+            class?: string
         }
     }
 }

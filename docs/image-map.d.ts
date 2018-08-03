@@ -11,9 +11,9 @@ declare module ImageMap {
         protected w: number;
         protected h: number;
         protected scale: number;
-        constructor(doc: Document, el?: SVGElement);
+        constructor(doc: Document, definition?: SVGElement | string);
         private symbol;
-        protected getSymbolFrom(el: SVGElement): SVGSymbolElement;
+        protected getSymbolFrom(definition: SVGElement | string): SVGSymbolElement;
         protected getStandardSymbol(): SVGSymbolElement;
         attachTo(el: SVGGraphicsElement, x: "left" | "center" | "right" | number, y: "top" | "center" | "bottom" | number): void;
         setPosition(x: number, y: number): void;
@@ -27,6 +27,14 @@ declare module ImageMap {
         setPopup(popup: HTMLElement): void;
         showPopup(evt: MouseEvent): void;
         hidePopup(): void;
+    }
+    module InfoPoint {
+        interface IJson {
+            "data-for": string;
+            scale: number;
+            offsetX: number;
+            offdetY: number;
+        }
     }
 }
 declare module ImageMap.Event {
@@ -75,12 +83,13 @@ declare module ImageMap {
         readonly HEnable: Event.Handle<(region: this) => void>;
         readonly HDisable: Event.Handle<(region: this) => void>;
         private readonly doc;
-        constructor(map: SvgMap, contour: SVGGraphicsElement | string | Region2d.IJson);
+        constructor(map: SvgMap, def: Region2d.TDefinition);
         readonly gElement: SVGGElement;
         private initGlobalElement;
         private onMouseOver;
         readonly pathElement: SVGGraphicsElement;
         private initContourPath;
+        private createRegionElement;
         readonly imageElement: SVGImageElement;
         private clipPath;
         private initClippedImage;
@@ -98,21 +107,24 @@ declare module ImageMap {
         updateDisplay(): void;
     }
     module Region2d {
+        type TDefinition = string | SVGGraphicsElement | IJson;
         interface IJson {
-            _id: string;
-            _points: string;
-            _class?: string;
+            "@type": "https://corbane.github.io/ImageMap/schema/region2d";
+            id: string;
+            polygon?: string;
+            path?: string;
+            class?: string;
         }
     }
 }
 declare module ImageMap {
     class RegionCollection implements Iterable<Region2d> {
-        protected parent: SvgMap;
+        protected map: SvgMap;
         protected registry: Region2d[];
         HRegionAdded: Event.Handle<(region: Region2d) => void>;
         HRegionRemoved: Event.Handle<(region: Region2d) => void>;
-        constructor(parent: SvgMap);
-        add(el: SVGGraphicsElement | string | Region2d.IJson | Region2d.IJson[]): Region2d;
+        constructor(map: SvgMap);
+        add(def: Region2d.TDefinition | Region2d.TDefinition[]): Region2d;
         has(region: Region2d): boolean;
         indexOf(region: string | Region2d): number;
         get(id: string): Region2d;
@@ -154,15 +166,15 @@ declare module ImageMap {
         readonly root: SVGSVGElement;
         HLoaded: Event.Handle<(map: this) => void>;
         constructor(object: HTMLObjectElement);
-        /** @hidden */
-        getClientRectFor(el: string | SVGGraphicsElement): DOMRect;
+        load(url: string): void;
+        private loadDefinitions;
         private initBackground;
+        private createBackgroundElement;
         readonly regions: RegionCollection;
-        private getRegionsDefinitions;
         private initRegions;
         private onRegionAdded;
         zoomTo(b: SVGRect, margin?: number): void;
-        zoomAll(): void;
+        zoomToAll(): void;
         private selectedSapes;
         HSelectionChanged: Event.Handle<(map: this) => void>;
         select(region: Region2d): void;
@@ -191,6 +203,21 @@ declare module ImageMap {
         private initFilters;
     }
     module SvgMap {
+        interface IJson {
+            "@type": "https://corbane.github.io/ImageMap/schema";
+            background: IJsonBackground;
+            regions: Region2d.IJson[];
+            infoPoints: InfoPoint.IJson;
+        }
+        interface IJsonBackground {
+            "@type": "https://corbane.github.io/ImageMap/schema/background";
+            href: string;
+            id?: string;
+            x: number;
+            y: number;
+            width: number;
+            height: number;
+        }
         class Options {
             backgroundSelector: string;
             regionsSelector: string;
