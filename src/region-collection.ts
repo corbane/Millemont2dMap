@@ -73,6 +73,8 @@ module ImageMap
                 var del = this.registry.splice (i, 1)
 
                 this.HRegionRemoved.trigger (del[0])
+
+                del[0].dispose ()
             }
         }
 

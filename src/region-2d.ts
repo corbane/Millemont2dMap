@@ -57,6 +57,14 @@ module ImageMap
             this.updateDisplay ()
         }
 
+        dispose ()
+        {
+            this.gElement.parentNode.removeChild (this.gElement)
+
+            if( this.infoPoint )
+                this.infoPoint.dispose ()
+        }
+
         //#region Global element
 
         readonly gElement: SVGGElement

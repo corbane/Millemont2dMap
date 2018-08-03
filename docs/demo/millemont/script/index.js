@@ -1,5 +1,3 @@
-/// <reference path="../../../../../build/image-map.d.ts" />
-// <reference path="../script/" />
 var __values = (this && this.__values) || function (o) {
     var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
     if (m) return m.call(o);
@@ -41,5 +39,8 @@ function init(obj) {
 function toggleMobileView() {
     map.setMobileMode(event.target.checked);
 }
-//@ts-ignore
 toggleTabDemo(document.querySelector(".demo-tab-anchor"), 'tab-html-source');
+function loadDefinition(url) {
+    map.load(url);
+}
+//# sourceMappingURL=index.js.map

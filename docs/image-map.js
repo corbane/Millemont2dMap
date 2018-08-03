@@ -89,6 +89,11 @@ var ImageMap;
             this.useElement.addEventListener("mouseout", this.hidePopup.bind(this));
             //this.updateSvg ()
         }
+        InfoPoint.prototype.dispose = function () {
+            if (this.useElement.parentNode)
+                this.useElement.parentNode.removeChild(this.useElement);
+            this.symbol.parentNode.removeChild(this.symbol);
+        };
         InfoPoint.prototype.getSymbolFrom = function (definition) {
             var defs = this.root.querySelector("defs");
             if (!defs) {
@@ -321,6 +326,11 @@ var ImageMap;
             this.initSelection();
             this.updateDisplay();
         }
+        Region2d.prototype.dispose = function () {
+            this.gElement.parentNode.removeChild(this.gElement);
+            if (this.infoPoint)
+                this.infoPoint.dispose();
+        };
         Region2d.prototype.initGlobalElement = function () {
             //@ts-ignore
             this.gElement = this.doc.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -556,6 +566,7 @@ var ImageMap;
                         continue;
                     var del = this.registry.splice(i, 1);
                     this.HRegionRemoved.trigger(del[0]);
+                    del[0].dispose();
                 }
             }
             catch (e_5_1) { e_5 = { error: e_5_1 }; }
@@ -662,8 +673,11 @@ var ImageMap;
             });
         }
         SvgMap.prototype.load = function (url) {
+            var _this = this;
             this.regions.clear();
-            this.loadDefinitions(url);
+            this.loadDefinitions(url).then(function (defs) {
+                _this.initRegions(defs.regions);
+            });
         };
         SvgMap.prototype.loadDefinitions = function (url) {
             return __awaiter(this, void 0, void 0, function () {
@@ -671,7 +685,9 @@ var ImageMap;
                     switch (_a.label) {
                         case 0:
                             if (!url) return [3 /*break*/, 2];
-                            return [4 /*yield*/, (fetch(url).then(function (rep) { return rep.json(); }))];
+                            return [4 /*yield*/, fetch(url).then(function (rep) {
+                                    return rep.json();
+                                })];
                         case 1: return [2 /*return*/, _a.sent()];
                         case 2: return [2 /*return*/, {}];
                     }

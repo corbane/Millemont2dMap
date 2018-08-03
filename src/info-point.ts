@@ -38,6 +38,14 @@ module ImageMap
             //this.updateSvg ()
         }
 
+        dispose ()
+        {
+            if( this.useElement.parentNode )
+                this.useElement.parentNode.removeChild (this.useElement)
+                
+            this.symbol.parentNode.removeChild (this.symbol)
+        }
+
         private symbol: SVGSymbolElement
 
         protected getSymbolFrom (definition: SVGElement|string): SVGSymbolElement

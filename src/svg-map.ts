@@ -78,13 +78,19 @@ module ImageMap
         load (url: string)
         {
             this.regions.clear ()
-            this.loadDefinitions (url)
+            this.loadDefinitions (url).then (defs =>
+            {
+                this.initRegions (defs.regions)
+            })
         }
 
         private async loadDefinitions (url: string)
         {
             if( url )
-                return <SvgMap.IJson> await (fetch (url).then (rep => rep.json ()))
+                return <SvgMap.IJson> await fetch (url).then (function (rep)
+                {
+                    return rep.json ()
+                })
             
             return <SvgMap.IJson> {}
         }

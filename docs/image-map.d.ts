@@ -12,6 +12,7 @@ declare module ImageMap {
         protected h: number;
         protected scale: number;
         constructor(doc: Document, definition?: SVGElement | string);
+        dispose(): void;
         private symbol;
         protected getSymbolFrom(definition: SVGElement | string): SVGSymbolElement;
         protected getStandardSymbol(): SVGSymbolElement;
@@ -84,6 +85,7 @@ declare module ImageMap {
         readonly HDisable: Event.Handle<(region: this) => void>;
         private readonly doc;
         constructor(map: SvgMap, def: Region2d.TDefinition);
+        dispose(): void;
         readonly gElement: SVGGElement;
         private initGlobalElement;
         private onMouseOver;
