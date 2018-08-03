@@ -40,7 +40,8 @@
         },
         {
             "data-for": "camping",
-            "content": "<h2>Le camping</h2>"
+            "content": "<h2>Le camping</h2>",
+            "offsetY": -35
         }
     ]
 }

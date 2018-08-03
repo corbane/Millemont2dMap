@@ -13,7 +13,7 @@ function init(obj) {
     map = new ImageMap.SvgMap(obj);
     map.HLoaded.add(function (map) {
         var camp = map.regions.get("camping");
-        camp.infoPoint.offsetY(-100);
+        camp.infoPoint.offsetY(-35);
         function printSelected(map) {
             var e_1, _a;
             var ids = [];

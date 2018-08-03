@@ -38,7 +38,7 @@ svg.image-map .background {
 svg.image-map .region2d .path {
   opacity: 0;
   stroke: black;
-  stroke-width: 15;
+  stroke-width: 3;
   fill: transparent;
 }
 svg.image-map .region2d .image {

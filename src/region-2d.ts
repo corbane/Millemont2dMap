@@ -160,6 +160,10 @@ module ImageMap
                 this.clipPath.appendChild (p)
                 break
         
+            case "path":
+                this.clipPath.appendChild (this.pathElement.cloneNode (true))
+                break
+                
             case "g":
                 //@ts-ignore
                 for( var e of this.pathElement.children )

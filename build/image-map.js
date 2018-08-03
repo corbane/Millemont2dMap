@@ -186,8 +186,8 @@ var ImageMap;
         InfoPoint.prototype.updateSvg = function () {
             var w = this.w * this.scale;
             var h = this.h * this.scale;
-            var x = this.x + (this.w - w) / 2;
-            var y = this.y + (this.h - h) / 2;
+            var x = this.x - w / 2; //+ (this.w - w) / 2
+            var y = this.y - h / 2; //+ (this.h - h) / 2
             this.useElement.setAttribute("x", (x + this.ox).toString());
             this.useElement.setAttribute("y", (y + this.oy).toString());
             this.useElement.setAttribute("width", (w).toString());
@@ -390,6 +390,9 @@ var ImageMap;
                     p = this.doc.createElementNS("http://www.w3.org/2000/svg", "polyline");
                     p.setAttributeNS(null, "points", this.pathElement.getAttributeNS(null, "points"));
                     this.clipPath.appendChild(p);
+                    break;
+                case "path":
+                    this.clipPath.appendChild(this.pathElement.cloneNode(true));
                     break;
                 case "g":
                     try {
