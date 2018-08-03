@@ -5,6 +5,7 @@ all: default doc api
 
 ts:
 	tsc
+	cp src/vendor/*  build/vendor/
 
 less:
 	lessc  src/style/image-map.less  build/image-map.css
@@ -13,7 +14,7 @@ doc:
 	lessc  src/docs/style/index.less  docs/style/index.css
 	pug  --out docs/  src/docs/index.pug
 	cp  src/docs/script/*.js  docs/script/
-	cp  build/*  docs/
+	cp  -r  build/*  docs/
 	make demo
 
 demo:

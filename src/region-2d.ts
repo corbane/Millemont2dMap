@@ -77,7 +77,7 @@ module ImageMap
             this.gElement.addEventListener ("mouseover", this.onMouseOver.bind (this))
         }
 
-        protected onMouseOver (evt: MouseEvent)
+        private onMouseOver (evt: MouseEvent)
         {
             this.HMouseOver.trigger (this, evt)
         }
@@ -184,7 +184,7 @@ module ImageMap
                 this.onClick ({ctrlKey: false, shiftKey: false} as MouseEvent)
         }
 
-        protected onClick (evt: MouseEvent)
+        private onClick (evt: MouseEvent)
         {
             this.HClick.trigger (this, evt)
 

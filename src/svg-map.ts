@@ -41,6 +41,12 @@ module ImageMap
         readonly doc: Document
         readonly root: SVGSVGElement
 
+        // TODO:
+        // HRegionSelected
+        // HRegionUnselected
+        // HRegionEnabled
+        // HRegionDisabled
+
         constructor (object: HTMLObjectElement)
         {
             if( object.tagName.toLowerCase () != "object" )
@@ -206,7 +212,7 @@ module ImageMap
             this.updateDisplay ()
         }
 
-        protected onBackgroundClick (evt: Event)
+        private onBackgroundClick (evt: Event)
         {
             if( evt.target != this.background )
                 return
@@ -280,7 +286,7 @@ module ImageMap
             }
         }
 
-        protected onOverRegion (region: Region2d, evt: MouseEvent)
+        private onOverRegion (region: Region2d, evt: MouseEvent)
         {
             if( this.mobileMode )
                 return
@@ -289,7 +295,7 @@ module ImageMap
             this.setDisplayMode ("ghost")
         }
 
-        protected onOverBackground (region: Region2d, evt: MouseEvent)
+        private onOverBackground (region: Region2d, evt: MouseEvent)
         {
             if( this.mobileMode )
                 return
@@ -326,24 +332,6 @@ module ImageMap
                 //this.addFilter (f.id, f.innerHTML)
             }
         }
-
-        /*addFilter (id: string, def: string = null)
-        {
-            var doc = this.container.ownerDocument
-            if( def )
-            {
-                var filter = doc.createElementNS ("http://www.w3.org/2000/svg", "filter")
-                filter.id = id
-                filter.innerHTML = def
-                this.defsElement.appendChild (filter)
-
-                this.filtersRegister[id] = def
-            }
-            else
-            {
-                //TODO default & global filters
-            }
-        }*/
 
         //#endregion
     }

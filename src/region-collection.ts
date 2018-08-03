@@ -21,7 +21,7 @@ module ImageMap
 
                 // Initialize popup info
 
-                var popup = document.querySelector (`[data-for="${region.id}"]`) as HTMLElement
+                var popup = document.querySelector (`[data-for="${region.id}"]`) as HTMLElement //TODO: make popup external
                 if( popup )
                     region.infoPoint.setPopup (popup)
 
