@@ -57,10 +57,11 @@ module ImageMap
             this.root.setAttribute ("height", "100%")
             
             this.initBackground ()
+            this.zoomAll ()
+
             this.initRegions ()
             this.initFilters ()
 
-            this.zoomAll ()
         }
 
         /** @hidden */

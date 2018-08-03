@@ -46,15 +46,18 @@ module ImageMap
             this.doc = map.doc
             
             this.initGlobalElement ()
-            this.initContourPath (el)
-            this.initClippedImage ()
-            this.initInfoPoint ()
+            this.map.root.appendChild (this.gElement)
 
-            this.gElement.appendChild (this.clipPath)
-            this.gElement.appendChild (this.imageElement)
+            this.initContourPath (el)
             this.gElement.appendChild (this.pathElement)
 
             this.id = this.pathElement.id
+
+            this.initClippedImage ()
+            this.gElement.appendChild (this.clipPath)
+            this.gElement.appendChild (this.imageElement)
+
+            this.initInfoPoint ()
 
             this.initSelection ()
 
@@ -72,7 +75,6 @@ module ImageMap
             this.gElement.classList.add ("region2d")
             this.gElement.vElement = this
             this.gElement.addEventListener ("mouseover", this.onMouseOver.bind (this))
-            this.map.root.appendChild (this.gElement)
         }
 
         protected onMouseOver (evt: MouseEvent)
@@ -142,12 +144,11 @@ module ImageMap
 
         private initInfoPoint ()
         {
+            var s = this.doc.querySelector ("defs > symbol#info-point") as SVGGraphicsElement
             //@ts-ignore
-            this.infoPoint = new InfoPoint ()
-            this.infoPoint.attachTo (this.gElement, "center", "center")
-            var bbox = this.pathElement.getBBox ()
-            this.infoPoint.setPosition (bbox.x + bbox.width / 2, bbox.y + bbox.height / 2)
-            this.infoPoint.setScale (10)
+            this.infoPoint = new InfoPoint (this.doc, s)
+            this.infoPoint.attachTo (this.pathElement, "center", "center")
+            this.infoPoint.setScale (5)
         }
 
         //#endregion

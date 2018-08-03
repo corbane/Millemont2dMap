@@ -964,33 +964,79 @@ var ImageMap;
 (function (ImageMap) {
     var InfoPoint = /** @class */ (function () {
         // suggest
-        // var p = ImageMap.InfoPoint.createFrom (element)
-        // p.attachTo (element, position)
         // bar pp = new ImageMap.Popup ("query")
-        // pp.attachTo (p)
-        function InfoPoint( /*map: SvgMap*/) {
-            //this.map = map
+        // pp.attachTo (InfoPoint)
+        function InfoPoint(doc, el) {
+            if (el === void 0) { el = null; }
+            this.doc = doc;
             this.popup = null;
+            this.ox = 0;
+            this.oy = 0;
             this.scale = 1;
-            //#endregion
-            this.active = false;
-            this.svg = document.createElementNS("http://www.w3.org/2000/svg", "g");
-            this.svg.setAttributeNS(null, "pointer-events", "all");
-            this.svg.addEventListener("mouseover", this.showPopup.bind(this));
-            this.svg.addEventListener("mouseout", this.hidePopup.bind(this));
-            this.setPosition(100, 100);
+            this.root = doc.querySelector("svg");
+            if (el)
+                this.symbol = this.getSymbolFrom(el);
+            else
+                this.symbol = this.getStandardSymbol();
+            this.x = this.symbol.viewBox.baseVal.x;
+            this.y = this.symbol.viewBox.baseVal.y;
+            this.w = this.symbol.viewBox.baseVal.width;
+            this.h = this.symbol.viewBox.baseVal.height;
+            this.useElement = doc.createElementNS("http://www.w3.org/2000/svg", "use");
+            this.useElement.setAttribute("href", "#" + this.symbol.id);
+            this.useElement.addEventListener("mouseover", this.showPopup.bind(this));
+            this.useElement.addEventListener("mouseout", this.hidePopup.bind(this));
+            //this.updateSvg ()
         }
-        /*static load (doc: Document, query: string): InfoPoint
-        {
-            var el = doc.querySelector (query)
-            if( !el )
-                throw "Can not load info point :("
-
-            var ip = new InfoPoint ()
-            ip.getInnerHtml = (): string => el.innerHTML
-
-            return ip
-        }*/
+        // createFromTemplate
+        InfoPoint.prototype.getSymbolFrom = function (el) {
+            var defs = this.root.querySelector("defs");
+            if (!defs) {
+                defs = this.doc.createElementNS("http://www.w3.org/2000/svg", "defs");
+                this.root.appendChild(defs);
+            }
+            if (el.tagName.toLowerCase() == "symbol") {
+                var s = el.cloneNode(true);
+            }
+            else {
+                var s = this.doc.createElementNS("http://www.w3.org/2000/svg", "symbol");
+                s.appendChild(el);
+            }
+            s.id = ImageMap.newId();
+            defs.appendChild(s);
+            return s;
+        };
+        InfoPoint.prototype.getStandardSymbol = function () {
+            var defs = this.root.querySelector("defs");
+            if (!defs) {
+                defs = this.doc.createElementNS("http://www.w3.org/2000/svg", "defs");
+                this.root.appendChild(defs);
+            }
+            var s = this.doc.createElementNS("http://www.w3.org/2000/svg", "symbol");
+            s.id = ImageMap.newId();
+            s.viewBox.baseVal.x = -50;
+            s.viewBox.baseVal.y = -50;
+            s.viewBox.baseVal.width = 100;
+            s.viewBox.baseVal.height = 100;
+            var c1 = this.doc.createElementNS("http://www.w3.org/2000/svg", "circle");
+            c1.setAttribute("cx", "0");
+            c1.setAttribute("cy", "0");
+            c1.setAttribute("r", "40");
+            c1.setAttribute("fill", "none");
+            c1.setAttribute("stroke", "#FFD50055");
+            c1.setAttribute("stroke-width", "10");
+            var c2 = this.doc.createElementNS("http://www.w3.org/2000/svg", "circle");
+            c1.setAttribute("cx", "0");
+            c1.setAttribute("cy", "0");
+            c1.setAttribute("r", "30");
+            c1.setAttribute("fill", "#FFD50055");
+            c1.setAttribute("stroke", "none");
+            c1.setAttribute("stroke-width", "0");
+            s.appendChild(c1);
+            s.appendChild(c2);
+            defs.appendChild(s);
+            return s;
+        };
         InfoPoint.prototype.attachTo = function (el, x, y) {
             var bbox = el.getBBox();
             if (x == "left")
@@ -1006,47 +1052,47 @@ var ImageMap;
             else if (y == "bottom")
                 y = bbox.y + bbox.height;
             this.setPosition(x, y);
-            if (el.nextSibling)
-                el.parentNode.insertBefore(this.svg, el.nextSibling);
-            else
-                el.parentNode.appendChild(this.svg);
-        };
-        InfoPoint.prototype.updateSvg = function () {
-            this.svg.style.transform = "scale(" + this.scale + ")";
-            this.svg.style.transformOrigin = this.x + "px " + this.y + "px"; // "center center"
-            this.svg.innerHTML = this.getInnerHtml();
-        };
-        /**
-         * Overrides this method for build a custom style point
-         */
-        InfoPoint.prototype.getInnerHtml = function () {
-            return "\n                <circle cx=\"" + this.x + "\" cy=\"" + this.y + "\" r=\"14\" fill=\"" + (this.active ? "#FFD50055" : "none") + "\" stroke=\"gold\" stroke-width=\"2\"/>\n                <circle cx=\"" + this.x + "\" cy=\"" + (this.y - 6) + "\" r=\"2\" fill=\"gold\"/>\n                <rect x=\"" + (this.x - 1.5) + "\" y=\"" + (this.y - 2) + "\" width=\"3\" height=\"10\" fill=\"gold\"/>";
+            el.parentNode.appendChild(this.useElement);
         };
         //#region Transform
         InfoPoint.prototype.setPosition = function (x, y) {
-            this.x = this.x_origin = x;
-            this.y = this.y_origin = y;
+            this.x = x + this.symbol.viewBox.baseVal.x;
+            this.y = y + this.symbol.viewBox.baseVal.y;
             this.updateSvg();
         };
         InfoPoint.prototype.offsetX = function (n) {
-            this.x = this.x_origin + n;
+            this.ox = n;
             this.updateSvg();
         };
         InfoPoint.prototype.offsetY = function (n) {
-            this.y = this.y_origin + n;
+            this.oy = n;
+            this.updateSvg();
+        };
+        InfoPoint.prototype.setSize = function (width, height) {
+            this.w = width;
+            this.h = height;
             this.updateSvg();
         };
         InfoPoint.prototype.setScale = function (n) {
             this.scale = n;
-            this.svg.style.transform = "scale(" + this.scale + ")";
-        };
-        InfoPoint.prototype.select = function () {
-            this.active = true;
             this.updateSvg();
+        };
+        InfoPoint.prototype.updateSvg = function () {
+            var w = this.w * this.scale;
+            var h = this.h * this.scale;
+            var x = this.x + (this.w - w) / 2;
+            var y = this.y + (this.h - h) / 2;
+            this.useElement.setAttribute("x", (x + this.ox).toString());
+            this.useElement.setAttribute("y", (y + this.oy).toString());
+            this.useElement.setAttribute("width", (w).toString());
+            this.useElement.setAttribute("height", (h).toString());
+        };
+        //#endregion
+        InfoPoint.prototype.select = function () {
+            this.useElement.classList.add("selected");
         };
         InfoPoint.prototype.unselect = function () {
-            this.active = false;
-            this.updateSvg();
+            this.useElement.classList.remove("selected");
         };
         //#region Popup
         InfoPoint.prototype.setPopup = function (popup) {
@@ -1059,7 +1105,7 @@ var ImageMap;
             if (!this.popup)
                 return;
             this.popup.style.display = "block";
-            var b = this.svg.getBoundingClientRect();
+            var b = this.useElement.getBoundingClientRect();
             //var bbox = this.map.getClientRectFor (this.svg)
             this.popup.style.left = (b.x + b.width) + "px";
             this.popup.style.top = (b.y + b.height) + 30 + "px";
@@ -1167,14 +1213,14 @@ var ImageMap;
             this.selected = false;
             this.doc = map.doc;
             this.initGlobalElement();
+            this.map.root.appendChild(this.gElement);
             this.initContourPath(el);
+            this.gElement.appendChild(this.pathElement);
+            this.id = this.pathElement.id;
             this.initClippedImage();
-            this.initInfoPoint();
             this.gElement.appendChild(this.clipPath);
             this.gElement.appendChild(this.imageElement);
-            this.gElement.appendChild(this.pathElement);
-            //this.gElement.appendChild (this.infoPoint.svg)
-            this.id = this.pathElement.id;
+            this.initInfoPoint();
             this.initSelection();
             this.updateDisplay();
         }
@@ -1184,7 +1230,6 @@ var ImageMap;
             this.gElement.classList.add("region2d");
             this.gElement.vElement = this;
             this.gElement.addEventListener("mouseover", this.onMouseOver.bind(this));
-            this.map.root.appendChild(this.gElement);
         };
         Region2d.prototype.onMouseOver = function (evt) {
             this.HMouseOver.trigger(this, evt);
@@ -1232,12 +1277,11 @@ var ImageMap;
             }
         };
         Region2d.prototype.initInfoPoint = function () {
+            var s = this.doc.querySelector("defs > symbol#info-point");
             //@ts-ignore
-            this.infoPoint = new ImageMap.InfoPoint( /*this.map*/);
-            this.infoPoint.attachTo(this.gElement, "center", "center");
-            var bbox = this.pathElement.getBBox();
-            this.infoPoint.setPosition(bbox.x + bbox.width / 2, bbox.y + bbox.height / 2);
-            this.infoPoint.setScale(10);
+            this.infoPoint = new ImageMap.InfoPoint(this.doc, s);
+            this.infoPoint.attachTo(this.pathElement, "center", "center");
+            this.infoPoint.setScale(5);
         };
         Region2d.prototype.initSelection = function () {
             this.gElement.addEventListener("click", this.onClick.bind(this));
@@ -1454,9 +1498,9 @@ var ImageMap;
             this.root.setAttribute("width", "100%");
             this.root.setAttribute("height", "100%");
             this.initBackground();
+            this.zoomAll();
             this.initRegions();
             this.initFilters();
-            this.zoomAll();
         }
         /** @hidden */
         SvgMap.prototype.getClientRectFor = function (el) {
@@ -1696,6 +1740,14 @@ var ImageMap;
     })(SvgMap = ImageMap.SvgMap || (ImageMap.SvgMap = {}));
 })(ImageMap || (ImageMap = {}));
 /// <reference path="svg-map.ts" />
+var ImageMap;
+(function (ImageMap) {
+    var _id = 0;
+    function newId() {
+        return "_id" + (++_id);
+    }
+    ImageMap.newId = newId;
+})(ImageMap || (ImageMap = {}));
 /// <reference path="vendor/mobile-detect.js" />
 /// <reference path="image-map.ts" />
 //# sourceMappingURL=image-map.js.map
