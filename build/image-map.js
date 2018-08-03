@@ -1280,7 +1280,11 @@ var ImageMap;
             //@ts-ignore
             this.infoPoint = new ImageMap.InfoPoint(this.doc, s);
             this.infoPoint.attachTo(this.pathElement, "center", "center");
-            this.infoPoint.setScale(5);
+            if (s) {
+                var scale = parseFloat(s.getAttribute("data-scale"));
+                if (scale)
+                    this.infoPoint.setScale(scale);
+            }
         };
         Region2d.prototype.initSelection = function () {
             this.gElement.addEventListener("click", this.onClick.bind(this));
