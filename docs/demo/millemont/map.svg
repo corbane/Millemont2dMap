@@ -10,7 +10,7 @@
         <filter id="blur-filter">
             <feGaussianBlur in="SourceGraphic" stdDeviation="9"/>
         </filter>
-        <symbol id="info-point" viewBox="0 0 100 100">
+        <symbol id="info--point" viewBox="0 0 100 100">
             <circle id="contour" cx="50" cy="50" r="40" fill="none" stroke="#ffb100" stroke-width="5px"/>
             <path d="M50,75l0,-29" fill="none" stroke="#ffb100" stroke-width="8px"/>
             <circle cx="50" cy="28" r="5" fill="#ffb100"/>
