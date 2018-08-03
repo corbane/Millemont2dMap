@@ -14,20 +14,27 @@ module ImageMap
         constructor (protected parent: SvgMap)
         { }
 
-        add (el: SVGGraphicsElement|string): Region2d
+        add (el: SVGGraphicsElement|string|Region2d.IJson|Region2d.IJson []): Region2d
         {
-                var region = new Region2d (this.parent, el)
-                this.registry.push (region)
+            if( Array.isArray (el) )
+            {
+                for( var r of el )
+                    this.add (r)
+                return
+            }
+            
+            var region = new Region2d (this.parent, el)
+            this.registry.push (region)
 
-                // Initialize popup info
+            // Initialize popup info
 
-                var popup = document.querySelector (`[data-for="${region.id}"]`) as HTMLElement //TODO: make popup external
-                if( popup )
-                    region.infoPoint.setPopup (popup)
+            var popup = document.querySelector (`[data-for="${region.id}"]`) as HTMLElement //TODO: make popup external
+            if( popup )
+                region.infoPoint.setPopup (popup)
 
-                this.HRegionAdded.trigger (region)
+            this.HRegionAdded.trigger (region)
 
-                return region
+            return region
         }
 
         has (region: Region2d): boolean

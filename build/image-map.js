@@ -28,6 +28,41 @@ var __spread = (this && this.__spread) || function () {
     for (var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
     return ar;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 /// <reference path="svg-map.ts" />
 var ImageMap;
 (function (ImageMap) {
@@ -268,7 +303,7 @@ var ImageMap;
      * ```
      */
     var Region2d = /** @class */ (function () {
-        function Region2d(map, el) {
+        function Region2d(map, contour) {
             this.map = map;
             this.HMouseOver = new ImageMap.Event.Handle();
             this.HClick = new ImageMap.Event.Handle();
@@ -282,7 +317,7 @@ var ImageMap;
             this.doc = map.doc;
             this.initGlobalElement();
             this.map.root.appendChild(this.gElement);
-            this.initContourPath(el);
+            this.initContourPath(contour);
             this.gElement.appendChild(this.pathElement);
             this.id = this.pathElement.id;
             this.initClippedImage();
@@ -303,8 +338,22 @@ var ImageMap;
             this.HMouseOver.trigger(this, evt);
         };
         Region2d.prototype.initContourPath = function (el) {
-            //@ts-ignore
-            this.pathElement = typeof el == "string" ? map.container.ownerDocument.querySelector(el) : el;
+            if (typeof el == "string")
+                //@ts-ignore
+                this.pathElement = map.container.ownerDocument.querySelector(el);
+            else if (el instanceof SVGGraphicsElement)
+                //@ts-ignore
+                this.pathElement = el;
+            else {
+                var p = this.doc.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                p.id = el._id;
+                p.setAttribute("class", el._class || "");
+                p.setAttribute("points", el._points);
+                //@ts-ignore
+                this.pathElement = p;
+                this.gElement.appendChild(p);
+            }
+            //this.pathElement = typeof el == "string" ? map.container.ownerDocument.querySelector (el) : el
             this.pathElement.classList.add("path");
         };
         Region2d.prototype.initClippedImage = function () {
@@ -428,6 +477,23 @@ var ImageMap;
             this.HRegionRemoved = new ImageMap.Event.Handle();
         }
         RegionCollection.prototype.add = function (el) {
+            var e_3, _a;
+            if (Array.isArray(el)) {
+                try {
+                    for (var el_1 = __values(el), el_1_1 = el_1.next(); !el_1_1.done; el_1_1 = el_1.next()) {
+                        var r = el_1_1.value;
+                        this.add(r);
+                    }
+                }
+                catch (e_3_1) { e_3 = { error: e_3_1 }; }
+                finally {
+                    try {
+                        if (el_1_1 && !el_1_1.done && (_a = el_1["return"])) _a.call(el_1);
+                    }
+                    finally { if (e_3) throw e_3.error; }
+                }
+                return;
+            }
             var region = new ImageMap.Region2d(this.parent, el);
             this.registry.push(region);
             // Initialize popup info
@@ -439,7 +505,7 @@ var ImageMap;
         };
         RegionCollection.prototype.has = function (region) { return !(this.indexOf(region) == -1); };
         RegionCollection.prototype.indexOf = function (region) {
-            var e_3, _a;
+            var e_4, _a;
             if (typeof region == "string")
                 region = this.get(region);
             var i = 0;
@@ -451,12 +517,12 @@ var ImageMap;
                     ++i;
                 }
             }
-            catch (e_3_1) { e_3 = { error: e_3_1 }; }
+            catch (e_4_1) { e_4 = { error: e_4_1 }; }
             finally {
                 try {
                     if (_c && !_c.done && (_a = _b["return"])) _a.call(_b);
                 }
-                finally { if (e_3) throw e_3.error; }
+                finally { if (e_4) throw e_4.error; }
             }
             return -1;
         };
@@ -471,7 +537,7 @@ var ImageMap;
             for (var _i = 0; _i < arguments.length; _i++) {
                 regions[_i] = arguments[_i];
             }
-            var e_4, _a;
+            var e_5, _a;
             try {
                 for (var regions_1 = __values(regions), regions_1_1 = regions_1.next(); !regions_1_1.done; regions_1_1 = regions_1.next()) {
                     var region = regions_1_1.value;
@@ -482,12 +548,12 @@ var ImageMap;
                     this.HRegionRemoved.trigger(del[0]);
                 }
             }
-            catch (e_4_1) { e_4 = { error: e_4_1 }; }
+            catch (e_5_1) { e_5 = { error: e_5_1 }; }
             finally {
                 try {
                     if (regions_1_1 && !regions_1_1.done && (_a = regions_1["return"])) _a.call(regions_1);
                 }
-                finally { if (e_4) throw e_4.error; }
+                finally { if (e_5) throw e_5.error; }
             }
         };
         RegionCollection.prototype.clear = function () {
@@ -541,13 +607,15 @@ var ImageMap;
      * ```
      */
     var SvgMap = /** @class */ (function () {
-        // TODO:
-        // HRegionSelected
-        // HRegionUnselected
-        // HRegionEnabled
-        // HRegionDisabled
         function SvgMap(object) {
+            var _this = this;
             this.options = new SvgMap.Options();
+            // TODO:
+            // HRegionSelected
+            // HRegionUnselected
+            // HRegionEnabled
+            // HRegionDisabled
+            this.HLoaded = new ImageMap.Event.Handle();
             //#endregion
             //#region Regions
             this.regions = new ImageMap.RegionCollection(this);
@@ -576,8 +644,11 @@ var ImageMap;
             this.root.setAttribute("height", "100%");
             this.initBackground();
             this.zoomAll();
-            this.initRegions();
             this.initFilters();
+            this.getRegionsDefinitions().then(function (els) {
+                _this.initRegions(els);
+                _this.HLoaded.trigger(_this);
+            });
         }
         /** @hidden */
         SvgMap.prototype.getClientRectFor = function (el) {
@@ -608,23 +679,46 @@ var ImageMap;
             this.background.classList.add("background");
             this.background.onclick = this.onBackgroundClick.bind(this);
         };
-        SvgMap.prototype.initRegions = function () {
-            var e_5, _a;
+        SvgMap.prototype.getRegionsDefinitions = function () {
+            return __awaiter(this, void 0, void 0, function () {
+                var url, selector, els;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            url = this.container.getAttribute("data-region-url");
+                            if (!url) return [3 /*break*/, 2];
+                            return [4 /*yield*/, fetch(url).then(function (rep) { return rep.json(); })];
+                        case 1: return [2 /*return*/, (_a.sent()).regions];
+                        case 2:
+                            selector = this.container.getAttribute("data-region-selector");
+                            els = selector
+                                ? this.doc.querySelectorAll(selector)
+                                : this.doc.querySelectorAll(this.options.regionsSelector);
+                            return [2 /*return*/, els];
+                    }
+                });
+            });
+        };
+        SvgMap.prototype.initRegions = function (els) {
+            var e_6, _a;
             this.regions.HRegionAdded.add(this.onRegionAdded.bind(this));
-            var els = this.doc.querySelectorAll(this.options.regionsSelector);
             try {
+                /*var selector = this.container.getAttribute ("data-region-selector")
+                var els = selector
+                        ? this.doc.querySelectorAll (selector)
+                        : this.doc.querySelectorAll (this.options.regionsSelector)*/
                 //@ts-ignore
                 for (var els_1 = __values(els), els_1_1 = els_1.next(); !els_1_1.done; els_1_1 = els_1.next()) {
                     var el = els_1_1.value;
                     this.regions.add(el);
                 }
             }
-            catch (e_5_1) { e_5 = { error: e_5_1 }; }
+            catch (e_6_1) { e_6 = { error: e_6_1 }; }
             finally {
                 try {
                     if (els_1_1 && !els_1_1.done && (_a = els_1["return"])) _a.call(els_1);
                 }
-                finally { if (e_5) throw e_5.error; }
+                finally { if (e_6) throw e_6.error; }
             }
         };
         SvgMap.prototype.onRegionAdded = function (region) {
@@ -710,7 +804,7 @@ var ImageMap;
             this.updateDisplay();
         };
         SvgMap.prototype.updateDisplay = function () {
-            var e_6, _a, e_7, _b, e_8, _c;
+            var e_7, _a, e_8, _b, e_9, _c;
             if (this.mobileMode) {
                 if (this.selectedSapes.length)
                     this.setDisplayMode("ghost");
@@ -724,12 +818,12 @@ var ImageMap;
                         s.disable();
                     }
                 }
-                catch (e_6_1) { e_6 = { error: e_6_1 }; }
+                catch (e_7_1) { e_7 = { error: e_7_1 }; }
                 finally {
                     try {
                         if (_e && !_e.done && (_a = _d["return"])) _a.call(_d);
                     }
-                    finally { if (e_6) throw e_6.error; }
+                    finally { if (e_7) throw e_7.error; }
                 }
                 try {
                     for (var _f = __values(this.selectedSapes), _g = _f.next(); !_g.done; _g = _f.next()) {
@@ -737,12 +831,12 @@ var ImageMap;
                         r.enable();
                     }
                 }
-                catch (e_7_1) { e_7 = { error: e_7_1 }; }
+                catch (e_8_1) { e_8 = { error: e_8_1 }; }
                 finally {
                     try {
                         if (_g && !_g.done && (_b = _f["return"])) _b.call(_f);
                     }
-                    finally { if (e_7) throw e_7.error; }
+                    finally { if (e_8) throw e_8.error; }
                 }
             }
             else //"normal"
@@ -753,12 +847,12 @@ var ImageMap;
                         s.disable();
                     }
                 }
-                catch (e_8_1) { e_8 = { error: e_8_1 }; }
+                catch (e_9_1) { e_9 = { error: e_9_1 }; }
                 finally {
                     try {
                         if (_j && !_j.done && (_c = _h["return"])) _c.call(_h);
                     }
-                    finally { if (e_8) throw e_8.error; }
+                    finally { if (e_9) throw e_9.error; }
                 }
             }
         };
@@ -775,7 +869,7 @@ var ImageMap;
             this.setDisplayMode("normal");
         };
         SvgMap.prototype.initFilters = function () {
-            var e_9, _a;
+            var e_10, _a;
             var defs = this.root.querySelector("defs");
             if (!defs) {
                 defs = this.doc.createElementNS("http://www.w3.org/2000/svg", "defs");
@@ -792,12 +886,12 @@ var ImageMap;
                     //this.addFilter (f.id, f.innerHTML)
                 }
             }
-            catch (e_9_1) { e_9 = { error: e_9_1 }; }
+            catch (e_10_1) { e_10 = { error: e_10_1 }; }
             finally {
                 try {
                     if (filters_1_1 && !filters_1_1.done && (_a = filters_1["return"])) _a.call(filters_1);
                 }
-                finally { if (e_9) throw e_9.error; }
+                finally { if (e_10) throw e_10.error; }
             }
         };
         return SvgMap;

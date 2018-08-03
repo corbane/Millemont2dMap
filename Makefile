@@ -24,6 +24,7 @@ demo:
 	cp  src/docs/demo/millemont/thumb.*  docs/demo/millemont/
 	cp  src/docs/demo/millemont/*.css    docs/demo/millemont/
 	cp  src/docs/demo/millemont/*.js     docs/demo/millemont/
+	cp  src/docs/demo/millemont/region*.json   docs/demo/millemont/
 	
 	lessc  src/docs/demo/turbine/style.less  src/docs/demo/turbine/style.css
 	pug  --out docs/demo/turbine/  src/docs/demo/turbine/index.pug

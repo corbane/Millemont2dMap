@@ -41,14 +41,14 @@ module ImageMap
 
         private readonly doc: Document
 
-        constructor (readonly map: SvgMap, el: SVGGraphicsElement|string)
+        constructor (readonly map: SvgMap, contour: SVGGraphicsElement|string|Region2d.IJson)
         {
             this.doc = map.doc
             
             this.initGlobalElement ()
             this.map.root.appendChild (this.gElement)
 
-            this.initContourPath (el)
+            this.initContourPath (contour)
             this.gElement.appendChild (this.pathElement)
 
             this.id = this.pathElement.id
@@ -88,10 +88,26 @@ module ImageMap
 
         readonly pathElement: SVGGraphicsElement
 
-        private initContourPath (el: SVGGraphicsElement|string)
+        private initContourPath (el: SVGGraphicsElement|string|Region2d.IJson)
         {
-            //@ts-ignore
-            this.pathElement = typeof el == "string" ? map.container.ownerDocument.querySelector (el) : el
+            if( typeof el == "string"  )
+                //@ts-ignore
+                this.pathElement = map.container.ownerDocument.querySelector (el)
+            else if( el instanceof SVGGraphicsElement )
+                //@ts-ignore
+                this.pathElement = el
+            else
+            {
+                var p = this.doc.createElementNS ("http://www.w3.org/2000/svg", "polygon")
+                p.id = el._id
+                p.setAttribute ("class", el._class || "")
+                p.setAttribute ("points", el._points)
+                //@ts-ignore
+                this.pathElement = p
+                this.gElement.appendChild (p)
+            }
+
+            //this.pathElement = typeof el == "string" ? map.container.ownerDocument.querySelector (el) : el
             this.pathElement.classList.add ("path")
         }
 
@@ -247,5 +263,15 @@ module ImageMap
         }
 
         //#endregion
+    }
+
+    export module Region2d
+    {
+        export interface IJson
+        {
+            _id: string
+            _points: string
+            _class?: string
+        }
     }
 }

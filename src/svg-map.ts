@@ -47,6 +47,8 @@ module ImageMap
         // HRegionEnabled
         // HRegionDisabled
 
+        HLoaded = new Event.Handle <(map: this) => void> ()
+
         constructor (object: HTMLObjectElement)
         {
             if( object.tagName.toLowerCase () != "object" )
@@ -65,8 +67,14 @@ module ImageMap
             this.initBackground ()
             this.zoomAll ()
 
-            this.initRegions ()
             this.initFilters ()
+
+            this.getRegionsDefinitions ().then (els => 
+            {
+                this.initRegions (els)
+                this.HLoaded.trigger (this)
+            })
+
 
         }
 
@@ -114,14 +122,32 @@ module ImageMap
 
         readonly regions = new RegionCollection (this)
 
-        private initRegions ()
+        private async getRegionsDefinitions (): Promise <NodeListOf <SVGGraphicsElement>|Region2d.IJson[]>
+        {
+            var url = this.container.getAttribute ("data-region-url") 
+            if( url )
+                return (await fetch (url).then (rep => rep.json ())).regions
+            
+            var selector = this.container.getAttribute ("data-region-selector") 
+            var els = selector 
+                    ? this.doc.querySelectorAll (selector)
+                    : this.doc.querySelectorAll (this.options.regionsSelector)
+                
+            return els as NodeListOf <SVGGraphicsElement>
+        }
+
+        private initRegions (els: NodeListOf <SVGGraphicsElement>|Region2d.IJson[])
         {
             this.regions.HRegionAdded.add (this.onRegionAdded.bind (this))
 
-            var els = this.doc.querySelectorAll (this.options.regionsSelector)
+            /*var selector = this.container.getAttribute ("data-region-selector") 
+            var els = selector 
+                    ? this.doc.querySelectorAll (selector)
+                    : this.doc.querySelectorAll (this.options.regionsSelector)*/
+            
             //@ts-ignore
             for( var el of els )
-                this.regions.add (el as SVGGraphicsElement)
+                this.regions.add (el)
         }
 
         private onRegionAdded (region: Region2d)

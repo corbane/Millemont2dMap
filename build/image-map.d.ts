@@ -75,7 +75,7 @@ declare module ImageMap {
         readonly HEnable: Event.Handle<(region: this) => void>;
         readonly HDisable: Event.Handle<(region: this) => void>;
         private readonly doc;
-        constructor(map: SvgMap, el: SVGGraphicsElement | string);
+        constructor(map: SvgMap, contour: SVGGraphicsElement | string | Region2d.IJson);
         readonly gElement: SVGGElement;
         private initGlobalElement;
         private onMouseOver;
@@ -97,6 +97,13 @@ declare module ImageMap {
         disable(): void;
         updateDisplay(): void;
     }
+    module Region2d {
+        interface IJson {
+            _id: string;
+            _points: string;
+            _class?: string;
+        }
+    }
 }
 declare module ImageMap {
     class RegionCollection implements Iterable<Region2d> {
@@ -105,7 +112,7 @@ declare module ImageMap {
         HRegionAdded: Event.Handle<(region: Region2d) => void>;
         HRegionRemoved: Event.Handle<(region: Region2d) => void>;
         constructor(parent: SvgMap);
-        add(el: SVGGraphicsElement | string): Region2d;
+        add(el: SVGGraphicsElement | string | Region2d.IJson | Region2d.IJson[]): Region2d;
         has(region: Region2d): boolean;
         indexOf(region: string | Region2d): number;
         get(id: string): Region2d;
@@ -145,11 +152,13 @@ declare module ImageMap {
         readonly container: HTMLObjectElement;
         readonly doc: Document;
         readonly root: SVGSVGElement;
+        HLoaded: Event.Handle<(map: this) => void>;
         constructor(object: HTMLObjectElement);
         /** @hidden */
         getClientRectFor(el: string | SVGGraphicsElement): DOMRect;
         private initBackground;
         readonly regions: RegionCollection;
+        private getRegionsDefinitions;
         private initRegions;
         private onRegionAdded;
         zoomTo(b: SVGRect, margin?: number): void;
