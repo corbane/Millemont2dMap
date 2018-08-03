@@ -764,6 +764,7 @@ var ImageMap;
             }
             this.selectedSapes.push(region);
             this.updateDisplay();
+            this.HSelectionChanged.trigger(this);
         };
         SvgMap.prototype.onRegionUnelected = function (region, evt) {
             var i = this.selectedSapes.indexOf(region);
@@ -775,6 +776,7 @@ var ImageMap;
                     (this.selectedSapes.splice(0, 1))[0].unselect();
             }
             this.updateDisplay();
+            this.HSelectionChanged.trigger(this);
         };
         SvgMap.prototype.onBackgroundClick = function (evt) {
             if (evt.target != this.background)
@@ -782,6 +784,7 @@ var ImageMap;
             while (this.selectedSapes.length)
                 (this.selectedSapes.splice(0, 1))[0].unselect();
             this.updateDisplay();
+            this.HSelectionChanged.trigger(this);
         };
         SvgMap.prototype.setDisplayMode = function (mode) {
             if (this.displayMode == mode)
@@ -913,6 +916,7 @@ var ImageMap;
 /// <reference path="svg-map.ts" />
 var ImageMap;
 (function (ImageMap) {
+    /** @hidden */
     var _id = 0;
     function newId() {
         return "_id" + (++_id);

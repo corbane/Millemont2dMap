@@ -7,6 +7,7 @@ declare interface Element
 
 module ImageMap
 {
+    /** @hidden */
     var _id = 0
 
     export function newId (): string

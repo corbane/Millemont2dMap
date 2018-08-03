@@ -219,6 +219,8 @@ module ImageMap
             this.selectedSapes.push (region)
 
             this.updateDisplay ()
+
+            this.HSelectionChanged.trigger (this)
         }
 
         private onRegionUnelected (region: Region2d, evt: MouseEvent)
@@ -236,6 +238,8 @@ module ImageMap
             }
 
             this.updateDisplay ()
+
+            this.HSelectionChanged.trigger (this)
         }
 
         private onBackgroundClick (evt: Event)
@@ -247,6 +251,8 @@ module ImageMap
                 (this.selectedSapes.splice (0, 1))[0].unselect ()
             
             this.updateDisplay ()
+
+            this.HSelectionChanged.trigger (this)
         }
 
         //#endregion

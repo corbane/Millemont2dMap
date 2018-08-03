@@ -33,7 +33,9 @@
         }
     ]
 }
-</pre></div><div class="demo-source-tab tab-html-source"><pre class="code htmlHigh notranslate border-light-grey">&lt;object type="image/svg+xml" data="map.svg" data-region-url="regions.json" onload="init (this)"></object>
+</pre></div><div class="demo-source-tab tab-html-source"><pre class="code htmlHigh notranslate border-light-grey">&lt;object type="image/svg+xml" data="map.svg" data-region-url="regions.json" onload="init (this)">&lt;/object>
+&lt;h2>Selected region: &lt;span id="#info">&lt;/span>&lt;/h2>
+&lt;input type="checkbox" onclick="toggleMobileView ()">&lt;/input>
 </pre></div><div class="demo-source-tab tab-js-source"><pre class="code jsHigh notranslate border-light-grey">var map
 
 function init (obj)
@@ -44,20 +46,16 @@ function init (obj)
         var camp = map.regions.get ("camping")
         camp.infoPoint.offsetY (-100)
 
-        function printSelected (region)
+        function printSelected (map)
         {
             var ids = []
-            for( var r of region.map.getSelected () )
-                ids.push (r.id)
+            for( var region of map.getSelected () )
+                ids.push (region.id)
 
             document.getElementById ("info").innerHTML = ids.join (", ")
         }
 
-        for( var region of map.regions )
-        {
-            region.HSelect.add (printSelected)
-            region.HUnselect.add (printSelected)
-        }
+        map.HSelectionChanged.add (printSelected)
         
         console.log (map)        
     })
